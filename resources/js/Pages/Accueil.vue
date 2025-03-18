@@ -1,8 +1,9 @@
 <script setup>
 import SecondaryButton from '@/Components/SecondaryButton.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue'; // Chemin corrigé
-import { Head } from '@inertiajs/vue3'; // Importation pour SEO
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import { Head } from '@inertiajs/vue3';
 import PublicLayout from '@/Layouts/PublicLayout.vue';
+import Services from '@/Components/Services.vue';
 </script>
 
 <template>
@@ -88,6 +89,7 @@ import PublicLayout from '@/Layouts/PublicLayout.vue';
                     <h4 class="font-inter text-lg text-center">Des solutions adaptées à vos besoins énergétiques.</h4>
                 </div>
             </div>
+            <Services />
 
         </section>
     </PublicLayout>
