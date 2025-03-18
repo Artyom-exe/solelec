@@ -2,10 +2,13 @@
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\ServiceController;
 
 Route::get('/', function () {
     return Inertia::render('Accueil');
 })->name('accueil');
+
+Route::get('/api/services', [ServiceController::class, 'index']);
 
 Route::middleware([
     'auth:sanctum',
