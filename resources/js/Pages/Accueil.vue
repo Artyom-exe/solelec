@@ -1,9 +1,41 @@
 <script setup>
+import { ref, onMounted, computed } from 'vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { Head } from '@inertiajs/vue3';
 import PublicLayout from '@/Layouts/PublicLayout.vue';
 import Services from '@/Components/Services.vue';
+
+// Définition des images pour les 2 colonnes
+const leftImages = ref([
+    { src: '/images/header/ouvrier-dos.jpg', alt: 'Électricien Solelec de dos travaillant sur une installation' },
+    { src: '/images/header/electricien.jpg', alt: 'Technicien qualifié Solelec en intervention' },
+    { src: '/images/header/ouvrier-panneau.jpg', alt: "Installation de panneau solaire par l'équipe Solelec" },
+])
+
+const rightImages = ref([
+    { src: '/images/header/ouvrier-tableau-electrique.jpg', alt: 'Expert Solelec travaillant sur un tableau électrique' },
+    { src: '/images/header/plan-travail.jpg', alt: "Plan d'installation électrique étudié par Solelec" },
+    { src: '/images/header/tableau-electrique-zoom.jpg', alt: "Gros plan sur tableau électrique installé par Solelec" },
+])
+
+// À l'aide de onMounted, attribuer un délai aléatoire à chaque image
+onMounted(() => {
+    leftImages.value = leftImages.value.map(img => ({ ...img, delay: Math.floor(Math.random() * 1000) + 'ms' }))
+    rightImages.value = rightImages.value.map(img => ({ ...img, delay: Math.floor(Math.random() * 1000) + 'ms' }))
+})
+
+// Total d'images à charger
+const totalImages = computed(() => leftImages.value.length + rightImages.value.length)
+const loadedImages = ref(0)
+
+const allImagesLoaded = computed(() => {
+    return loadedImages.value === totalImages.value
+})
+
+function handleImageLoad() {
+    loadedImages.value++
+}
 </script>
 
 <template>
@@ -39,79 +71,69 @@ import Services from '@/Components/Services.vue';
                     </div>
                 </div>
                 <div class="flex gap-4 flex-1 h-full overflow-hidden">
+                    <!-- Colonne gauche -->
                     <div class="flex flex-col w-1/2 gap-4 -translate-y-60">
-                        <div class="h-[340px]">
-                            <img src="/images/header/ouvrier-dos.jpg"
-                                alt="Électricien Solelec de dos travaillant sur une installation"
-                                class="w-full h-full object-cover rounded-lg" />
-                        </div>
-                        <div class="h-[340px]">
-                            <img src="/images/header/electricien.jpg" alt="Technicien qualifié Solelec en intervention"
-                                class="w-full h-full object-cover rounded-lg" loading="lazy" />
-                        </div>
-                        <div class="h-[340px]">
-                            <img src="/images/header/ouvrier-panneau.jpg"
-                                alt="Installation de panneau solaire par l'équipe Solelec"
-                                class="w-full h-full object-cover rounded-lg" loading="lazy" />
+                        <div v-for="(img, index) in leftImages" :key="'left-' + index"
+                            class="h-[340px] opacity-0 animate-fadeIn" :style="{ animationDelay: img.delay }">
+                            <img :src="img.src" :alt="img.alt" class="w-full h-full object-cover rounded-lg"
+                            loading="lazy"
+                                @load="handleImageLoad" />
                         </div>
                     </div>
-                    <div class="flex flex-col w-1/2 gap-4 -translate-y-40">
-                        <div class="h-[340px]">
-                            <img src="/images/header/ouvrier-tableau-electrique.jpg"
-                                alt="Expert Solelec travaillant sur un tableau électrique"
-                                class="w-full h-full object-cover rounded-lg" loading="lazy" />
-                        </div>
-                        <div class="h-[340px]">
-                            <img src="/images/header/plan-travail.jpg"
-                                alt="Plan d'installation électrique étudié par Solelec"
-                                class="w-full h-full object-cover rounded-lg" loading="lazy" />
-                        </div>
-                        <div class="h-[340px]">
-                            <img src="/images/header/tableau-electrique-zoom.jpg"
-                                alt="Gros plan sur tableau électrique installé par Solelec"
-                                class="w-full h-full object-cover rounded-lg" loading="lazy" />
+                    <!-- Colonne droite -->
+                    <div class=" flex flex-col w-1/2 gap-4 -translate-y-40">
+                        <div v-for="(img, index) in rightImages" :key="'right-' + index"
+                            class="h-[340px] opacity-0 animate-fadeIn" :style="{ animationDelay: img.delay }">
+                            <img :src="img.src" :alt="img.alt" class="w-full h-full object-cover rounded-lg"
+                                loading="lazy" @load="handleImageLoad" />
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
         </header>
 
         <!-- Services -->
 
-        <section class="flex py-28 px-16 flex-col gap-20 bg-[#FBFAF6]">
-            <div class="flex flex-col gap-4 text-[#0D0703]">
-                <h2 class="text-center  font-inter text-base font-semibold">services</h2>
-                <div class="relative flex flex-col gap-6">
-                    <h3 class="font-poppins text-5xl text-center font-medium leading-[57.6px] tracking-[-0.48px]">Nos
-                        Services
-                        Principaux</h3>
-                    <div
-                        class="absolute bottom-10 right-1/2 border-2 border-[#FF8C42] w-[40%] max-w-[353px] min-w-[200px]">
-                    </div>
-                    <h4 class="font-inter text-lg text-center">Des solutions adaptées à vos besoins énergétiques.</h4>
-                </div>
-            </div>
-            <Services />
-        </section>
+        <section class=" flex py-28 px-16 flex-col gap-20 bg-[#FBFAF6]">
+                            <div class="flex flex-col gap-4 text-[#0D0703]">
+                                <h2 class="text-center  font-inter text-base font-semibold">services</h2>
+                                <div class="relative flex flex-col gap-6">
+                                    <h3
+                                        class="font-poppins text-5xl text-center font-medium leading-[57.6px] tracking-[-0.48px]">
+                                        Nos
+                                        Services
+                                        Principaux</h3>
+                                    <div
+                                        class="absolute bottom-10 right-1/2 border-2 border-[#FF8C42] w-[40%] max-w-[353px] min-w-[200px]">
+                                    </div>
+                                    <h4 class="font-inter text-lg text-center">Des solutions adaptées à vos besoins
+                                        énergétiques.</h4>
+                                </div>
+                            </div>
+                            <Services />
+                            </section>
 
-        <!-- À propos -->
-        <section class="flex py-28 px-16 gap-20 bg-[#2D2D2D] text-white">
-            <div class="flex flex-col flex-1 gap-4">
-                <h2 class=" font-poppins text-[40px] leading-[48px] font-medium ">Découvrez l'expertise de S<span
-                        class="text-[#FF8C42]">o</span>lelec en
-                    électricité et énergies renouvelables.</h2>
-            </div>
-            <div class="flex flex-1 flex-col gap-6">
-                <p class="font-inter text-lg font-normal">S<span class="text-[#FF8C42]">o</span>lelec, c'est 3 ans
-                    d'expertise dans les
-                    solutions
-                    électriques et
-                    photovoltaïques. Nous guidons nos
-                    clients à chaque étape de leur projet, garantissant un service de qualité et des installations
-                    conformes
-                    aux normes. Faites confiance à notre savoir-faire pour des solutions adaptées à vos besoins.</p>
-            </div>
-        </section>
+                            <!-- À propos -->
+                            <section class="flex py-28 px-16 gap-20 bg-[#2D2D2D] text-white">
+                                <div class="flex flex-col flex-1 gap-4">
+                                    <h2 class=" font-poppins text-[40px] leading-[48px] font-medium ">Découvrez
+                                        l'expertise de S<span class="text-[#FF8C42]">o</span>lelec en
+                                        électricité et énergies renouvelables.</h2>
+                                </div>
+                                <div class="flex flex-1 flex-col gap-6">
+                                    <p class="font-inter text-lg font-normal">S<span
+                                            class="text-[#FF8C42]">o</span>lelec, c'est 3 ans
+                                        d'expertise dans les
+                                        solutions
+                                        électriques et
+                                        photovoltaïques. Nous guidons nos
+                                        clients à chaque étape de leur projet, garantissant un service de qualité et des
+                                        installations
+                                        conformes
+                                        aux normes. Faites confiance à notre savoir-faire pour des solutions adaptées à
+                                        vos besoins.</p>
+                                </div>
+                            </section>
     </PublicLayout>
 </template>
 
