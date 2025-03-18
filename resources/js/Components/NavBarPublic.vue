@@ -61,6 +61,7 @@ const aboutSubItems = [
                     <Link
                         v-for="item in navItems"
                         :key="item.name"
+                        :href="route('accueil')"
                         class="font-inter text-white text-base hover:text-[#FF8C42] transition-colors duration-200"
                         :class="{ 'text-[#FF8C42] font-medium': route().current(item.route) }"
                     >
@@ -107,7 +108,7 @@ const aboutSubItems = [
                 </div>
             </div>
 
-            <PrimaryButton>Devis</PrimaryButton>
+            <PrimaryButton navStyle>Devis</PrimaryButton>
 
             <!-- Hamburger (Mobile) -->
             <button @click="toggleMobileMenu" class="md:hidden flex items-center text-white">
@@ -124,6 +125,7 @@ const aboutSubItems = [
                 <Link
                     v-for="item in navItems"
                     :key="item.name"
+                    :href="route('accueil')"
                     class="font-inter text-gray-700 py-2 hover:text-[#FF8C42]"
                     :class="{ 'text-[#FF8C42] font-medium': route().current(item.route) }"
                     @click="toggleMobileMenu"

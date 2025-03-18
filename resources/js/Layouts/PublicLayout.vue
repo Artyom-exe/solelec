@@ -1,6 +1,6 @@
 <script setup>
 import { Head } from '@inertiajs/vue3';
-import NavBar from '@/Components/NavBar.vue';
+import NavBarPublic from '@/Components/NavBarPublic.vue';
 // import Footer from '@/Components/Footer.vue';
 
 defineProps({
@@ -15,7 +15,7 @@ defineProps({
     <div class="flex flex-col min-h-screen bg-white">
         <Head :title="title" />
 
-        <NavBar />
+        <NavBarPublic />
 
         <main class="flex-grow">
             <slot />
