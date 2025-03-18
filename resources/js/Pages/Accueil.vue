@@ -85,12 +85,32 @@ import Services from '@/Components/Services.vue';
                     <h3 class="font-poppins text-5xl text-center font-medium leading-[57.6px] tracking-[-0.48px]">Nos
                         Services
                         Principaux</h3>
-                    <div class="absolute bottom-10 right-1/2 border-2 border-[#FF8C42] w-[40%] max-w-[353px] min-w-[200px]"></div>
+                    <div
+                        class="absolute bottom-10 right-1/2 border-2 border-[#FF8C42] w-[40%] max-w-[353px] min-w-[200px]">
+                    </div>
                     <h4 class="font-inter text-lg text-center">Des solutions adaptées à vos besoins énergétiques.</h4>
                 </div>
             </div>
             <Services />
+        </section>
 
+        <!-- À propos -->
+        <section class="flex py-28 px-16 gap-20 bg-[#2D2D2D] text-white">
+            <div class="flex flex-col flex-1 gap-4">
+                <h2 class=" font-poppins text-[40px] leading-[48px] font-medium ">Découvrez l'expertise de S<span
+                        class="text-[#FF8C42]">o</span>lelec en
+                    électricité et énergies renouvelables.</h2>
+            </div>
+            <div class="flex flex-1 flex-col gap-6">
+                <p class="font-inter text-lg font-normal">S<span class="text-[#FF8C42]">o</span>lelec, c'est 3 ans
+                    d'expertise dans les
+                    solutions
+                    électriques et
+                    photovoltaïques. Nous guidons nos
+                    clients à chaque étape de leur projet, garantissant un service de qualité et des installations
+                    conformes
+                    aux normes. Faites confiance à notre savoir-faire pour des solutions adaptées à vos besoins.</p>
+            </div>
         </section>
     </PublicLayout>
 </template>
