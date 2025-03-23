@@ -30,7 +30,7 @@ onMounted(() => {
     <section class="flex gap-6" aria-label="Liste des services">
         <article v-for="(service, index) in services.slice(0, props.limit)" :key="service.id"
             class="group flex gap-6 rounded-lg border border-[rgba(13,7,3,0.15)] bg-[#FAF8F3] h-[340px] transition-all duration-500 overflow-hidden shadow-md"
-            :class="(activeIndex !== null ? activeIndex === index : index === 0) ? 'w-2/3 bg-[#242424] text-white border-none' : 'w-1/3 text-[#0D0703]'"
+            :class="(activeIndex !== null ? activeIndex === index : index === 0) ? 'w-2/3 bg-[#2D2D2B] text-white border-none' : 'w-1/3 text-[#0D0703]'"
             @mouseenter="activeIndex = index" @mouseleave="activeIndex = null">
 
             <!-- Image qui s'étire vers la gauche -->
