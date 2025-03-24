@@ -10,7 +10,7 @@ Route::get('/', function () {
     return Inertia::render('Accueil');
 })->name('accueil');
 
-Route::get('services', [ServiceController::class, 'index']);
+Route::get('api/services', [ServiceController::class, 'index']);
 
 Route::get('portfolios', [PortfolioController::class, 'index']);
 Route::get('portfolios/{portfolio}', [PortfolioController::class, 'show']);

@@ -1,41 +1,45 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted } from 'vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { Head } from '@inertiajs/vue3';
 import PublicLayout from '@/Layouts/PublicLayout.vue';
 import Services from '@/Components/Services.vue';
+import AOS from 'aos'
+import 'aos/dist/aos.css'
 
 // Définition des images pour les 2 colonnes
 const leftImages = ref([
-    { src: '/images/header/ouvrier-dos.jpg', alt: 'Électricien Solelec de dos travaillant sur une installation' },
-    { src: '/images/header/electricien.jpg', alt: 'Technicien qualifié Solelec en intervention' },
-    { src: '/images/header/ouvrier-panneau.jpg', alt: "Installation de panneau solaire par l'équipe Solelec" },
+    { src: '/images/header/ouvrier-dos.jpg', alt: 'Électricien Solelec de dos travaillant sur une installation', aosDelay: 0 },
+    { src: '/images/header/electricien.webp', alt: 'Technicien qualifié Solelec en intervention', aosDelay: 200 },
+    { src: '/images/header/ouvrier-panneau.jpg', alt: "Installation de panneau solaire par l'équipe Solelec", aosDelay: 400 },
 ])
 
 const rightImages = ref([
-    { src: '/images/header/ouvrier-tableau-electrique.jpg', alt: 'Expert Solelec travaillant sur un tableau électrique' },
-    { src: '/images/header/plan-travail.jpg', alt: "Plan d'installation électrique étudié par Solelec" },
-    { src: '/images/header/tableau-electrique-zoom.jpg', alt: "Gros plan sur tableau électrique installé par Solelec" },
+    { src: '/images/header/ouvrier-tableau-electrique.jpg', alt: 'Expert Solelec travaillant sur un tableau électrique', aosDelay: 100 },
+    { src: '/images/header/plan-travail.jpg', alt: "Plan d'installation électrique étudié par Solelec", aosDelay: 300 },
+    { src: '/images/header/tableau-electrique-zoom.jpg', alt: "Gros plan sur tableau électrique installé par Solelec", aosDelay: 500 },
 ])
 
-// À l'aide de onMounted, attribuer un délai aléatoire à chaque image
 onMounted(() => {
-    leftImages.value = leftImages.value.map(img => ({ ...img, delay: Math.floor(Math.random() * 1000) + 'ms' }))
-    rightImages.value = rightImages.value.map(img => ({ ...img, delay: Math.floor(Math.random() * 1000) + 'ms' }))
+    // Configuration optimisée pour AOS
+    AOS.init({
+        duration: 1000,
+        once: true, // Changement à true pour éviter les réapparitions non désirées
+        mirror: false, // Changement à false pour plus de stabilité
+        easing: 'ease-out-cubic',
+        offset: 50,
+        anchorPlacement: 'top-center', // Point d'ancrage commun
+        startEvent: 'DOMContentLoaded'
+    })
+
+    document.documentElement.style.overflowX = 'hidden';
+
+    // Force une pause puis un rafraîchissement pour s'assurer que toutes les images sont chargées
+    setTimeout(() => {
+        AOS.refresh();
+    }, 200);
 })
-
-// Total d'images à charger
-const totalImages = computed(() => leftImages.value.length + rightImages.value.length)
-const loadedImages = ref(0)
-
-const allImagesLoaded = computed(() => {
-    return loadedImages.value === totalImages.value
-})
-
-function handleImageLoad() {
-    loadedImages.value++
-}
 </script>
 
 <template>
@@ -73,33 +77,30 @@ function handleImageLoad() {
                 <div class="flex gap-4 flex-1 h-full overflow-hidden">
                     <!-- Colonne gauche -->
                     <div class="flex flex-col w-1/2 gap-4 -translate-y-60">
-                        <div v-for="(img, index) in leftImages" :key="'left-' + index"
-                            class="h-[340px] opacity-0 animate-fadeIn" :style="{ animationDelay: img.delay }">
+                        <div v-for="(img, index) in leftImages" :key="'left-' + index" class="h-[340px]"
+                            data-aos="fade-up" :data-aos-delay="img.aosDelay" data-aos-anchor="#header-section">
                             <img :src="img.src" :alt="img.alt" class="w-full h-full object-cover rounded-lg"
-                            loading="lazy"
-                                @load="handleImageLoad" />
+                                loading="lazy" />
                         </div>
                     </div>
                     <!-- Colonne droite -->
-                    <div class=" flex flex-col w-1/2 gap-4 -translate-y-40">
-                        <div v-for="(img, index) in rightImages" :key="'right-' + index"
-                            class="h-[340px] opacity-0 animate-fadeIn" :style="{ animationDelay: img.delay }">
+                    <div class="flex flex-col w-1/2 gap-4 -translate-y-40">
+                        <div v-for="(img, index) in rightImages" :key="'right-' + index" class="h-[340px]"
+                            data-aos="fade-up" :data-aos-delay="img.aosDelay" data-aos-anchor="#header-section">
                             <img :src="img.src" :alt="img.alt" class="w-full h-full object-cover rounded-lg"
-                                loading="lazy" @load="handleImageLoad" />
-                            </div>
+                                loading="lazy" />
                         </div>
                     </div>
                 </div>
+            </div>
         </header>
 
         <!-- Services -->
-
-        <section class=" flex py-28 px-16 flex-col gap-20 bg-[#FBFAF6]">
-            <div class="flex flex-col gap-4 text-[#0D0703]">
-                <h2 class="text-center  font-inter text-base font-semibold">services</h2>
+        <section class="flex py-28 px-16 flex-col gap-20 bg-[#FBFAF6]">
+            <div class="flex flex-col gap-4 text-[#0D0703]" data-aos="fade-up">
+                <h2 class="text-center font-inter text-base font-semibold">services</h2>
                 <div class="relative flex flex-col gap-6">
-                    <h3
-                        class="font-poppins text-5xl text-center font-medium leading-[57.6px] tracking-[-0.48px]">
+                    <h3 class="font-poppins text-5xl text-center font-medium leading-[57.6px] tracking-[-0.48px]">
                         Nos
                         Services
                         Principaux</h3>
@@ -110,19 +111,18 @@ function handleImageLoad() {
                         énergétiques.</h4>
                 </div>
             </div>
-            <Services />
+            <Services data-aos="zoom-in" data-aos-duration="800" />
         </section>
 
         <!-- À propos -->
         <section class="flex py-28 px-16 gap-20 bg-[#2D2D2D] text-white">
-            <div class="flex flex-col flex-1 gap-4">
-                <h2 class=" font-poppins text-[40px] leading-[48px] font-medium ">Découvrez
+            <div class="flex flex-col flex-1 gap-4" data-aos="fade-right" data-aos-duration="1000">
+                <h2 class="font-poppins text-[40px] leading-[48px] font-medium">Découvrez
                     l'expertise de S<span class="text-[#FF8C42]">o</span>lelec en
                     électricité et énergies renouvelables.</h2>
             </div>
-            <div class="flex flex-1 flex-col gap-6">
-                <p class="font-inter text-lg font-normal">S<span
-                        class="text-[#FF8C42]">o</span>lelec, c'est 3 ans
+            <div class="flex flex-1 flex-col gap-6" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200">
+                <p class="font-inter text-lg font-normal">S<span class="text-[#FF8C42]">o</span>lelec, c'est 3 ans
                     d'expertise dans les
                     solutions
                     électriques et
@@ -134,18 +134,20 @@ function handleImageLoad() {
                     vos besoins.</p>
             </div>
         </section>
+
+        <!-- Portfolio -->
         <section class="flex py-[120px] px-16 flex-col items-center gap-20 bg-[#FEFEFD] text-[#0D0703]">
-            <div class="flex flex-col gap-4 text-[#0D0703]">
-                <h2 class="text-center  font-inter text-base font-semibold">portfolio</h2>
+            <div class="flex flex-col gap-4 text-[#0D0703]" data-aos="fade-up" data-aos-duration="800">
+                <h2 class="text-center font-inter text-base font-semibold">portfolio</h2>
                 <div class="relative flex flex-col gap-6">
-                    <h3
-                        class="font-poppins text-5xl text-center font-medium leading-[57.6px] tracking-[-0.48px]">
+                    <h3 class="font-poppins text-5xl text-center font-medium leading-[57.6px] tracking-[-0.48px]">
                         Nos
                         projets récents</h3>
                     <div
                         class="absolute bottom-10 left-1/2 border-2 border-[#FF8C42] w-[80%] max-w-[353px] min-w-[200px]">
                     </div>
-                    <h4 class="font-inter text-lg text-center">Découvrez notre expertise à travers nos réalisations.</h4>
+                    <h4 class="font-inter text-lg text-center">Découvrez notre expertise à travers nos réalisations.
+                    </h4>
                 </div>
             </div>
         </section>
