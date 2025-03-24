@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue';
+import axios from 'axios';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { Head } from '@inertiajs/vue3';
@@ -7,6 +8,35 @@ import PublicLayout from '@/Layouts/PublicLayout.vue';
 import Services from '@/Components/Services.vue';
 import AOS from 'aos'
 import 'aos/dist/aos.css'
+
+const props = defineProps({
+    limit: {
+        type: Number,
+        default: 2
+    }
+});
+
+const portfolio = ref([]);
+const tags = ref([]);
+
+const fetchPortfolio = async () => {
+    try {
+        const response = await axios.get('portfolios');
+        portfolio.value = response.data;
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+const fetchTags = async () => {
+    try {
+        const response = await axios.get('tags');
+        tags.value = response.data;
+    } catch (error) {
+        console.error(error);
+    }
+};
+fetch
 
 // Définition des images pour les 2 colonnes
 const leftImages = ref([
@@ -34,6 +64,9 @@ onMounted(() => {
     })
 
     document.documentElement.style.overflowX = 'hidden';
+
+    fetchPortfolio();
+    fetchTags();
 
     // Force une pause puis un rafraîchissement pour s'assurer que toutes les images sont chargées
     setTimeout(() => {
@@ -150,8 +183,27 @@ onMounted(() => {
                     </h4>
                 </div>
             </div>
+            <div class="flex flex-col gap-16 items-center">
+                <div class="flex items-start gap-12 flex-wrap justify-center">
+                    <article v-for="(item, index) in portfolio.slice(0, limit)" :key="index"
+                        class="flex flex-col items-start gap-6 flex-1" data-aos="fade-up" :data-aos-delay="index * 150">
+                        <img :src="item.image" :alt="item.title"
+                            class="w-full max-h-[356px] min-h-[200px] aspect-[4/3] object-cover rounded-lg" />
+                        <div class="flex flex-col gap-4 text-[#0D0703]">
+                            <h5 class="font-poppins text-2xl font-medium">{{ item.title }}</h5>
+                            <p class="font-inter text-base">{{ item.description }}</p>
+                            <div class="flex flex-wrap gap-2 mt-2">
+                                <span v-for="tag in item.tags" :key="tag.id"
+                                    class="px-[10px] py-1 bg-[#F5F5F5] rounded-l font-inter text-sm font-semibold border border-[#0D070326/15] bg-[#0D070326/5]">
+                                    {{ tag.name }}
+                                </span>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+                <SecondaryButton variant="dark" @click="$inertia.visit('#')">Voir plus</SecondaryButton>
+            </div>
         </section>
-
     </PublicLayout>
 </template>
 
