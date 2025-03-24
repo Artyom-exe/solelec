@@ -1,16 +1,33 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
 
 const props = defineProps({
     limit: {
         type: Number,
         default: 3
+    },
+    serviceIds: {
+        type: Array,
+        default: () => []
     }
 });
 
 const services = ref([]);
 const activeIndex = ref(null);
+
+// Calculer les services à afficher
+const displayedServices = computed(() => {
+    if (props.serviceIds && props.serviceIds.length > 0) {
+        // Filtre les services par les IDs spécifiés dans le même ordre
+        return props.serviceIds
+            .map(id => services.value.find(service => service.id === id))
+            .filter(Boolean); // Élimine les services non trouvés
+    } else {
+        // Comportement par défaut : limite services
+        return services.value.slice(0, props.limit);
+    }
+});
 
 const fetchServices = async () => {
     try {
@@ -28,7 +45,7 @@ onMounted(() => {
 
 <template>
     <section class="flex gap-6" aria-label="Liste des services">
-        <article v-for="(service, index) in services.slice(0, props.limit)" :key="service.id"
+        <article v-for="(service, index) in displayedServices" :key="service.id"
             class="group flex gap-6 rounded-lg border border-[rgba(13,7,3,0.15)] bg-[#FAF8F3] h-[340px] transition-all duration-500 overflow-hidden shadow-md"
             :class="(activeIndex !== null ? activeIndex === index : index === 0) ? 'w-2/3 bg-[#2D2D2C] text-white border-none' : 'w-1/3 text-[#0D0703]'"
             @mouseenter="activeIndex = index" @mouseleave="activeIndex = null">
@@ -36,7 +53,8 @@ onMounted(() => {
             <!-- Image qui s'étire vers la gauche -->
             <div class="h-full w-0 transition-all duration-500 ease-in-out"
                 :class="(activeIndex !== null ? activeIndex === index : index === 0) ? 'w-1/2 opacity-100' : 'w-0 opacity-0'">
-                <img :src="service.image" :alt="service.title + ' image'" loading="lazy" class="w-full h-full object-cover rounded-l-lg">
+                <img :src="service.image" :alt="service.title + ' image'" loading="lazy"
+                    class="w-full h-full object-cover rounded-l-lg">
             </div>
 
             <!-- Section droite contenant le texte, toujours visible -->
