@@ -164,28 +164,29 @@ onMounted(() => {
                         énergétiques.</h4>
                 </div>
             </div>
-            <Services data-aos="zoom-in" data-aos-duration="800" />
+            <Services data-aos="zoom-in" data-aos-duration="800" :serviceIds="[1, 4, 2]"/>
         </section>
 
         <!-- À propos -->
-        <section class="flex py-28 px-16 gap-20 bg-[#2D2D2D] text-white">
-            <div class="flex flex-col flex-1 gap-4" data-aos="fade-right" data-aos-duration="1000">
-                <h2 class="font-poppins text-[40px] leading-[48px] font-medium">Découvrez
-                    l'expertise de S<span class="text-[#FF8C42]">o</span>lelec en
-                    électricité et énergies renouvelables.</h2>
-            </div>
-            <div class="flex flex-1 flex-col gap-6" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200">
-                <p class="font-inter text-lg font-normal">S<span class="text-[#FF8C42]">o</span>lelec, c'est 3 ans
-                    d'expertise dans les
-                    solutions
-                    électriques et
-                    photovoltaïques. Nous guidons nos
-                    clients à chaque étape de leur projet, garantissant un service de qualité et des
-                    installations
-                    conformes
-                    aux normes. Faites confiance à notre savoir-faire pour des solutions adaptées à
-                    vos besoins.</p>
-            </div>
+        <section class=" flex py-28 px-16 gap-20 bg-[#2D2D2D] text-white">
+                <div class="flex flex-col flex-1 gap-4" data-aos="fade-right" data-aos-duration="1000">
+                    <h2 class="font-poppins text-[40px] leading-[48px] font-medium">Découvrez
+                        l'expertise de S<span class="text-[#FF8C42]">o</span>lelec en
+                        électricité et énergies renouvelables.</h2>
+                </div>
+                <div class="flex flex-1 flex-col gap-6" data-aos="fade-left" data-aos-duration="1000"
+                    data-aos-delay="200">
+                    <p class="font-inter text-lg font-normal">S<span class="text-[#FF8C42]">o</span>lelec, c'est 3 ans
+                        d'expertise dans les
+                        solutions
+                        électriques et
+                        photovoltaïques. Nous guidons nos
+                        clients à chaque étape de leur projet, garantissant un service de qualité et des
+                        installations
+                        conformes
+                        aux normes. Faites confiance à notre savoir-faire pour des solutions adaptées à
+                        vos besoins.</p>
+                </div>
         </section>
 
         <!-- Portfolio -->
