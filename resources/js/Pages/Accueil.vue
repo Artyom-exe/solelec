@@ -18,13 +18,33 @@ const props = defineProps({
 
 const portfolio = ref([]);
 const tags = ref([]);
+const randomPortfolio = ref([]);
+
 
 const fetchPortfolio = async () => {
     try {
         const response = await axios.get('portfolios');
         portfolio.value = response.data;
+        getRandomPortfolio();
     } catch (error) {
         console.error(error);
+    }
+};
+
+const getRandomPortfolio = () => {
+    if (portfolio.value.length <= props.limit) {
+        // Si le portfolio a moins ou égal au nombre d'éléments demandés, on prend tout
+        randomPortfolio.value = [...portfolio.value];
+    } else {
+        // Création d'une copie du tableau pour ne pas modifier l'original
+        const shuffled = [...portfolio.value];
+        // Mélange du tableau (algorithme de Fisher-Yates)
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        // Sélection des premiers éléments après mélange
+        randomPortfolio.value = shuffled.slice(0, props.limit);
     }
 };
 
@@ -185,7 +205,7 @@ onMounted(() => {
             </div>
             <div class="flex flex-col gap-16 items-center">
                 <div class="flex items-start gap-12 flex-wrap justify-center">
-                    <article v-for="(item, index) in portfolio.slice(0, limit)" :key="index"
+                    <article v-for="(item, index) in randomPortfolio" :key="index"
                         class="flex flex-col items-start gap-6 flex-1" data-aos="fade-up" :data-aos-delay="index * 150">
                         <img :src="item.image" :alt="item.title"
                             class="w-full max-h-[356px] min-h-[200px] aspect-[4/3] object-cover rounded-lg" />
