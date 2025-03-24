@@ -4,15 +4,26 @@ defineProps({
         type: String,
         default: 'button',
     },
+    variant: {
+        type: String,
+        default: 'default', // 'default' ou 'dark'
+    },
 });
 </script>
 
 <template>
     <button :type="type" :class="[
-        'flex justify-center items-center px-6 py-[10px] border border-white/20 rounded-md font-[500] text-base font-inter text-white',
+        'flex justify-center items-center px-6 py-[10px] rounded-md font-[500] text-base font-inter',
         'transition-all duration-300 ease-in-out',
-        'hover:bg-white/20',
-        'focus:outline-none focus:bg-white/20'
+        variant === 'default' ? [
+            'border border-white/20 text-white',
+            'hover:bg-white/20',
+            'focus:outline-none focus:bg-white/20'
+        ] : [
+            'border border-[#0D070326/15] text-[#0D0703]',
+            'hover:bg-gray-100',
+            'focus:outline-none focus:bg-gray-100'
+        ]
     ]">
         <slot />
     </button>
