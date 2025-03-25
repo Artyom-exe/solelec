@@ -23,6 +23,36 @@ const randomPortfolio = ref([]);
 const faq = ref([])
 const openedItems = ref([])
 
+const contactForm = ref({
+    name: '',
+    email: '',
+    message: '',
+    acceptConditions: false
+});
+
+const sendEmail = async () => {
+    try {
+        await axios.post('send-email', contactForm.value);
+        // Réinitialiser le formulaire après l'envoi
+        contactForm.value = {
+            name: '',
+            email: '',
+            message: '',
+            acceptConditions: false
+        };
+        alert('Votre message a été envoyé avec succès!');
+    } catch (error) {
+        console.error('Erreur lors de l\'envoi du message:', error);
+
+        // Afficher plus de détails sur l'erreur
+        if (error.response) {
+            console.error('Données d\'erreur:', error.response.data);
+            console.error('Status:', error.response.status);
+        }
+
+        alert('Une erreur est survenue lors de l\'envoi du message. Veuillez réessayer plus tard.');
+    }
+};
 
 const toggle = (id) => {
     const index = openedItems.value.indexOf(id)
@@ -294,16 +324,77 @@ onMounted(() => {
                     </div>
                 </div>
             </div>
-            <div class="flex flex-col gap-6"
-                data-aos="fade-up">
+            <div class="flex flex-col gap-6" data-aos="fade-up">
                 <div class="flex flex-col gap-4 text-[#0D0703]">
-                    <h3 class="font-poppins text-[32px] font-medium leading-[41.6px]">Des questions supplémentaires ?</h3>
+                    <h3 class="font-poppins text-[32px] font-medium leading-[41.6px]">Des questions supplémentaires ?
+                    </h3>
                     <p class="font-inter text-lg">N'hésitez pas à nous contacter.</p>
                 </div>
                 <SecondaryButton class="self-start" variant="dark">Contact</SecondaryButton>
             </div>
         </section>
+        <section id="contact" class="flex py-28 px-16 flex-col gap-20 text-white bg-[#2D2D2D]">
+            <div class="flex gap-20">
+                <div class="flex flex-col gap-8 flex-1">
+                    <h2 class="font-inter text-base font-semibold">Contact</h2>
+                    <div class="relative flex flex-col gap-6">
+                        <h3 class="font-poppins text-5xl font-medium">Nous contacter</h3>
+                        <div
+                            class="absolute bottom-[40px] ml-28  border-2 border-[#FF8C42] w-[100%] max-w-[353px] min-w-[200px]">
+                        </div>
+                        <p class="font-inter text-lg">Nous sommes là pour répondre à vos questions.</p>
+                    </div>
+                    <div class="flex flex-col py-2 gap-4 font-inter max-w-[255px] min-w-[155px]">
+                        <div class="flex gap-4">
+                            <img src="/assets/icons/contact/envelope-solid.svg" alt="Icône d'une enveloppe"
+                                class="w-6 h-6 filter invert brightness-100" />
+                            <p>solelec.lmbt@gmail.com</p>
+                        </div>
+                        <div class="flex gap-4">
+                            <img src="/assets/icons/contact/phone-solid.svg" alt="Icône d'une enveloppe"
+                                class="w-6 h-6 filter invert brightness-100" />
+                            <p>0492 51 09 31</p>
+                        </div>
+                        <div class="flex gap-4">
+                            <img src="/assets/icons/contact/location-dot-solid.svg" alt="Icône d'une enveloppe"
+                                class="w-6 h-6 filter invert brightness-100" />
+                            <p>Rue de Neufmoustier 4, 1348 Ottignies-Louvain-la-Neuve, Belgium</p>
+                        </div>
+                    </div>
+                </div>
+                <form @submit.prevent="sendEmail" class="flex flex-col gap-6 flex-1 font-inter">
+                    <div class="flex flex-col gap-2">
+                        <label for="name">Nom</label>
+                        <input type="text" id="name" v-model="contactForm.name" required
+                            class="w-full bg-white/10 border border-white/20 rounded-[6px] focus:ring-[#FF8C42] focus:border-[#FF8C42] p-2">
+                    </div>
 
+                    <div class="flex flex-col gap-2">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" v-model="contactForm.email" required
+                            class="w-full bg-white/10 border border-white/20 rounded-[6px] focus:ring-[#FF8C42] focus:border-[#FF8C42] p-2">
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label for="message">Message</label>
+                        <textarea id="message" v-model="contactForm.message" required
+                            class="w-full h-[180px] bg-white/10 border border-white/20 rounded-[6px] focus:ring-[#FF8C42] focus:border-[#FF8C42] p-2"></textarea>
+                    </div>
+
+                    <div class="flex pb-4">
+                        <label class="flex gap-2 items-start">
+                            <input type="checkbox" v-model="contactForm.acceptConditions" required
+                                class="w-4 h-4 border border-white/20 bg-white/10 rounded-[2px] focus:ring-[#FF8C42] focus:border-[#FF8C42]">
+                            <span class="text-sm">J'accepte les conditions générales d'utilisation</span>
+                        </label>
+                    </div>
+
+                    <div>
+                        <PrimaryButton type="submit">Envoyer</PrimaryButton>
+                    </div>
+                </form>
+            </div>
+        </section>
     </PublicLayout>
 </template>
 

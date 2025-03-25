@@ -21,7 +21,7 @@ defineProps({
             'focus:outline-none focus:bg-white/20'
         ] : [
             'border border-[#0D070326/15] text-[#0D0703]',
-            'hover:bg-gray-100',
+            'hover:bg-gray-200',
             'focus:outline-none focus:bg-gray-100'
         ]
     ]">
