@@ -249,45 +249,44 @@ onMounted(() => {
         <!-- Header -->
 
         <header id="header"
-            class="flex flex-col items-center gap-2 bg-[#2D2D2D] h-[calc(100vh-72px)] px-16 overflow-hidden mt-[72px]">
-            <div class="flex flex-col lg:flex-row items-center flex-1 self-stretch h-full w-full">
-                <div class="flex flex-col pr-20 justify-center items-start gap-8 flex-1">
-                    <div class="flex flex-col items-start gap-6 text-white">
-                        <h1 class="text-white font-poppins text-[56px] font-medium leading-[120%] tracking-[-0.56px]">
-                            S<span class="text-[#FF8C42]">o</span>lelec - Votre expert en électricité & énergies
-                            renouvelables</h1>
+    class="flex flex-col items-center gap-2 bg-[#2D2D2D] h-[calc(100vh-72px)] px-16 overflow-hidden mt-[72px]">
+    <div class="flex flex-col lg:flex-row items-center flex-1 self-stretch h-full w-full">
+        <div class="flex flex-col pr-20 justify-center items-start gap-8 flex-1" data-aos="fade-right" data-aos-duration="1200">
+            <div class="flex flex-col items-start gap-6 text-white">
+                <h1 class="text-white font-poppins text-[56px] font-medium leading-[120%] tracking-[-0.56px]" data-aos="fade-up" data-aos-delay="150" data-aos-anchor="#header">
+                    S<span class="text-[#FF8C42]">o</span>lelec - Votre expert en électricité & énergies
+                    renouvelables</h1>
 
-                        <p class="font-inter text-lg font-normal leading-[150%]">Découvrez des solutions électriques
-                            innovantes et éco-responsables. Faites confiance à notre expertise pour vos projets
-                            d'énergie renouvelable.</p>
-                    </div>
+                <p class="font-inter text-lg font-normal leading-[150%]" data-aos="fade-up" data-aos-delay="300" data-aos-anchor="#header">Découvrez des solutions électriques
+                    innovantes et éco-responsables. Faites confiance à notre expertise pour vos projets
+                    d'énergie renouvelable.</p>
+            </div>
 
-                    <div class="flex gap-4">
-                        <PrimaryButton>Demander un devis</PrimaryButton>
-                        <SecondaryButton>Nous contacter</SecondaryButton>
-                    </div>
-                </div>
-                <div class="flex gap-4 flex-1 h-full overflow-hidden">
-                    <!-- Colonne gauche -->
-                    <div class="flex flex-col w-1/2 gap-4 -translate-y-60">
-                        <div v-for="(img, index) in leftImages" :key="'left-' + index" class="h-[340px]"
-                            data-aos="fade-up" :data-aos-delay="img.aosDelay" data-aos-anchor="#header-section">
-                            <img :src="img.src" :alt="img.alt" class="w-full h-full object-cover rounded-lg"
-                                loading="lazy" />
-                        </div>
-                    </div>
-                    <!-- Colonne droite -->
-                    <div class="flex flex-col w-1/2 gap-4 -translate-y-40">
-                        <div v-for="(img, index) in rightImages" :key="'right-' + index" class="h-[340px]"
-                            data-aos="fade-up" :data-aos-delay="img.aosDelay" data-aos-anchor="#header-section">
-                            <img :src="img.src" :alt="img.alt" class="w-full h-full object-cover rounded-lg"
-                                loading="lazy" />
-                        </div>
-                    </div>
+            <div class="flex gap-4" data-aos="fade-up" data-aos-delay="450" data-aos-anchor="#header">
+                <PrimaryButton>Demander un devis</PrimaryButton>
+                <SecondaryButton>Nous contacter</SecondaryButton>
+            </div>
+        </div>
+        <div class="flex gap-4 flex-1 h-full overflow-hidden" data-aos="fade-left" data-aos-duration="1200">
+            <!-- Colonne gauche -->
+            <div class="flex flex-col w-1/2 gap-4 -translate-y-60">
+                <div v-for="(img, index) in leftImages" :key="'left-' + index" class="h-[340px]"
+                    data-aos="fade-up" :data-aos-delay="img.aosDelay" data-aos-anchor="#header">
+                    <img :src="img.src" :alt="img.alt" class="w-full h-full object-cover rounded-lg"
+                        loading="lazy" />
                 </div>
             </div>
-        </header>
-
+            <!-- Colonne droite -->
+            <div class="flex flex-col w-1/2 gap-4 -translate-y-40">
+                <div v-for="(img, index) in rightImages" :key="'right-' + index" class="h-[340px]"
+                    data-aos="fade-up" :data-aos-delay="img.aosDelay" data-aos-anchor="#header">
+                    <img :src="img.src" :alt="img.alt" class="w-full h-full object-cover rounded-lg"
+                        loading="lazy" />
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
         <!-- Services -->
         <section id="services" class="flex py-28 px-16 flex-col gap-20 bg-[#FBFAF6]">
             <div class="flex flex-col gap-4 text-[#0D0703]" data-aos="fade-up">
@@ -417,96 +416,96 @@ onMounted(() => {
                 <SecondaryButton class="self-start" variant="dark">Contact</SecondaryButton>
             </div>
         </section>
-        <section id="contact" class="flex py-28 px-16 flex-col gap-20 text-white bg-[#2D2D2D]">
-            <div class="flex gap-20">
-                <div class="flex flex-col gap-8 flex-1">
-                    <h2 class="font-inter text-base font-semibold">Contact</h2>
-                    <div class="relative flex flex-col gap-6">
-                        <h3 class="font-poppins text-5xl font-medium">Nous contacter</h3>
-                        <div
-                            class="absolute bottom-[40px] ml-28  border-2 border-[#FF8C42] w-[100%] max-w-[353px] min-w-[200px]">
-                        </div>
-                        <p class="font-inter text-lg">Nous sommes là pour répondre à vos questions.</p>
-                    </div>
-                    <div class="flex flex-col py-2 gap-4 font-inter max-w-[255px] min-w-[155px]">
-                        <div class="flex gap-4">
-                            <img src="/assets/icons/contact/envelope-solid.svg" alt="Icône d'une enveloppe"
-                                class="w-6 h-6 filter invert brightness-100" />
-                            <p>solelec.lmbt@gmail.com</p>
-                        </div>
-                        <div class="flex gap-4">
-                            <img src="/assets/icons/contact/phone-solid.svg" alt="Icône d'une enveloppe"
-                                class="w-6 h-6 filter invert brightness-100" />
-                            <p>0492 51 09 31</p>
-                        </div>
-                        <div class="flex gap-4">
-                            <img src="/assets/icons/contact/location-dot-solid.svg" alt="Icône d'une enveloppe"
-                                class="w-6 h-6 filter invert brightness-100" />
-                            <p>Rue de Neufmoustier 4, 1348 Ottignies-Louvain-la-Neuve, Belgium</p>
-                        </div>
-                    </div>
+<section id="contact" class="flex py-28 px-16 flex-col gap-20 text-white bg-[#2D2D2D]">
+    <div class="flex gap-20">
+        <div class="flex flex-col gap-8 flex-1" data-aos="fade-right" data-aos-duration="1000">
+            <h2 class="font-inter text-base font-semibold">Contact</h2>
+            <div class="relative flex flex-col gap-6">
+                <h3 class="font-poppins text-5xl font-medium">Nous contacter</h3>
+                <div
+                    class="absolute bottom-[40px] ml-28  border-2 border-[#FF8C42] w-[100%] max-w-[353px] min-w-[200px]">
                 </div>
-<form @submit.prevent="sendEmail" class="flex flex-col gap-6 flex-1 font-inter">
-    <!-- Message de statut général -->
-    <div v-if="formStatus.message && !formStatus.success"
-        class="p-4 bg-red-800/30 border border-red-700 rounded-md mb-2 text-sm">
-        {{ formStatus.message }}
-    </div>
-
-    <div v-if="formStatus.success"
-        class="p-4 bg-green-800/30 border border-green-700 rounded-md mb-2 text-sm">
-        {{ formStatus.message }}
-    </div>
-
-    <div class="flex flex-col gap-2">
-        <label for="name">Nom<span class="text-red-500">*</span></label>
-        <input
-            type="text"
-            id="name"
-            v-model="contactForm.name"
-            :class="{'border-red-500 focus:border-red-500 focus:ring-red-500': formStatus.errors.name}"
-            class="w-full bg-white/10 border border-white/20 rounded-[6px] focus:ring-[#FF8C42] focus:border-[#FF8C42] p-2">
-        <span v-if="formStatus.errors.name" class="text-red-400 text-sm mt-1">Veuillez entrer votre nom</span>
-    </div>
-
-    <div class="flex flex-col gap-2">
-        <label for="email">Email<span class="text-red-500">*</span></label>
-        <input
-            type="email"
-            id="email"
-            v-model="contactForm.email"
-            :class="{'border-red-500 focus:border-red-500 focus:ring-red-500': formStatus.errors.email}"
-            class="w-full bg-white/10 border border-white/20 rounded-[6px] focus:ring-[#FF8C42] focus:border-[#FF8C42] p-2">
-        <span v-if="formStatus.errors.email" class="text-red-400 text-sm mt-1">Veuillez entrer une adresse email valide</span>
-    </div>
-
-    <div class="flex flex-col gap-2">
-        <label for="message">Message<span class="text-red-500">*</span></label>
-        <textarea
-            id="message"
-            v-model="contactForm.message"
-            :class="{'border-red-500 focus:border-red-500 focus:ring-red-500': formStatus.errors.message}"
-            class="w-full h-[180px] bg-white/10 border border-white/20 rounded-[6px] focus:ring-[#FF8C42] focus:border-[#FF8C42] p-2"></textarea>
-        <span v-if="formStatus.errors.message" class="text-red-400 text-sm mt-1">Veuillez entrer votre message</span>
-    </div>
-
-    <div class="flex pb-4">
-        <label class="flex gap-2 items-start" :class="{'text-red-400': formStatus.errors.acceptConditions}">
-            <input
-                type="checkbox"
-                v-model="contactForm.acceptConditions"
-                :class="{'outline-red-500': formStatus.errors.acceptConditions}"
-                class="w-4 h-4 border border-white/20 bg-white/10 rounded-[2px] focus:ring-[#FF8C42] focus:border-[#FF8C42]">
-            <span class="text-sm">J'accepte les conditions générales d'utilisation<span class="text-red-500">*</span></span>
-        </label>
-    </div>
-
-    <div>
-        <PrimaryButton type="submit">Envoyer</PrimaryButton>
-    </div>
-</form>
+                <p class="font-inter text-lg">Nous sommes là pour répondre à vos questions.</p>
             </div>
-        </section>
+            <div class="flex flex-col py-2 gap-4 font-inter max-w-[255px] min-w-[155px]">
+                <div class="flex gap-4" data-aos="fade-up" data-aos-delay="100">
+                    <img src="/assets/icons/contact/envelope-solid.svg" alt="Icône d'une enveloppe"
+                        class="w-6 h-6 filter invert brightness-100" />
+                    <p>solelec.lmbt@gmail.com</p>
+                </div>
+                <div class="flex gap-4" data-aos="fade-up" data-aos-delay="200">
+                    <img src="/assets/icons/contact/phone-solid.svg" alt="Icône d'une enveloppe"
+                        class="w-6 h-6 filter invert brightness-100" />
+                    <p>0492 51 09 31</p>
+                </div>
+                <div class="flex gap-4" data-aos="fade-up" data-aos-delay="300">
+                    <img src="/assets/icons/contact/location-dot-solid.svg" alt="Icône d'une enveloppe"
+                        class="w-6 h-6 filter invert brightness-100" />
+                    <p>Rue de Neufmoustier 4, 1348 Ottignies-Louvain-la-Neuve, Belgium</p>
+                </div>
+            </div>
+        </div>
+        <form @submit.prevent="sendEmail" class="flex flex-col gap-6 flex-1 font-inter" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200">
+            <!-- Message de statut général -->
+            <div v-if="formStatus.message && !formStatus.success"
+                class="p-4 bg-red-800/30 border border-red-700 rounded-md mb-2 text-sm">
+                {{ formStatus.message }}
+            </div>
+
+            <div v-if="formStatus.success"
+                class="p-4 bg-green-800/30 border border-green-700 rounded-md mb-2 text-sm">
+                {{ formStatus.message }}
+            </div>
+
+            <div class="flex flex-col gap-2" data-aos="fade-up" data-aos-delay="300" data-aos-anchor="#contact">
+                <label for="name">Nom<span class="text-red-500">*</span></label>
+                <input
+                    type="text"
+                    id="name"
+                    v-model="contactForm.name"
+                    :class="{'border-red-500 focus:border-red-500 focus:ring-red-500': formStatus.errors.name}"
+                    class="w-full bg-white/10 border border-white/20 rounded-[6px] focus:ring-[#FF8C42] focus:border-[#FF8C42] p-2">
+                <span v-if="formStatus.errors.name" class="text-red-400 text-sm mt-1">Veuillez entrer votre nom</span>
+            </div>
+
+            <div class="flex flex-col gap-2" data-aos="fade-up" data-aos-delay="400" data-aos-anchor="#contact">
+                <label for="email">Email<span class="text-red-500">*</span></label>
+                <input
+                    type="email"
+                    id="email"
+                    v-model="contactForm.email"
+                    :class="{'border-red-500 focus:border-red-500 focus:ring-red-500': formStatus.errors.email}"
+                    class="w-full bg-white/10 border border-white/20 rounded-[6px] focus:ring-[#FF8C42] focus:border-[#FF8C42] p-2">
+                <span v-if="formStatus.errors.email" class="text-red-400 text-sm mt-1">Veuillez entrer une adresse email valide</span>
+            </div>
+
+            <div class="flex flex-col gap-2" data-aos="fade-up" data-aos-delay="500" data-aos-anchor="#contact">
+                <label for="message">Message<span class="text-red-500">*</span></label>
+                <textarea
+                    id="message"
+                    v-model="contactForm.message"
+                    :class="{'border-red-500 focus:border-red-500 focus:ring-red-500': formStatus.errors.message}"
+                    class="w-full h-[180px] bg-white/10 border border-white/20 rounded-[6px] focus:ring-[#FF8C42] focus:border-[#FF8C42] p-2"></textarea>
+                <span v-if="formStatus.errors.message" class="text-red-400 text-sm mt-1">Veuillez entrer votre message</span>
+            </div>
+
+            <div class="flex pb-4" data-aos="fade-up" data-aos-delay="600" data-aos-anchor="#contact">
+                <label class="flex gap-2 items-start" :class="{'text-red-400': formStatus.errors.acceptConditions}">
+                    <input
+                        type="checkbox"
+                        v-model="contactForm.acceptConditions"
+                        :class="{'outline-red-500': formStatus.errors.acceptConditions}"
+                        class="w-4 h-4 border border-white/20 bg-white/10 rounded-[2px] focus:ring-[#FF8C42] focus:border-[#FF8C42]">
+                    <span class="text-sm">J'accepte les conditions générales d'utilisation<span class="text-red-500">*</span></span>
+                </label>
+            </div>
+
+            <div data-aos="fade-up" data-aos-delay="700" data-aos-anchor="#contact">
+                <PrimaryButton type="submit">Envoyer</PrimaryButton>
+            </div>
+        </form>
+    </div>
+</section>
     </PublicLayout>
 </template>
 
