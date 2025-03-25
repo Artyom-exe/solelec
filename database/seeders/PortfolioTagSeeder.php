@@ -26,6 +26,7 @@ class PortfolioTagSeeder extends Seeder
             'Dépannage suite à court-circuit' => ['Dépannage', 'Intervention urgente', 'Résidentiel'],
             'Installation d\'une borne de recharge domestique' => ['Bornes de recharge', 'Véhicules électriques', 'Résidentiel', 'Installation'],
             'Rénovation électrique complète d\'un appartement' => ['Rénovation', 'Mise aux normes', 'Résidentiel'],
+            'Installation de chauffage électrique' => ['Installation', 'Résidentiel', 'Basse consommation'],
         ];
 
         foreach ($portfolioTags as $portfolioTitle => $tagNames) {
