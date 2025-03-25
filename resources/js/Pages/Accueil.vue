@@ -353,7 +353,7 @@ onMounted(() => {
                             <p class="font-inter text-base">{{ item.description }}</p>
                             <div class="flex flex-wrap gap-2 mt-2">
                                 <span v-for="tag in item.tags" :key="tag.id"
-                                    class="px-[10px] py-1 bg-[#F5F5F5] rounded-l font-inter text-sm font-semibold border border-[#0D070326/15] bg-[#0D070326/5]">
+                                    class="px-[10px] py-1 rounded font-inter text-sm font-semibold border border-[#0D0703] border-opacity-15 bg-[#0D0703] bg-opacity-5">
                                     {{ tag.name }}
                                 </span>
                             </div>
