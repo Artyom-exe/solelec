@@ -267,9 +267,11 @@ onMounted(() => {
                 </div>
             </div>
             <div class="flex flex-col border-b border-[#0D070326/15] text-[#0D0703]">
-                <div v-for="item in faq" :key="item.id" class="flex flex-col font-inter border-t border-[#0D070326/15]">
-                    <div class="flex items py-5 gap-6
-                        justify-between cursor-pointer" @click="toggle(item.id)">
+                <div v-for="(item, index) in faq" :key="item.id"
+                    class="flex flex-col font-inter border-t border-[#0D070326/15]" data-aos="fade-up"
+                    :data-aos-delay="index * 100" data-aos-duration="800" data-aos-anchor="#faq">
+
+                    <div class="flex items py-5 gap-6 justify-between cursor-pointer" @click="toggle(item.id)">
                         <h5 class="text-lg font-bold">{{ item.question }}</h5>
                         <svg v-if="openedItems.includes(item.id)" xmlns="http://www.w3.org/2000/svg" width="32"
                             height="33" viewBox="0 0 32 33" fill="none"
@@ -285,11 +287,20 @@ onMounted(() => {
                                 fill="#0D0703" stroke="#0D0703" />
                         </svg>
                     </div>
+
                     <div class="overflow-hidden transition-all duration-300 ease-in-out"
                         :class="openedItems.includes(item.id) ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'">
                         <p class="font-inter text-base pb-6 gap-4 max-w-[768px] min-w-[600px]">{{ item.answer }}</p>
                     </div>
                 </div>
+            </div>
+            <div class="flex flex-col gap-6"
+                data-aos="fade-up">
+                <div class="flex flex-col gap-4 text-[#0D0703]">
+                    <h3 class="font-poppins text-[32px] font-medium leading-[41.6px]">Des questions supplémentaires ?</h3>
+                    <p class="font-inter text-lg">N'hésitez pas à nous contacter.</p>
+                </div>
+                <SecondaryButton class="self-start" variant="dark">Contact</SecondaryButton>
             </div>
         </section>
 
