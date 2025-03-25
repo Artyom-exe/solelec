@@ -28,11 +28,80 @@ const contactForm = ref({
     email: '',
     message: '',
     acceptConditions: false
-});
+})
+
+const formStatus = ref({
+    success: false,
+    errors: {
+        name: false,
+        email: false,
+        message: false,
+        acceptConditions: false,
+        general: false
+    },
+    message: ''
+})
+
+const validateForm = () => {
+    // Réinitialiser les erreurs
+    formStatus.value.errors = {
+        name: false,
+        email: false,
+        message: false,
+        acceptConditions: false,
+        general: false
+    }
+
+    let isValid = true;
+
+    // Validation des champs
+    if (!contactForm.value.name.trim()) {
+        formStatus.value.errors.name = true;
+        isValid = false;
+    }
+
+    if (!contactForm.value.email.trim()) {
+        formStatus.value.errors.email = true;
+        isValid = false;
+    } else {
+        // Validation basique du format email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(contactForm.value.email)) {
+            formStatus.value.errors.email = true;
+            isValid = false;
+        }
+    }
+
+    if (!contactForm.value.message.trim()) {
+        formStatus.value.errors.message = true;
+        isValid = false;
+    }
+
+    if (!contactForm.value.acceptConditions) {
+        formStatus.value.errors.acceptConditions = true;
+        isValid = false;
+    }
+
+    return isValid;
+}
 
 const sendEmail = async () => {
+    // Réinitialiser le statut du formulaire
+    formStatus.value.success = false;
+    formStatus.value.message = '';
+
+    // Valider le formulaire avant envoi
+    if (!validateForm()) {
+        return;
+    }
+
     try {
         await axios.post('send-email', contactForm.value);
+
+        // Mise à jour du statut en cas de succès
+        formStatus.value.success = true;
+        formStatus.value.message = 'Votre message a été envoyé avec succès! Nous vous répondrons dans les meilleurs délais.';
+
         // Réinitialiser le formulaire après l'envoi
         contactForm.value = {
             name: '',
@@ -40,19 +109,33 @@ const sendEmail = async () => {
             message: '',
             acceptConditions: false
         };
-        alert('Votre message a été envoyé avec succès!');
     } catch (error) {
         console.error('Erreur lors de l\'envoi du message:', error);
+        formStatus.value.errors.general = true;
 
         // Afficher plus de détails sur l'erreur
         if (error.response) {
             console.error('Données d\'erreur:', error.response.data);
             console.error('Status:', error.response.status);
-        }
 
-        alert('Une erreur est survenue lors de l\'envoi du message. Veuillez réessayer plus tard.');
+            // Traitement des erreurs de validation du serveur
+            if (error.response.status === 422 && error.response.data.errors) {
+                const serverErrors = error.response.data.errors;
+
+                if (serverErrors.name) formStatus.value.errors.name = true;
+                if (serverErrors.email) formStatus.value.errors.email = true;
+                if (serverErrors.message) formStatus.value.errors.message = true;
+                if (serverErrors.acceptConditions) formStatus.value.errors.acceptConditions = true;
+
+                formStatus.value.message = 'Veuillez corriger les erreurs dans le formulaire.';
+            } else {
+                formStatus.value.message = error.response.data.message || 'Une erreur est survenue lors de l\'envoi du message. Veuillez réessayer plus tard.';
+            }
+        } else {
+            formStatus.value.message = 'Une erreur de connexion est survenue. Veuillez vérifier votre connexion internet et réessayer.';
+        }
     }
-};
+}
 
 const toggle = (id) => {
     const index = openedItems.value.indexOf(id)
@@ -149,6 +232,7 @@ onMounted(() => {
         AOS.refresh();
     }, 200);
 })
+
 </script>
 
 <template>
@@ -362,37 +446,65 @@ onMounted(() => {
                         </div>
                     </div>
                 </div>
-                <form @submit.prevent="sendEmail" class="flex flex-col gap-6 flex-1 font-inter">
-                    <div class="flex flex-col gap-2">
-                        <label for="name">Nom</label>
-                        <input type="text" id="name" v-model="contactForm.name" required
-                            class="w-full bg-white/10 border border-white/20 rounded-[6px] focus:ring-[#FF8C42] focus:border-[#FF8C42] p-2">
-                    </div>
+<form @submit.prevent="sendEmail" class="flex flex-col gap-6 flex-1 font-inter">
+    <!-- Message de statut général -->
+    <div v-if="formStatus.message && !formStatus.success"
+        class="p-4 bg-red-800/30 border border-red-700 rounded-md mb-2 text-sm">
+        {{ formStatus.message }}
+    </div>
 
-                    <div class="flex flex-col gap-2">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" v-model="contactForm.email" required
-                            class="w-full bg-white/10 border border-white/20 rounded-[6px] focus:ring-[#FF8C42] focus:border-[#FF8C42] p-2">
-                    </div>
+    <div v-if="formStatus.success"
+        class="p-4 bg-green-800/30 border border-green-700 rounded-md mb-2 text-sm">
+        {{ formStatus.message }}
+    </div>
 
-                    <div class="flex flex-col gap-2">
-                        <label for="message">Message</label>
-                        <textarea id="message" v-model="contactForm.message" required
-                            class="w-full h-[180px] bg-white/10 border border-white/20 rounded-[6px] focus:ring-[#FF8C42] focus:border-[#FF8C42] p-2"></textarea>
-                    </div>
+    <div class="flex flex-col gap-2">
+        <label for="name">Nom<span class="text-red-500">*</span></label>
+        <input
+            type="text"
+            id="name"
+            v-model="contactForm.name"
+            :class="{'border-red-500 focus:border-red-500 focus:ring-red-500': formStatus.errors.name}"
+            class="w-full bg-white/10 border border-white/20 rounded-[6px] focus:ring-[#FF8C42] focus:border-[#FF8C42] p-2">
+        <span v-if="formStatus.errors.name" class="text-red-400 text-sm mt-1">Veuillez entrer votre nom</span>
+    </div>
 
-                    <div class="flex pb-4">
-                        <label class="flex gap-2 items-start">
-                            <input type="checkbox" v-model="contactForm.acceptConditions" required
-                                class="w-4 h-4 border border-white/20 bg-white/10 rounded-[2px] focus:ring-[#FF8C42] focus:border-[#FF8C42]">
-                            <span class="text-sm">J'accepte les conditions générales d'utilisation</span>
-                        </label>
-                    </div>
+    <div class="flex flex-col gap-2">
+        <label for="email">Email<span class="text-red-500">*</span></label>
+        <input
+            type="email"
+            id="email"
+            v-model="contactForm.email"
+            :class="{'border-red-500 focus:border-red-500 focus:ring-red-500': formStatus.errors.email}"
+            class="w-full bg-white/10 border border-white/20 rounded-[6px] focus:ring-[#FF8C42] focus:border-[#FF8C42] p-2">
+        <span v-if="formStatus.errors.email" class="text-red-400 text-sm mt-1">Veuillez entrer une adresse email valide</span>
+    </div>
 
-                    <div>
-                        <PrimaryButton type="submit">Envoyer</PrimaryButton>
-                    </div>
-                </form>
+    <div class="flex flex-col gap-2">
+        <label for="message">Message<span class="text-red-500">*</span></label>
+        <textarea
+            id="message"
+            v-model="contactForm.message"
+            :class="{'border-red-500 focus:border-red-500 focus:ring-red-500': formStatus.errors.message}"
+            class="w-full h-[180px] bg-white/10 border border-white/20 rounded-[6px] focus:ring-[#FF8C42] focus:border-[#FF8C42] p-2"></textarea>
+        <span v-if="formStatus.errors.message" class="text-red-400 text-sm mt-1">Veuillez entrer votre message</span>
+    </div>
+
+    <div class="flex pb-4">
+        <label class="flex gap-2 items-start" :class="{'text-red-400': formStatus.errors.acceptConditions}">
+            <input
+                type="checkbox"
+                v-model="contactForm.acceptConditions"
+                :class="{'outline-red-500': formStatus.errors.acceptConditions}"
+                class="w-4 h-4 border border-white/20 bg-white/10 rounded-[2px] focus:ring-[#FF8C42] focus:border-[#FF8C42]">
+            <span class="text-sm">J'accepte les conditions générales d'utilisation<span class="text-red-500">*</span></span>
+        </label>
+    </div>
+
+    <div>
+        <PrimaryButton type="submit">Envoyer</PrimaryButton>
+    </div>
+</form>
             </div>
         </section>
     </PublicLayout>
