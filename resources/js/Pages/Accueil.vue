@@ -8,6 +8,7 @@ import PublicLayout from '@/Layouts/PublicLayout.vue';
 import Services from '@/Components/Services.vue';
 import AOS from 'aos'
 import 'aos/dist/aos.css'
+import ReviewSlider from '@/Components/ReviewSlider.vue';
 
 const props = defineProps({
     limit: {
@@ -365,7 +366,7 @@ onMounted(() => {
         </section>
 
         <section id="avis-client">
-
+            <ReviewSlider />
         </section>
 
         <!-- FAQ -->

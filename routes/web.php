@@ -7,6 +7,7 @@ use App\Http\Controllers\PortfolioController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\FAQController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\CustomerReviewController;
 
 Route::get('/', function () {
     return Inertia::render('Accueil');
@@ -23,6 +24,8 @@ Route::get('tags/{tag}', [TagController::class, 'show']);
 Route::get('faq', [FAQController::class, 'index']);
 
 Route::post('send-email', [ContactController::class, 'sendEmail']);
+
+Route::get('customer-reviews', [CustomerReviewController::class, 'index']);
 
 Route::middleware([
     'auth:sanctum',
