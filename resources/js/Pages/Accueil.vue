@@ -330,7 +330,7 @@ onMounted(() => {
 
         <!-- Portfolio -->
         <section id="portfolio" class="flex py-[120px] px-16 flex-col items-center gap-20 bg-[#F5F5F5] text-[#0D0703]">
-            <div class="flex flex-col gap-4 text-[#0D0703]" data-aos="fade-up" data-aos-duration="800">
+            <div class="flex flex-col gap-4 text-[#0D0703]" data-aos="fade-up" dataaos-duration="800">
                 <h2 class="text-center font-inter text-base font-semibold">portfolio</h2>
                 <div class="relative flex flex-col gap-6">
                     <h3 class="font-poppins text-5xl text-center font-medium leading-[57.6px] tracking-[-0.48px]">
@@ -365,7 +365,19 @@ onMounted(() => {
             </div>
         </section>
 
-        <section id="avis-client">
+        <section id="avis-client" class="flex py-28 px-16 flex-col items-center gap-20 bg-[#2D2D2D] text-white">
+            <div class="flex flex-col gap-4" data-aos="fade-up" dataaos-duration="800">
+                <h2 class="text-center font-inter text-base font-semibold">portfolio</h2>
+                <div class="relative flex flex-col gap-6">
+                    <h3 class="font-poppins text-5xl text-center font-medium leading-[57.6px] tracking-[-0.48px]">
+                        Témoignages clients</h3>
+                    <div
+                        class="absolute bottom-10 right-1/2 border-2 border-[#FF8C42] w-[80%] max-w-[353px] min-w-[200px]">
+                    </div>
+                    <h4 class="font-inter text-lg text-center">Nos clients partagent leur expérience avec Solelec.
+                    </h4>
+                </div>
+            </div>
             <ReviewSlider />
         </section>
 
