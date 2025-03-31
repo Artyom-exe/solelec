@@ -9,6 +9,7 @@ import Services from '@/Components/Services.vue';
 import AOS from 'aos'
 import 'aos/dist/aos.css'
 import ReviewSlider from '@/Components/ReviewSlider.vue';
+import InterventionMap from '@/Components/InterventionMap.vue';
 
 const props = defineProps({
     limit: {
@@ -270,7 +271,7 @@ onMounted(() => {
         </div>
         <div class="flex gap-4 flex-1 h-full overflow-hidden" data-aos="fade-left" data-aos-duration="1200">
             <!-- Colonne gauche -->
-            <div class="flex flex-col w-1/2 gap-4 -translate-y-60">
+            <div class="flex flex-col w-1/2 h-screen gap-4 -translate-y-60">
                 <div v-for="(img, index) in leftImages" :key="'left-' + index" class="h-[340px]"
                     data-aos="fade-up" :data-aos-delay="img.aosDelay" data-aos-anchor="#header">
                     <img :src="img.src" :alt="img.alt" class="w-full h-full object-cover rounded-lg"
@@ -278,7 +279,7 @@ onMounted(() => {
                 </div>
             </div>
             <!-- Colonne droite -->
-            <div class="flex flex-col w-1/2 gap-4 -translate-y-40">
+            <div class="flex flex-col h-screen w-1/2 gap-4 -translate-y-40">
                 <div v-for="(img, index) in rightImages" :key="'right-' + index" class="h-[340px]"
                     data-aos="fade-up" :data-aos-delay="img.aosDelay" data-aos-anchor="#header">
                     <img :src="img.src" :alt="img.alt" class="w-full h-full object-cover rounded-lg"
@@ -298,7 +299,9 @@ onMounted(() => {
                         Services
                         Principaux</h3>
                     <div
-                        class="absolute bottom-10 right-1/2 border-2 border-[#FF8C42] w-[40%] max-w-[353px] min-w-[200px]">
+                        class="absolute bottom-10 right-1/2 border-2 border-[#FF8C42] w-[40%] max-w-[353px] min-w-[200px]"
+                        data-aos="slide-right"
+                        data-aos-duration="1000">
                     </div>
                     <h4 class="font-inter text-lg text-center">Des solutions adaptées à vos besoins
                         énergétiques.</h4>
@@ -337,7 +340,9 @@ onMounted(() => {
                         Nos
                         projets récents</h3>
                     <div
-                        class="absolute bottom-10 left-1/2 border-2 border-[#FF8C42] w-[80%] max-w-[353px] min-w-[200px]">
+                        class="absolute bottom-10 left-1/2 border-2 border-[#FF8C42] w-[80%] max-w-[353px] min-w-[200px]"
+                        data-aos="slide-left"
+                        data-aos-duration="1000">
                     </div>
                     <h4 class="font-inter text-lg text-center">Découvrez notre expertise à travers nos réalisations.
                     </h4>
@@ -371,7 +376,10 @@ onMounted(() => {
                     <h3 class="font-poppins text-5xl text-center font-medium leading-[57.6px] tracking-[-0.48px]">
                         Témoignages clients</h3>
                     <div
-                        class="absolute bottom-10 right-1/2 border-2 border-[#FF8C42] w-[80%] max-w-[353px] min-w-[200px]">
+                        class="absolute bottom-10 right-1/2 border-2 border-[#FF8C42] w-[80%] max-w-[353px] min-w-[200px]"
+                        data-aos="slide-right"
+                        data-aos-duration="1000"
+                        >
                     </div>
                     <h4 class="font-inter text-lg text-center">Nos clients partagent leur expérience avec Solelec.
                     </h4>
@@ -394,7 +402,9 @@ onMounted(() => {
                     <h2 class="font-poppins text-5xl text-left font-medium leading-[57.6px] tracking-[-0.48px]">
                         FAQs</h2>
                     <div
-                        class="absolute bottom-[76px] ml-36     border-2 border-[#FF8C42] w-[100%] max-w-[353px] min-w-[200px]">
+                        class="absolute bottom-[76px] ml-36 border-2 border-[#FF8C42] w-[100%] max-w-[353px] min-w-[200px]"
+                        data-aos="slide-left"
+                        data-aos-duration="1000">
                     </div>
                     <h4 class="font-inter
                         text-lg text-left">Voici les réponses aux questions les plus fréquentes concernant nos
@@ -447,7 +457,9 @@ onMounted(() => {
                     <div class="relative flex flex-col gap-6">
                         <h3 class="font-poppins text-5xl font-medium">Nous contacter</h3>
                         <div
-                            class="absolute bottom-[40px] ml-28  border-2 border-[#FF8C42] w-[100%] max-w-[353px] min-w-[200px]">
+                            class="absolute bottom-[40px] ml-28  border-2 border-[#FF8C42] w-[100%] max-w-[353px] min-w-[200px]"
+                            data-aos="slide-left"
+                            data-aos-duration="1000">
                         </div>
                         <p class="font-inter text-lg">Nous sommes là pour répondre à vos questions.</p>
                     </div>
@@ -532,7 +544,23 @@ onMounted(() => {
         </section>
 
         <!-- zones d'intervention -->
+        <section class="flex py-28 px-16 flex-col gap-20 bg-[#F5F5F5] text-[#0D0703]">
+            <div class="flex flex-col gap-8 flex-1" data-aos="fade-right" data-aos-duration="1000">
+                    <h2 class="font-inter text-base font-semibold">Zones</h2>
+                    <div class="relative flex flex-col gap-6">
+                        <h3 class="font-poppins text-5xl font-medium">Interventions</h3>
+                        <div
+                            class="absolute bottom-[72px] ml-[340px] border-2 border-[#FF8C42] w-[100%] max-w-[353px] min-w-[200px]"
+                            data-aos="slide-left"
+                            data-aos-duration="1000">
+                        </div>
+                        <p class="font-inter text-lg"> Nous intervenons dans <strong>toute la Wallonie</strong> et à <strong>Bruxelles</strong>.
+        Voici quelques villes régulièrement desservies :</p>
+                    </div>
+            </div>
 
+            <InterventionMap />
+        </section>
 
     </PublicLayout>
 </template>
