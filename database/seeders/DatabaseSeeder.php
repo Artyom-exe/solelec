@@ -26,6 +26,8 @@ class DatabaseSeeder extends Seeder
             ServiceSeeder::class,
             PortfolioTagSeeder::class,
             FAQSeeder::class,
+            CustomerReviewSeeder::class,
+
         ]);
     }
 }
