@@ -377,7 +377,14 @@ onMounted(() => {
                     </h4>
                 </div>
             </div>
-            <ReviewSlider data-aos="fade-up" data-aos-duration="1000" />
+
+            <div class="w-screen -mx-16">
+                <ReviewSlider data-aos="fade-up" data-aos-duration="1000" />
+            </div>
+
+            <SecondaryButton :to="'https://search.google.com/local/writereview?placeid=ChIJIyOb7r_HvWkRJGDmFy5S2j4'">Donner votre avis sur Google
+            </SecondaryButton>
+
         </section>
 
         <!-- FAQ -->

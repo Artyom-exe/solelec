@@ -17,7 +17,7 @@ onMounted(async () => {
     :options="{
       type: 'loop',
       perPage: 3,
-      gap: '2rem',
+      gap: '32px',
       arrows: false,
       pagination: false,
       drag: false,
@@ -31,7 +31,7 @@ onMounted(async () => {
     class="w-full"
   >
     <SplideSlide v-for="review in reviews" :key="review.id" class="w-auto">
-      <div class="w-[320px] sm:w-[360px] md:w-[400px] lg:w-[416px] h-[233px] flex p-6 flex-col justify-between gap-4 rounded-lg border border-white/20 bg-[#242424] text-white shadow-md">
+      <div class="h-[233px] flex p-8 flex-col justify-between gap-6 rounded-lg border border-white/20 bg-[#242424] text-white shadow-md">
         <!-- Étoiles -->
         <div class="text-orange-400 text-xl flex">
           <span v-for="n in review.note" :key="n">
@@ -39,7 +39,7 @@ onMounted(async () => {
           </span>
         </div>
         <!-- Commentaire -->
-        <p class="font-inter text-base md:text-lg line-clamp-2">
+        <p class="font-inter text-base line-clamp-2">
           "{{ review.comment }}"
         </p>
         <!-- Auteur -->
