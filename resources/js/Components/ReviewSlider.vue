@@ -8,7 +8,7 @@ const reviews = ref([])
 
 onMounted(async () => {
   const res = await axios.get('customer-reviews')
-  reviews.value = res.data
+  reviews.value = res.data.filter(r => r.comment?.length > 0)
 })
 </script>
 
@@ -16,23 +16,34 @@ onMounted(async () => {
   <Splide
     :options="{
       type: 'loop',
-      perPage: 4,
-      gap: '32px',
+      perPage: 3,
+      gap: '2rem',
       arrows: false,
       pagination: false,
       drag: false,
-      autoScroll: {
-        speed: 1,
+      autoScroll: { speed: 1 },
+      breakpoints: {
+        1280: { perPage: 2, gap: '1.5rem' },
+        768: { perPage: 1, gap: '1rem' },
       },
     }"
     :extensions="{ AutoScroll }"
     class="w-full"
   >
-    <SplideSlide v-for="review in reviews" :key="review.id">
-      <div class="max-w-[416px] h-[233px] flex p-8 flex-col gap-6 rounded-lg border border-white/20 bg-[#242424] text-white">
-        <p class="text-yellow-500 font-bold text-lg">★ {{ review.note }}/5</p>
-        <p class="italic text-gray-700">"{{ review.comment }}"</p>
-        <p class="mt-2 text-sm text-gray-500">— {{ review.author }}</p>
+    <SplideSlide v-for="review in reviews" :key="review.id" class="w-auto">
+      <div class="w-[320px] sm:w-[360px] md:w-[400px] lg:w-[416px] h-[233px] flex p-6 flex-col justify-between gap-4 rounded-lg border border-white/20 bg-[#242424] text-white shadow-md">
+        <!-- Étoiles -->
+        <div class="text-orange-400 text-xl flex">
+          <span v-for="n in review.note" :key="n">
+            <img src="/assets/icons/vector.svg" alt="star" class="w-5 h-5 mr-1" />
+          </span>
+        </div>
+        <!-- Commentaire -->
+        <p class="font-inter text-base md:text-lg line-clamp-2">
+          "{{ review.comment }}"
+        </p>
+        <!-- Auteur -->
+        <p class="mt-2 text-sm text-gray-400">— {{ review.author }}</p>
       </div>
     </SplideSlide>
   </Splide>

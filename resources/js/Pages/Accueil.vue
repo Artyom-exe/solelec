@@ -367,7 +367,6 @@ onMounted(() => {
 
         <section id="avis-client" class="flex py-28 px-16 flex-col items-center gap-20 bg-[#2D2D2D] text-white">
             <div class="flex flex-col gap-4" data-aos="fade-up" dataaos-duration="800">
-                <h2 class="text-center font-inter text-base font-semibold">portfolio</h2>
                 <div class="relative flex flex-col gap-6">
                     <h3 class="font-poppins text-5xl text-center font-medium leading-[57.6px] tracking-[-0.48px]">
                         Témoignages clients</h3>
@@ -378,7 +377,7 @@ onMounted(() => {
                     </h4>
                 </div>
             </div>
-            <ReviewSlider />
+            <ReviewSlider data-aos="fade-up" data-aos-duration="1000" />
         </section>
 
         <!-- FAQ -->

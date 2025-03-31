@@ -11,51 +11,6 @@ class CustomerReviewSeeder extends Seeder
     public function run(): void
     {
         CustomerReview::updateOrCreate([
-            'author' => 'iKenzo24',
-            'comment' => "",
-        ], [
-            'note' => 5,
-            'date_publication' => Carbon::parse('2024-03-31'),
-            'source_id' => 'google',
-        ]);
-
-        CustomerReview::updateOrCreate([
-            'author' => 'Eoline Savary',
-            'comment' => "",
-        ], [
-            'note' => 5,
-            'date_publication' => Carbon::parse('2023-04-01'),
-            'source_id' => 'google',
-        ]);
-
-        CustomerReview::updateOrCreate([
-            'author' => 'baptiste meaux',
-            'comment' => "",
-        ], [
-            'note' => 5,
-            'date_publication' => Carbon::parse('2023-04-01'),
-            'source_id' => 'google',
-        ]);
-
-        CustomerReview::updateOrCreate([
-            'author' => 'alexandre mouton',
-            'comment' => "",
-        ], [
-            'note' => 5,
-            'date_publication' => Carbon::parse('2023-04-01'),
-            'source_id' => 'google',
-        ]);
-
-        CustomerReview::updateOrCreate([
-            'author' => 'Thomas Lambot',
-            'comment' => "",
-        ], [
-            'note' => 5,
-            'date_publication' => Carbon::parse('2023-04-01'),
-            'source_id' => 'google',
-        ]);
-
-        CustomerReview::updateOrCreate([
             'author' => 'laurence jacquemin',
             'comment' => "Super travail ! Qualitatif, sympathique, ponctuel ! Je recommande",
         ], [
@@ -169,42 +124,6 @@ class CustomerReviewSeeder extends Seeder
         ], [
             'note' => 5,
             'date_publication' => Carbon::parse('2023-04-01'),
-            'source_id' => 'google',
-        ]);
-
-        CustomerReview::updateOrCreate([
-            'author' => 'Clara Nuten',
-            'comment' => "",
-        ], [
-            'note' => 5,
-            'date_publication' => Carbon::parse('2025-01-30'),
-            'source_id' => 'google',
-        ]);
-
-        CustomerReview::updateOrCreate([
-            'author' => 'kevin Kevin',
-            'comment' => "",
-        ], [
-            'note' => 5,
-            'date_publication' => Carbon::parse('2024-03-31'),
-            'source_id' => 'google',
-        ]);
-
-        CustomerReview::updateOrCreate([
-            'author' => 'simon gosselain',
-            'comment' => "",
-        ], [
-            'note' => 5,
-            'date_publication' => Carbon::parse('2024-03-31'),
-            'source_id' => 'google',
-        ]);
-
-        CustomerReview::updateOrCreate([
-            'author' => 'Kevin Bosman',
-            'comment' => "",
-        ], [
-            'note' => 5,
-            'date_publication' => Carbon::parse('2024-03-31'),
             'source_id' => 'google',
         ]);
     }
