@@ -27,6 +27,11 @@ class ImportGoogleReviews extends Command
         $reviews = $response['result']['reviews'] ?? [];
 
         foreach ($reviews as $review) {
+
+            if (empty($review['text'])) {
+                continue;
+            }
+
             CustomerReview::updateOrCreate(
                 [
                     'author' => $review['author_name'],
