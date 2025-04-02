@@ -46,7 +46,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <article class="flex flex-col gap-8 py-16 px-4 md:px-8 lg:px-16 bg-[#F5F5F5]" data-aos="fade-up" data-aos-duration="800">
+  <article class="flex flex-col gap-8 bg-[#F5F5F5]" data-aos="fade-up" data-aos-duration="800">
 
     <div class="flex flex-col md:flex-row gap-8">
       <!-- Deux colonnes -->
