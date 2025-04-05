@@ -2,6 +2,7 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import logo from './logo.vue';
 
 const mobileMenuOpen = ref(false);
 const aboutDropdownOpen = ref(false);
@@ -50,9 +51,7 @@ const aboutSubItems = [
     <nav class="fixed top-0 left-0 right-0 bg-[#2D2D2D] px-16 justify-center flex-col items-center py-4 z-50">
         <div class="flex justify-between items-center gap-8 self-stretch">
             <!-- Logo -->
-            <Link href="/" class="flex items-center">
-                <span class="font-inter font-extrabold text-xl text-white leading-7">S<span class="text-[#FF8C42]">O</span>LELEC</span>
-            </Link>
+            <logo />
 
             <!-- Navigation principale (Desktop) -->
             <div class="hidden md:flex items-center space-x-8">
