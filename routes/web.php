@@ -8,6 +8,7 @@ use App\Http\Controllers\TagController;
 use App\Http\Controllers\FAQController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CustomerReviewController;
+use App\Http\Controllers\QuoteController;
 
 Route::get('/', function () {
     return Inertia::render('Accueil');
@@ -26,6 +27,9 @@ Route::get('faq', [FAQController::class, 'index']);
 Route::post('send-email', [ContactController::class, 'sendEmail']);
 
 Route::get('customer-reviews', [CustomerReviewController::class, 'index']);
+
+Route::post('/quotes', [QuoteController::class, 'store']);
+
 
 Route::middleware([
     'auth:sanctum',
