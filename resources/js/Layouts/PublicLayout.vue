@@ -3,7 +3,22 @@ import { Head } from '@inertiajs/vue3';
 import NavBarPublic from '@/Components/NavBarPublic.vue';
 import logo from '@/Components/logo.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import 'vue-final-modal/style.css'
+import { ModalsContainer, useModal } from 'vue-final-modal';
+import ModalConfirm from '@/Components/ModalConfirm.vue';
 
+  const { open, close } = useModal({
+    component: ModalConfirm,
+    attrs: {
+      title: 'Hello World!',
+      onConfirm() {
+        close()
+      },
+    },
+    slots: {
+      default: '<p>UseModal: The content of the modal</p>',
+    },
+  })
 
 defineProps({
     title: {
@@ -29,6 +44,8 @@ const aboutSubItems = [
         <Head :title="title" />
 
         <NavBarPublic />
+
+        <ModalsContainer />
 
         <main class="flex-grow">
             <slot />
@@ -70,7 +87,7 @@ const aboutSubItems = [
                             </a>
                         </li>
                     </ul>
-                    <PrimaryButton class="mt-4" navStyle :to="'/devis'">Devis</PrimaryButton>
+                    <PrimaryButton @click="open" class="mt-4" navStyle> Devis</PrimaryButton>
                 </div>
             </div>
             <div class="flex flex-col flex-start gap-8 self-stretch text-[#ffff] font-inter text-sm">
