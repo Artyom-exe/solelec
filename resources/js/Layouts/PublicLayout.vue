@@ -4,6 +4,7 @@ import NavBarPublic from '@/Components/NavBarPublic.vue';
 import logo from '@/Components/logo.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 
+
 defineProps({
     title: {
         type: String,
@@ -70,6 +71,17 @@ const aboutSubItems = [
                         </li>
                     </ul>
                     <PrimaryButton class="mt-4" navStyle :to="'/devis'">Devis</PrimaryButton>
+                </div>
+            </div>
+            <div class="flex flex-col flex-start gap-8 self-stretch text-[#ffff] font-inter text-sm">
+                <div class="border-t border-white/20"></div>
+                <div class="flex justify-between items-start self-stretch">
+                    <p class="">© 2025 Solelec. Tous droits réservés.</p>
+                    <div class="flex flex-start gap-6">
+                        <a class="underline underline-offset-2 decoration-solid decoration-1 hover:text-[#FF8C42] transition-colors" href="">Politique de confidentialité</a>
+                        <a class="underline underline-offset-2 decoration-solid decoration-1 hover:text-[#FF8C42] transition-colors" href="">Conditions de service</a>
+                        <a class="underline underline-offset-2 decoration-solid decoration-1 hover:text-[#FF8C42] transition-colors" href="">Paramètres des cookies</a>
+                    </div>
                 </div>
             </div>
         </footer>
