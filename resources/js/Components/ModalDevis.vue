@@ -2,6 +2,7 @@
 import { ref, reactive } from 'vue'
 import { VueFinalModal } from 'vue-final-modal'
 import 'vue-final-modal/style.css'
+import Services from '@/Components/Services.vue'
 
 // Définition d'une prop optionnelle pour le titre du modal
 defineProps<{
@@ -16,9 +17,12 @@ const emit = defineEmits<{
 // Étape courante (1 : services, 2 : description, 3 : coordonnées)
 const step = ref(1)
 
+// Services sélectionnés (IDs)
+const selectedServiceIds = ref<number[]>([]);
+
 // Données du formulaire regroupant les infos pour le devis et le client
 const formData = reactive({
-  services: [] as string[], // tableau des services sélectionnés
+  services: [] as number[], // tableau des IDs de services sélectionnés
   description: '',
   desiredDate: '',
   name: '',
@@ -26,6 +30,12 @@ const formData = reactive({
   email: '',
   address: '',
 })
+
+// Gérer la sélection des services
+const handleServiceSelection = (serviceIds: number[]) => {
+  selectedServiceIds.value = serviceIds;
+  formData.services = [...serviceIds];
+}
 
 // Fonctions de navigation entre les étapes
 const nextStep = () => {
@@ -36,9 +46,7 @@ const prevStep = () => {
 }
 
 // Fonction appelée au clic sur "Valider"
-// Elle émet l'événement "submit" avec les données du formulaire
 const submitForm = () => {
-  // Ici, tu peux éventuellement ajouter une validation locale avant d'émettre
   emit('submit', formData)
 }
 </script>
@@ -50,45 +58,45 @@ const submitForm = () => {
     content-transition="vfm-scale-fade"
     overlay-class="bg-[rgba(0,0,0,0.4)]"
     class="flex justify-center items-center px-2"
-    content-class="bg-white w-full max-w-4xl rounded-lg p-6 space-y-6 shadow-lg relative"
+    content-class="bg-white w-full max-w-5xl rounded-lg p-6 space-y-6 shadow-lg relative"
+    :reserve-scroll-bar-gap="false"
   >
     <!-- Titre du modal -->
     <h2 v-if="title" class="text-2xl font-bold mb-4">{{ title }}</h2>
 
-    <!-- Étape 1 : Choix du/des service(s) -->
+    <!-- Étape 1 : Choix du/des service(s) avec le composant Services -->
     <div v-if="step === 1" class="flex flex-col gap-6">
-      <h3 class="text-xl font-semibold">Je désire :</h3>
-      <div class="flex flex-col sm:flex-row gap-4">
-        <!-- Pour chaque service proposé, on affiche une carte avec checkbox -->
-        <label
-          v-for="srv in ['Panneaux photovoltaïques', 'Mise en conformité électrique', 'Bornes de recharge']"
-          :key="srv"
-          class="flex-1 border rounded-lg p-4 cursor-pointer hover:shadow transition"
-        >
-          <input
-            type="checkbox"
-            class="mr-2"
-            :value="srv"
-            v-model="formData.services"
-          />
-          <span class="font-medium">{{ srv }}</span>
-          <p class="text-sm text-gray-500 mt-2">
-            Description rapide du service.
-          </p>
-        </label>
-      </div>
-      <div class="flex justify-end gap-2 mt-4">
-        <button
-          class="px-4 py-2 rounded bg-orange-500 text-white font-medium hover:bg-orange-600 transition"
-          @click="nextStep"
-        >
-          Suivant
-        </button>
-      </div>
-    </div>
+  <h3 class="text-xl font-semibold">Je désire :</h3>
 
-    <!-- Étape 2 : Description du projet -->
+  <!-- Services avec une hauteur réduite et une marge en bas -->
+  <div class="services-container">
+    <Services
+      :selectable="true"
+      :selected-services="selectedServiceIds"
+      height="200px"
+      @service-selected="handleServiceSelection"
+    />
+  </div>
+
+  <!-- Affichage du nombre de services sélectionnés -->
+  <div v-if="selectedServiceIds.length > 0" class="mt-2 text-sm text-gray-600">
+    {{ selectedServiceIds.length }} service{{ selectedServiceIds.length > 1 ? 's' : '' }} sélectionné{{ selectedServiceIds.length > 1 ? 's' : '' }}
+  </div>
+
+  <div class="flex justify-end gap-2 mt-4">
+    <button
+      class="px-4 py-2 rounded bg-orange-500 text-white font-medium hover:bg-orange-600 transition"
+      @click="nextStep"
+      :disabled="selectedServiceIds.length === 0"
+    >
+      Suivant
+    </button>
+  </div>
+</div>
+
+    <!-- Étapes 2 et 3 inchangées -->
     <div v-else-if="step === 2" class="flex flex-col gap-6">
+      <!-- Contenu étape 2 inchangé -->
       <h3 class="text-xl font-semibold">Dites m'en plus :</h3>
       <textarea
         v-model="formData.description"
@@ -120,8 +128,8 @@ const submitForm = () => {
       </div>
     </div>
 
-    <!-- Étape 3 : Coordonnées du client -->
     <div v-else-if="step === 3" class="flex flex-col gap-6">
+      <!-- Contenu étape 3 inchangé -->
       <h3 class="text-xl font-semibold">Parlez-moi de vous :</h3>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
@@ -176,7 +184,7 @@ const submitForm = () => {
 </template>
 
 <style scoped>
-/* Transitions overlay */
+/* Styles inchangés */
 .vfm-fade-enter-active,
 .vfm-fade-leave-active {
   transition: opacity 0.3s ease;
@@ -186,7 +194,6 @@ const submitForm = () => {
   opacity: 0;
 }
 
-/* Transitions contenu : scale et fade */
 .vfm-scale-fade-enter-active,
 .vfm-scale-fade-leave-active {
   transition: opacity 0.4s cubic-bezier(0.25, 0.1, 0.25, 1), transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
@@ -198,9 +205,14 @@ const submitForm = () => {
   transform: scale(0.90);
 }
 
-/* Pour éviter que le contenu du modal déborde */
 .vfm__content {
   max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* Style pour le conteneur des services */
+.services-container {
+  max-height: 500px;
   overflow-y: auto;
 }
 </style>
