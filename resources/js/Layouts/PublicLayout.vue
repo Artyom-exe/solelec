@@ -18,7 +18,7 @@ const { open, close } = useModal({
     },
     lockScroll: true,
     // La clé est ici: mettre reserveScrollBarGap à false
-    reserveScrollBarGap: false
+    reserveScrollBarGap: false,
   },
 })
 
