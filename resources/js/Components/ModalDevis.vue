@@ -59,13 +59,14 @@ const submitForm = () => {
 <template>
   <!-- Modal principal -->
   <VueFinalModal
-    overlay-transition="vfm-fade"
-    content-transition="vfm-scale-fade"
-    overlay-class="bg-[rgba(0,0,0,0.4)]"
-    class="flex justify-center items-center px-2"
-    content-class="w-full max-w-5xl rounded-lg shadow-lg relative max-h-[90vh] flex flex-col"
-    :reserve-scroll-bar-gap="false"
-  >
+  overlay-transition="vfm-fade"
+  content-transition="vfm-scale-fade"
+  overlay-class="bg-[rgba(0,0,0,0.4)]"
+  class="flex justify-center items-center px-2"
+  content-class="w-full max-w-5xl rounded-lg shadow-lg relative max-h-[90vh] flex flex-col"
+  :reserve-scroll-bar-gap="false"
+  :lock-scroll="false"
+>
 
     <!-- Zone de contenu défilable -->
     <div class="flex-1 overflow-y-auto p-6 rounded-t-lg"
@@ -93,27 +94,27 @@ const submitForm = () => {
         </div>
       </div>
 
-     <div v-else-if="step === 2" class="flex flex-col gap-6">
+     <div v-else-if="step === 2" class="flex flex-col gap-6 h-max">
   <!-- Contenu étape 2 inchangé -->
   <h3 class="text-[#ffff] font-medium text-2xl font-poppins">Dites m'en plus :</h3>
   <textarea
     v-model="formData.description"
     rows="4"
     placeholder="Décrivez votre projet ou intervention..."
-    class="w-full h-[180px] bg-white/10 border border-white/20 rounded-[6px] focus:ring-[#FF8C42] focus:border-[#FF8C42] p-2 font-inter text-base" ></textarea>
+    class="w-full h-[180px] bg-white/10 border border-white/20 text-white rounded-[6px] focus:ring-[#FF8C42] focus:border-[#FF8C42] p-2 font-inter text-base" ></textarea>
   <div>
-  <label class="block mb-1 font-medium text-white">Période souhaitée</label>
   <Datepicker
     v-model="formData.desiredDate"
-    range
-    :enable-time-picker="false"
-    text-input
-    auto-apply
-    :format="'dd/MM/yyyy'"
-    input-class-name="w-full bg-white/10 border border-white/20 rounded-[6px] focus:ring-[#FF8C42] focus:border-[#FF8C42] p-2 text-white"
-    :theme-color="'#FF8C42'"
-    placeholder="Sélectionnez une période"
-    range-separator=" au "
+  range
+  :enable-time-picker="false"
+  text-input
+  auto-apply
+  :format="'dd/MM/yyyy'"
+  input-class-name="w-max bg-white/10 border border-white/20 rounded-[6px] focus:ring-[#FF8C42] focus:border-[#FF8C42] p-2 text-white"
+  :theme-color="'#FF8C42'"
+  placeholder="Période souhaitée"
+  :teleport="true"
+
   />
 </div>
 </div>
@@ -232,39 +233,5 @@ const submitForm = () => {
 .vfm-scale-fade-leave-to {
   opacity: 0;
   transform: scale(0.90);
-}
-
-:deep(.dp__main) {
-  font-family: 'Inter', sans-serif;
-}
-
-:deep(.dp__theme_light) {
-  --dp-background-color: #2D2D2D;
-  --dp-text-color: #fff;
-  --dp-hover-color: #FF8C42;
-  --dp-hover-text-color: #fff;
-  --dp-hover-icon-color: #fff;
-  --dp-primary-color: #FF8C42;
-  --dp-primary-text-color: #fff;
-  --dp-secondary-color: #2D2D2D;
-  --dp-border-color: rgba(255, 255, 255, 0.2);
-  --dp-menu-border-color: rgba(255, 255, 255, 0.2);
-  --dp-border-color-hover: #FF8C42;
-  --dp-disabled-color: rgba(255, 255, 255, 0.1);
-  --dp-scroll-bar-background: rgba(255, 255, 255, 0.1);
-  --dp-scroll-bar-color: rgba(255, 255, 255, 0.2);
-  --dp-success-color: #FF8C42;
-  --dp-success-color-disabled: rgba(255, 140, 66, 0.5);
-  --dp-icon-color: #fff;
-  --dp-danger-color: #ff6b6b;
-}
-
-:deep(.dp__input) {
-  color: #fff;
-  background-color: transparent;
-}
-
-:deep(.dp__input_icon) {
-  color: rgba(255, 255, 255, 0.7);
 }
 </style>
