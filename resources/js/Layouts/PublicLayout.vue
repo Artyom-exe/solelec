@@ -3,22 +3,24 @@ import { Head } from '@inertiajs/vue3';
 import NavBarPublic from '@/Components/NavBarPublic.vue';
 import logo from '@/Components/logo.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import 'vue-final-modal/style.css'
+import 'vue-final-modal/style.css';
 import { ModalsContainer, useModal } from 'vue-final-modal';
-import ModalConfirm from '@/Components/ModalConfirm.vue';
+import ModalDevis from '@/Components/ModalDevis.vue';
 
-  const { open, close } = useModal({
-    component: ModalConfirm,
-    attrs: {
-      title: 'Hello World!',
-      onConfirm() {
-        close()
-      },
+const { open, close } = useModal({
+  component: ModalDevis,
+  attrs: {
+    title: 'Demande de devis',
+    onSubmit(formData) {
+      // Ici, tu peux envoyer formData à ton API ou faire ce que tu veux
+      console.log('Form data soumis :', formData)
+      close()
     },
-    slots: {
-      default: '<p>UseModal: The content of the modal</p>',
-    },
-  })
+    lockScroll: true,
+    // La clé est ici: mettre reserveScrollBarGap à false
+    reserveScrollBarGap: false
+  },
+})
 
 defineProps({
     title: {
