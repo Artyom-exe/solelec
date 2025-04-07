@@ -3,6 +3,10 @@ import { ref, reactive } from 'vue'
 import { VueFinalModal } from 'vue-final-modal'
 import 'vue-final-modal/style.css'
 import Services from '@/Components/Services.vue'
+import PrimaryButton from '@/Components/PrimaryButton.vue'
+import SecondaryButton from '@/Components/SecondaryButton.vue'
+import Datepicker from '@vuepic/vue-datepicker'
+import '@vuepic/vue-datepicker/dist/main.css'
 
 // Définition d'une prop optionnelle pour le titre du modal
 defineProps<{
@@ -24,12 +28,13 @@ const selectedServiceIds = ref<number[]>([]);
 const formData = reactive({
   services: [] as number[], // tableau des IDs de services sélectionnés
   description: '',
-  desiredDate: '',
+  desiredDate: [], // Changé pour un tableau qui contiendra [date début, date fin]
   name: '',
   phone: '',
   email: '',
   address: '',
 })
+
 
 // Gérer la sélection des services
 const handleServiceSelection = (serviceIds: number[]) => {
@@ -58,12 +63,16 @@ const submitForm = () => {
     content-transition="vfm-scale-fade"
     overlay-class="bg-[rgba(0,0,0,0.4)]"
     class="flex justify-center items-center px-2"
-    content-class="bg-white w-full max-w-5xl rounded-lg shadow-lg relative max-h-[90vh] flex flex-col"
+    content-class="w-full max-w-5xl rounded-lg shadow-lg relative max-h-[90vh] flex flex-col"
     :reserve-scroll-bar-gap="false"
   >
 
     <!-- Zone de contenu défilable -->
-    <div class="flex-1 overflow-y-auto p-6 rounded-lg">
+    <div class="flex-1 overflow-y-auto p-6 rounded-t-lg"
+    :class="{
+       'bg-[#FBFAF6]': step === 1 || step === 3,
+        'bg-[#2D2D2D]': step === 2
+    }">
       <!-- Étape 1 : Choix du/des service(s) avec le composant Services -->
       <div v-if="step === 1" class="flex flex-col gap-6">
         <h3 class="text-[#0D0703] font-medium text-2xl font-poppins">Je désire :</h3>
@@ -84,25 +93,30 @@ const submitForm = () => {
         </div>
       </div>
 
-      <!-- Étapes 2 et 3 inchangées -->
-      <div v-else-if="step === 2" class="flex flex-col gap-6">
-        <!-- Contenu étape 2 inchangé -->
-        <h3 class="text-xl font-semibold">Dites m'en plus :</h3>
-        <textarea
-          v-model="formData.description"
-          rows="4"
-          placeholder="Décrivez votre projet ou intervention..."
-          class="border rounded p-3 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
-        ></textarea>
-        <div>
-          <label class="block mb-1 font-medium">Date désirée (optionnel)</label>
-          <input
-            type="date"
-            v-model="formData.desiredDate"
-            class="border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
-          />
-        </div>
-      </div>
+     <div v-else-if="step === 2" class="flex flex-col gap-6">
+  <!-- Contenu étape 2 inchangé -->
+  <h3 class="text-[#ffff] font-medium text-2xl font-poppins">Dites m'en plus :</h3>
+  <textarea
+    v-model="formData.description"
+    rows="4"
+    placeholder="Décrivez votre projet ou intervention..."
+    class="w-full h-[180px] bg-white/10 border border-white/20 rounded-[6px] focus:ring-[#FF8C42] focus:border-[#FF8C42] p-2 font-inter text-base" ></textarea>
+  <div>
+  <label class="block mb-1 font-medium text-white">Période souhaitée</label>
+  <Datepicker
+    v-model="formData.desiredDate"
+    range
+    :enable-time-picker="false"
+    text-input
+    auto-apply
+    :format="'dd/MM/yyyy'"
+    input-class-name="w-full bg-white/10 border border-white/20 rounded-[6px] focus:ring-[#FF8C42] focus:border-[#FF8C42] p-2 text-white"
+    :theme-color="'#FF8C42'"
+    placeholder="Sélectionnez une période"
+    range-separator=" au "
+  />
+</div>
+</div>
 
       <div v-else-if="step === 3" class="flex flex-col gap-6">
         <!-- Contenu étape 3 inchangé -->
@@ -145,34 +159,56 @@ const submitForm = () => {
     </div>
 
     <!-- Barre de boutons fixe en bas du modal -->
-    <div class="p-6 border-t bg-gray-50 rounded-b-lg sticky bottom-0">
-      <div class="flex justify-between">
-        <button
-          v-if="step > 1"
-          class="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 transition"
-          @click="prevStep"
+    <div class="p-6 rounded-b-lg sticky bottom-0"
+    :class="{
+        'bg-[#FBFAF6]': step === 1 || step === 3,
+        'bg-[#2D2D2D]': step === 2
+    }">
+    <div class="flex justify-between">
+      <div v-if="step === 1"></div>
+        <SecondaryButton
+            v-if="step === 1"
+            @click="nextStep"
+            variant="dark"
+            :disabled="selectedServiceIds.length === 0"
+            class="transition"
         >
-          Précédent
-        </button>
-        <div v-else></div>
+            Suivant
+      </SecondaryButton>
+      <SecondaryButton
+        v-if="step === 2"
+        @click="prevStep"
+        :disabled="selectedServiceIds.length === 0"
+        class="transition">
+        Précédent
+      </SecondaryButton>
+      <PrimaryButton
+        v-if="step === 2"
+        @click="nextStep"
+        :disabled="selectedServiceIds.length === 0"
+        class="transition">
+        Suivant
+    </PrimaryButton>
+      <SecondaryButton
+        v-if="step === 3"
+        @click="prevStep"
+        variant="dark"
+        :disabled="selectedServiceIds.length === 0"
+        class="transition"
+    >
+        Suivant
+      </SecondaryButton>
+         <PrimaryButton
+        v-if="step === 3"
+        @click="submitForm"
+        :disabled="selectedServiceIds.length === 0"
+        class="transition">
+        Terminé
+    </PrimaryButton>
 
-        <button
-          v-if="step < 3"
-          class="px-4 py-2 rounded bg-orange-500 text-white font-medium hover:bg-orange-600 transition"
-          @click="nextStep"
-          :disabled="step === 1 && selectedServiceIds.length === 0"
-        >
-          Suivant
-        </button>
-        <button
-          v-else
-          class="px-4 py-2 rounded bg-orange-500 text-white font-medium hover:bg-orange-600 transition"
-          @click="submitForm"
-        >
-          Valider
-        </button>
-      </div>
+
     </div>
+  </div>
   </VueFinalModal>
 </template>
 
@@ -196,5 +232,39 @@ const submitForm = () => {
 .vfm-scale-fade-leave-to {
   opacity: 0;
   transform: scale(0.90);
+}
+
+:deep(.dp__main) {
+  font-family: 'Inter', sans-serif;
+}
+
+:deep(.dp__theme_light) {
+  --dp-background-color: #2D2D2D;
+  --dp-text-color: #fff;
+  --dp-hover-color: #FF8C42;
+  --dp-hover-text-color: #fff;
+  --dp-hover-icon-color: #fff;
+  --dp-primary-color: #FF8C42;
+  --dp-primary-text-color: #fff;
+  --dp-secondary-color: #2D2D2D;
+  --dp-border-color: rgba(255, 255, 255, 0.2);
+  --dp-menu-border-color: rgba(255, 255, 255, 0.2);
+  --dp-border-color-hover: #FF8C42;
+  --dp-disabled-color: rgba(255, 255, 255, 0.1);
+  --dp-scroll-bar-background: rgba(255, 255, 255, 0.1);
+  --dp-scroll-bar-color: rgba(255, 255, 255, 0.2);
+  --dp-success-color: #FF8C42;
+  --dp-success-color-disabled: rgba(255, 140, 66, 0.5);
+  --dp-icon-color: #fff;
+  --dp-danger-color: #ff6b6b;
+}
+
+:deep(.dp__input) {
+  color: #fff;
+  background-color: transparent;
+}
+
+:deep(.dp__input_icon) {
+  color: rgba(255, 255, 255, 0.7);
 }
 </style>
