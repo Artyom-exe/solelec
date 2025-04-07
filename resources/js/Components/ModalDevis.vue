@@ -58,121 +58,114 @@ const submitForm = () => {
     content-transition="vfm-scale-fade"
     overlay-class="bg-[rgba(0,0,0,0.4)]"
     class="flex justify-center items-center px-2"
-    content-class="bg-white w-full max-w-5xl rounded-lg p-6 space-y-6 shadow-lg relative"
+    content-class="bg-white w-full max-w-5xl rounded-lg shadow-lg relative max-h-[90vh] flex flex-col"
     :reserve-scroll-bar-gap="false"
   >
-    <!-- Titre du modal -->
-    <h2 v-if="title" class="text-2xl font-bold mb-4">{{ title }}</h2>
 
-    <!-- Étape 1 : Choix du/des service(s) avec le composant Services -->
-    <div v-if="step === 1" class="flex flex-col gap-6">
-  <h3 class="text-xl font-semibold">Je désire :</h3>
+    <!-- Zone de contenu défilable -->
+    <div class="flex-1 overflow-y-auto p-6 rounded-lg">
+      <!-- Étape 1 : Choix du/des service(s) avec le composant Services -->
+      <div v-if="step === 1" class="flex flex-col gap-6">
+        <h3 class="text-[#0D0703] font-medium text-2xl font-poppins">Je désire :</h3>
 
-  <!-- Services avec une hauteur réduite et une marge en bas -->
-  <div class="services-container">
-    <Services
-      :selectable="true"
-      :selected-services="selectedServiceIds"
-      height="200px"
-      @service-selected="handleServiceSelection"
-    />
-  </div>
+        <!-- Services avec une hauteur réduite et une marge en bas -->
+        <div class="services-container">
+          <Services
+            :selectable="true"
+            :selected-services="selectedServiceIds"
+            height="200px"
+            @service-selected="handleServiceSelection"
+          />
+        </div>
 
-  <!-- Affichage du nombre de services sélectionnés -->
-  <div v-if="selectedServiceIds.length > 0" class="mt-2 text-sm text-gray-600">
-    {{ selectedServiceIds.length }} service{{ selectedServiceIds.length > 1 ? 's' : '' }} sélectionné{{ selectedServiceIds.length > 1 ? 's' : '' }}
-  </div>
-
-  <div class="flex justify-end gap-2 mt-4">
-    <button
-      class="px-4 py-2 rounded bg-orange-500 text-white font-medium hover:bg-orange-600 transition"
-      @click="nextStep"
-      :disabled="selectedServiceIds.length === 0"
-    >
-      Suivant
-    </button>
-  </div>
-</div>
-
-    <!-- Étapes 2 et 3 inchangées -->
-    <div v-else-if="step === 2" class="flex flex-col gap-6">
-      <!-- Contenu étape 2 inchangé -->
-      <h3 class="text-xl font-semibold">Dites m'en plus :</h3>
-      <textarea
-        v-model="formData.description"
-        rows="4"
-        placeholder="Décrivez votre projet ou intervention..."
-        class="border rounded p-3 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
-      ></textarea>
-      <div>
-        <label class="block mb-1 font-medium">Date désirée (optionnel)</label>
-        <input
-          type="date"
-          v-model="formData.desiredDate"
-          class="border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
-        />
+        <!-- Affichage du nombre de services sélectionnés -->
+        <div v-if="selectedServiceIds.length > 0" class="mt-2 text-sm text-gray-600">
+          {{ selectedServiceIds.length }} service{{ selectedServiceIds.length > 1 ? 's' : '' }} sélectionné{{ selectedServiceIds.length > 1 ? 's' : '' }}
+        </div>
       </div>
-      <div class="flex justify-between mt-4">
-        <button
-          class="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 transition"
-          @click="prevStep"
-        >
-          Précédent
-        </button>
-        <button
-          class="px-4 py-2 rounded bg-orange-500 text-white font-medium hover:bg-orange-600 transition"
-          @click="nextStep"
-        >
-          Suivant
-        </button>
+
+      <!-- Étapes 2 et 3 inchangées -->
+      <div v-else-if="step === 2" class="flex flex-col gap-6">
+        <!-- Contenu étape 2 inchangé -->
+        <h3 class="text-xl font-semibold">Dites m'en plus :</h3>
+        <textarea
+          v-model="formData.description"
+          rows="4"
+          placeholder="Décrivez votre projet ou intervention..."
+          class="border rounded p-3 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
+        ></textarea>
+        <div>
+          <label class="block mb-1 font-medium">Date désirée (optionnel)</label>
+          <input
+            type="date"
+            v-model="formData.desiredDate"
+            class="border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
+          />
+        </div>
+      </div>
+
+      <div v-else-if="step === 3" class="flex flex-col gap-6">
+        <!-- Contenu étape 3 inchangé -->
+        <h3 class="text-xl font-semibold">Parlez-moi de vous :</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block mb-1 font-medium">Nom *</label>
+            <input
+              type="text"
+              v-model="formData.name"
+              class="border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
+            />
+          </div>
+          <div>
+            <label class="block mb-1 font-medium">Téléphone *</label>
+            <input
+              type="text"
+              v-model="formData.phone"
+              class="border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
+            />
+          </div>
+          <div>
+            <label class="block mb-1 font-medium">Email *</label>
+            <input
+              type="email"
+              v-model="formData.email"
+              class="border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
+            />
+          </div>
+          <div>
+            <label class="block mb-1 font-medium">Adresse (optionnel)</label>
+            <input
+              type="text"
+              v-model="formData.address"
+              class="border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
+            />
+          </div>
+        </div>
       </div>
     </div>
 
-    <div v-else-if="step === 3" class="flex flex-col gap-6">
-      <!-- Contenu étape 3 inchangé -->
-      <h3 class="text-xl font-semibold">Parlez-moi de vous :</h3>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label class="block mb-1 font-medium">Nom *</label>
-          <input
-            type="text"
-            v-model="formData.name"
-            class="border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
-          />
-        </div>
-        <div>
-          <label class="block mb-1 font-medium">Téléphone *</label>
-          <input
-            type="text"
-            v-model="formData.phone"
-            class="border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
-          />
-        </div>
-        <div>
-          <label class="block mb-1 font-medium">Email *</label>
-          <input
-            type="email"
-            v-model="formData.email"
-            class="border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
-          />
-        </div>
-        <div>
-          <label class="block mb-1 font-medium">Adresse (optionnel)</label>
-          <input
-            type="text"
-            v-model="formData.address"
-            class="border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
-          />
-        </div>
-      </div>
-      <div class="flex justify-between mt-4">
+    <!-- Barre de boutons fixe en bas du modal -->
+    <div class="p-6 border-t bg-gray-50 rounded-b-lg sticky bottom-0">
+      <div class="flex justify-between">
         <button
+          v-if="step > 1"
           class="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 transition"
           @click="prevStep"
         >
           Précédent
         </button>
+        <div v-else></div>
+
         <button
+          v-if="step < 3"
+          class="px-4 py-2 rounded bg-orange-500 text-white font-medium hover:bg-orange-600 transition"
+          @click="nextStep"
+          :disabled="step === 1 && selectedServiceIds.length === 0"
+        >
+          Suivant
+        </button>
+        <button
+          v-else
           class="px-4 py-2 rounded bg-orange-500 text-white font-medium hover:bg-orange-600 transition"
           @click="submitForm"
         >
@@ -203,16 +196,5 @@ const submitForm = () => {
 .vfm-scale-fade-leave-to {
   opacity: 0;
   transform: scale(0.90);
-}
-
-.vfm__content {
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
-/* Style pour le conteneur des services */
-.services-container {
-  max-height: 500px;
-  overflow-y: auto;
 }
 </style>
