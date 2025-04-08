@@ -39,7 +39,7 @@ onMounted(() => {
         <section
             class="flex py-28 px-16 items-start gap-20 bg-[#2D2D2D] text-white"
         >
-            <article class="flex flex-col items-start gap-8 flex-1">
+            <article class="flex w-1/2 flex-col items-start gap-8 flex-1">
                 <div class="flex flex-col items-start gap-4 self-stretch">
                     <h3 class="font-inter font-semibold text-base">Services</h3>
                     <div class="flex flex-col items-start gap-6 self-stretch">
@@ -60,7 +60,7 @@ onMounted(() => {
                     <div
                         v-for="(service, index) in services"
                         :key="index"
-                        class="flex pr-4 py-4 pl-6 flex-col justify-center items-start gap-2 self-stretch hover:border-l hover:border-[#FF8C42] hover:bg-[#242424] cursor-pointer"
+                        class="w-full flex pr-4 py-4 pl-6 flex-col justify-center items-start gap-2 self-stretch cursor-pointer hover:border-l hover:border-[#FF8C42] hover:bg-[#242424] transition duration-300 ease-in-out"
                         :class="{
                             'border-l border-[#FF8C42] bg-[#242424]':
                                 isActive(index),
@@ -70,10 +70,12 @@ onMounted(() => {
                         <h4 class="font-poppins text-2xl font-medium">
                             {{ service.title }}
                         </h4>
-                        <div class="description-container">
+                        <div class="w-full">
                             <p
-                                class="font-inter transition-height duration-300 ease-in-out"
-                                :class="{ 'line-clamp-1': !isActive(index) }"
+                                class="description font-inter"
+                                :class="
+                                    isActive(index) ? 'expanded' : 'collapsed'
+                                "
                             >
                                 {{ service.description }}
                             </p>
@@ -120,30 +122,31 @@ onMounted(() => {
     display: none; /* Chrome, Safari and Opera */
 }
 
-.line-clamp-1 {
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
+/* Styles pour les descriptions */
+.description {
+    transition: max-height 0.4s ease, opacity 0.3s ease;
     overflow: hidden;
-    max-height: 1.5em;
-}
-
-.transition-height {
-    transition-property: max-height, opacity;
-    transition-duration: 300ms;
-    transition-timing-function: ease-in-out;
-    overflow: hidden;
-    max-height: 500px; /* Une valeur suffisamment grande pour contenir le texte */
-}
-
-.description-container {
     width: 100%;
-    overflow: hidden;
 }
 
+.collapsed {
+    max-height: 1.5em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    opacity: 0.8;
+}
+
+.expanded {
+    max-height: 300px;
+    white-space: normal;
+    opacity: 1;
+}
+
+/* Transition d'image */
 .fade-enter-active,
 .fade-leave-active {
-    transition: opacity 0.3s ease;
+    transition: opacity 0.4s ease;
 }
 
 .fade-enter-from,
