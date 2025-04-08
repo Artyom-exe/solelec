@@ -18,6 +18,9 @@ const props = defineProps({
     },
 });
 
+const openDevisModal = ref(() => {
+    console.log("La fonction openDevisModal n'a pas encore été chargée");
+});
 const portfolio = ref([]);
 const tags = ref([]);
 const randomPortfolio = ref([]);
@@ -274,12 +277,6 @@ const scrollToSection = (sectionId, event) => {
     });
 };
 
-// Fonction spécifique pour gérer les clics sur les boutons
-const handleButtonClick = (targetId, event) => {
-    event.preventDefault();
-    scrollToSection(targetId);
-};
-
 onMounted(() => {
     // Configuration AOS
     AOS.init({
@@ -299,16 +296,16 @@ onMounted(() => {
             const targetId = this.getAttribute("href").substring(1);
             scrollToSection(targetId, e);
         });
-    });
 
-    // Vérifier si l'URL contient un fragment (ancre)
-    if (window.location.hash) {
-        // Attendre le chargement complet de la page et des animations
-        setTimeout(() => {
-            const sectionId = window.location.hash.substring(1);
-            scrollToSection(sectionId);
-        }, 1000);
-    }
+        // Vérifier si l'URL contient un fragment (ancre)
+        if (window.location.hash) {
+            // Attendre le chargement complet de la page et des animations
+            setTimeout(() => {
+                const sectionId = window.location.hash.substring(1);
+                scrollToSection(sectionId);
+            }, 1000);
+        }
+    });
 
     document.documentElement.style.overflowX = "hidden";
 
@@ -324,7 +321,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <PublicLayout title="Solelec">
+    <PublicLayout title="Solelec" @devisModalOpened="openDevisModal = $event">
         <Head>
             <title>
                 Solelec - Expert en électricité & énergies renouvelables
@@ -382,8 +379,13 @@ onMounted(() => {
                         data-aos-delay="450"
                         data-aos-anchor="#header"
                     >
-                        <PrimaryButton>Demander un devis</PrimaryButton>
-                        <SecondaryButton>Nous contacter</SecondaryButton>
+                        <PrimaryButton @click="openDevisModal"
+                            >Demander un devis</PrimaryButton
+                        >
+
+                        <SecondaryButton @click="scrollToSection('contact')"
+                            >Nous contacter</SecondaryButton
+                        >
                     </div>
                 </div>
                 <div

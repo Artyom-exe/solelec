@@ -1,5 +1,5 @@
 <script setup>
-import { ref, provide } from "vue";
+import { ref, provide, onMounted } from "vue";
 import { Head } from "@inertiajs/vue3";
 import NavBarPublic from "@/Components/NavBarPublic.vue";
 import logo from "@/Components/logo.vue";
@@ -33,6 +33,12 @@ defineProps({
         type: String,
         default: "Solelec",
     },
+});
+
+const emits = defineEmits(["devisModalOpened"]);
+// Émettre la fonction d'ouverture du modal après le montage du composant
+onMounted(() => {
+    emits("devisModalOpened", open);
 });
 
 const navItems = [
@@ -79,7 +85,10 @@ provide("hideNotification", hideNotification);
     <div class="flex flex-col min-h-screen bg-white">
         <Head :title="title" />
 
-        <NavBarPublic />
+        <NavBarPublic
+            :openDevisModal="open"
+            @scrollToSection="$emit('scrollToSection', $event)"
+        />
 
         <ModalsContainer />
 
