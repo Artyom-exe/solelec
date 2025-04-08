@@ -1,6 +1,6 @@
 <script setup>
 import { ref, provide, onMounted } from "vue";
-import { Head } from "@inertiajs/vue3";
+import { Head, router } from "@inertiajs/vue3";
 import NavBarPublic from "@/Components/NavBarPublic.vue";
 import logo from "@/Components/logo.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
@@ -76,9 +76,47 @@ const hideNotification = () => {
     notification.value.show = false;
 };
 
+const navigateToSection = (sectionId, route) => {
+    // Récupérer la route actuelle
+    const currentRoute = window.location.pathname.substring(1) || "accueil";
+
+    if (currentRoute === route) {
+        // Si on est déjà sur la bonne page, on défile simplement vers la section
+        scrollToSection(sectionId);
+    } else {
+        // Sinon, on navigue vers la page puis on défile
+        router.visit("/" + route, {
+            onSuccess: () => {
+                // Une fois la navigation terminée, on défile vers la section
+                // On ajoute un petit délai pour que le DOM soit bien chargé
+                setTimeout(() => {
+                    scrollToSection(sectionId);
+                }, 100);
+            },
+        });
+    }
+};
+
+// Fonction de défilement vers une section
+const scrollToSection = (sectionId) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+        const offset = 72; // Hauteur du header + marge additionnelle
+        const elementPosition =
+            element.getBoundingClientRect().top + window.scrollY;
+        const offsetPosition = elementPosition - offset;
+
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth",
+        });
+    }
+};
+
 // Exposer ces fonctions pour qu'elles soient accessibles par les composants enfants
 provide("showNotification", showNotification);
 provide("hideNotification", hideNotification);
+provide("navigateToSection", navigateToSection);
 </script>
 
 <template>
@@ -233,7 +271,13 @@ provide("hideNotification", hideNotification);
                     <ul class="flex flex-col gap-2 mt-2">
                         <li v-for="item in aboutSubItems" :key="item.name">
                             <a
-                                :href="'/' + item.route + item.anchor"
+                                href="#"
+                                @click.prevent="
+                                    navigateToSection(
+                                        item.anchor.substring(1),
+                                        item.route
+                                    )
+                                "
                                 class="text-white text-sm underline underline-offset-2 decoration-solid decoration-1 hover:text-[#FF8C42] transition-colors"
                             >
                                 {{ item.name }}

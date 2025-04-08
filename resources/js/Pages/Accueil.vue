@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, nextTick } from "vue";
+import { ref, onMounted, inject } from "vue";
 import axios from "axios";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
@@ -245,38 +245,41 @@ const rightImages = ref([
     },
 ]);
 
-// Fonction améliorée pour gérer le défilement vers les sections
-const scrollToSection = (sectionId, event) => {
-    // Si un événement est fourni, on l'empêche
-    if (event) {
-        event.preventDefault();
+const navigateToSection = (sectionId, route) => {
+    // Récupérer la route actuelle
+    const currentRoute = window.location.pathname.substring(1) || "accueil";
+
+    if (currentRoute === route) {
+        // Si on est déjà sur la bonne page, on défile simplement vers la section
+        scrollToSection(sectionId);
+    } else {
+        // Sinon, on navigue vers la page puis on défile
+        router.visit("/" + route, {
+            onSuccess: () => {
+                // Une fois la navigation terminée, on défile vers la section
+                setTimeout(() => {
+                    scrollToSection(sectionId);
+                }, 100);
+            },
+        });
     }
-
-    // Attendre que le DOM soit mis à jour
-    nextTick(() => {
-        // Trouver l'élément cible
-        const element = document.getElementById(sectionId);
-        if (element) {
-            // Calculer l'offset pour le header fixe
-            const offset = 72; // Hauteur du header + marge additionnelle
-
-            // Attendre que les animations soient terminées
-            setTimeout(() => {
-                // Recalculer la position après les animations
-                const elementPosition =
-                    element.getBoundingClientRect().top + window.scrollY;
-                const offsetPosition = elementPosition - offset;
-
-                // Faire défiler vers la position calculée
-                window.scrollTo({
-                    top: offsetPosition,
-                    behavior: "smooth",
-                });
-            }, 450); // Délai court pour les animations
-        }
-    });
 };
 
+// Fonction de défilement vers une section
+const scrollToSection = (sectionId) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+        const offset = 72; // Hauteur du header + marge additionnelle
+        const elementPosition =
+            element.getBoundingClientRect().top + window.scrollY;
+        const offsetPosition = elementPosition - offset;
+
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth",
+        });
+    }
+};
 onMounted(() => {
     // Configuration AOS
     AOS.init({
@@ -296,15 +299,6 @@ onMounted(() => {
             const targetId = this.getAttribute("href").substring(1);
             scrollToSection(targetId, e);
         });
-
-        // Vérifier si l'URL contient un fragment (ancre)
-        if (window.location.hash) {
-            // Attendre le chargement complet de la page et des animations
-            setTimeout(() => {
-                const sectionId = window.location.hash.substring(1);
-                scrollToSection(sectionId);
-            }, 1000);
-        }
     });
 
     document.documentElement.style.overflowX = "hidden";
@@ -313,7 +307,6 @@ onMounted(() => {
     fetchTags();
     fetchFaq();
 
-    // Force une pause puis un rafraîchissement pour s'assurer que toutes les images sont chargées
     setTimeout(() => {
         AOS.refresh();
     }, 200);
@@ -383,9 +376,11 @@ onMounted(() => {
                             >Demander un devis</PrimaryButton
                         >
 
-                        <SecondaryButton @click="scrollToSection('contact')"
-                            >Nous contacter</SecondaryButton
+                        <SecondaryButton
+                            @click="navigateToSection('contact', 'accueil')"
                         >
+                            Nous contacter
+                        </SecondaryButton>
                     </div>
                 </div>
                 <div
@@ -704,7 +699,10 @@ onMounted(() => {
                         N'hésitez pas à nous contacter.
                     </p>
                 </div>
-                <SecondaryButton class="self-start" variant="dark"
+                <SecondaryButton
+                    class="self-start"
+                    variant="dark"
+                    @click="scrollToSection('contact')"
                     >Contact</SecondaryButton
                 >
             </div>
