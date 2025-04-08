@@ -32,6 +32,19 @@ const formData = reactive({
     address: "",
 });
 
+// Ajout du statut de formulaire pour gérer les erreurs
+const formStatus = reactive({
+    errors: {
+        name: false,
+        lastName: false,
+        phone: false,
+        email: false,
+        address: false,
+        general: false,
+    },
+    message: "",
+});
+
 const handleServiceSelection = (serviceIds: number[]) => {
     selectedServiceIds.value = serviceIds;
     formData.services = [...serviceIds];
@@ -44,8 +57,61 @@ const prevStep = () => {
     if (step.value > 1) step.value--;
 };
 
+// Ajout d'une fonction de validation
+const validateContactForm = () => {
+    // Réinitialiser les erreurs
+    formStatus.errors = {
+        name: false,
+        lastName: false,
+        phone: false,
+        email: false,
+        address: false,
+        general: false,
+    };
+    formStatus.message = "";
+
+    let isValid = true;
+
+    // Validation des champs obligatoires
+    if (!formData.name.trim()) {
+        formStatus.errors.name = true;
+        isValid = false;
+    }
+
+    if (!formData.lastName.trim()) {
+        formStatus.errors.lastName = true;
+        isValid = false;
+    }
+
+    if (!formData.phone.trim()) {
+        formStatus.errors.phone = true;
+        isValid = false;
+    }
+
+    if (!formData.email.trim()) {
+        formStatus.errors.email = true;
+        isValid = false;
+    } else {
+        // Validation basique du format email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(formData.email)) {
+            formStatus.errors.email = true;
+            isValid = false;
+        }
+    }
+
+    if (!isValid) {
+        formStatus.message =
+            "Veuillez remplir tous les champs obligatoires correctement.";
+    }
+
+    return isValid;
+};
+
 const submitForm = () => {
-    emit("submit", formData);
+    if (validateContactForm()) {
+        emit("submit", formData);
+    }
 };
 </script>
 
@@ -132,6 +198,7 @@ const submitForm = () => {
                 >
                     Parlez-moi de vous :
                 </h3>
+
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-[#2D2D2D] font-inter"
@@ -140,8 +207,17 @@ const submitForm = () => {
                         <input
                             type="text"
                             v-model="formData.name"
+                            :class="{
+                                'border-red-500 focus:border-red-500 focus:ring-red-500':
+                                    formStatus.errors.name,
+                            }"
                             class="border rounded py-2 px-3 border-white/20 bg-[#0D07030D] w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
                         />
+                        <span
+                            v-if="formStatus.errors.name"
+                            class="text-red-500 text-sm mt-1"
+                            >Ce champ est requis</span
+                        >
                     </div>
                     <div>
                         <label class="block text-[#2D2D2D] font-inter"
@@ -150,8 +226,17 @@ const submitForm = () => {
                         <input
                             type="text"
                             v-model="formData.lastName"
+                            :class="{
+                                'border-red-500 focus:border-red-500 focus:ring-red-500':
+                                    formStatus.errors.lastName,
+                            }"
                             class="border rounded py-2 px-3 border-white/20 bg-[#0D07030D] w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
                         />
+                        <span
+                            v-if="formStatus.errors.lastName"
+                            class="text-red-500 text-sm mt-1"
+                            >Ce champ est requis</span
+                        >
                     </div>
                     <div>
                         <label class="block text-[#2D2D2D] font-inter"
@@ -160,8 +245,17 @@ const submitForm = () => {
                         <input
                             type="text"
                             v-model="formData.phone"
+                            :class="{
+                                'border-red-500 focus:border-red-500 focus:ring-red-500':
+                                    formStatus.errors.phone,
+                            }"
                             class="border rounded py-2 px-3 border-white/20 bg-[#0D07030D] w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
                         />
+                        <span
+                            v-if="formStatus.errors.phone"
+                            class="text-red-500 text-sm mt-1"
+                            >Ce champ est requis</span
+                        >
                     </div>
                     <div>
                         <label class="block text-[#2D2D2D] font-inter"
@@ -170,8 +264,17 @@ const submitForm = () => {
                         <input
                             type="email"
                             v-model="formData.email"
+                            :class="{
+                                'border-red-500 focus:border-red-500 focus:ring-red-500':
+                                    formStatus.errors.email,
+                            }"
                             class="border rounded py-2 px-3 border-white/20 bg-[#0D07030D] w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
                         />
+                        <span
+                            v-if="formStatus.errors.email"
+                            class="text-red-500 text-sm mt-1"
+                            >Veuillez entrer un email valide</span
+                        >
                     </div>
                     <div class="col-span-2">
                         <label class="block text-[#2D2D2D] font-inter"
