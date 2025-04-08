@@ -1,8 +1,15 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from "vue";
-import { Link, usePage } from "@inertiajs/vue3";
+import { Link } from "@inertiajs/vue3";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import logo from "./logo.vue";
+
+const props = defineProps({
+    openDevisModal: {
+        type: Function,
+        required: true,
+    },
+});
 
 const mobileMenuOpen = ref(false);
 const aboutDropdownOpen = ref(false);
@@ -29,10 +36,6 @@ const toggleMobileMenu = () => {
 const toggleAboutDropdown = (event) => {
     event.stopPropagation();
     aboutDropdownOpen.value = !aboutDropdownOpen.value;
-};
-
-const isHomePage = () => {
-    return usePage().component.value === "Accueil";
 };
 
 const navItems = [
@@ -158,8 +161,9 @@ const emit = defineEmits(["scrollToSection"]);
                 </div>
             </div>
 
-            <PrimaryButton navStyle>Devis</PrimaryButton>
-
+            <PrimaryButton @click="openDevisModal" navStyle>
+                Devis
+            </PrimaryButton>
             <!-- Hamburger (Mobile) -->
             <button
                 @click="toggleMobileMenu"
@@ -237,7 +241,10 @@ const emit = defineEmits(["scrollToSection"]);
 
                 <PrimaryButton
                     class="w-full justify-center"
-                    @click="toggleMobileMenu"
+                    @click="
+                        openDevisModal();
+                        toggleMobileMenu();
+                    "
                 >
                     Demander un devis
                 </PrimaryButton>
