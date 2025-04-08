@@ -1,12 +1,16 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import axios from "axios";
 import PublicLayout from "@/Layouts/PublicLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
+// Importez AOS
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 const openDevisModal = ref(null);
 const services = ref([]);
 const activeIndex = ref(0);
+const prevActiveIndex = ref(0);
 
 // Récupérer les services depuis l'API Laravel
 const fetchServices = async () => {
@@ -20,6 +24,7 @@ const fetchServices = async () => {
 
 // Sélectionner un service
 const selectService = (index) => {
+    prevActiveIndex.value = activeIndex.value;
     activeIndex.value = index;
 };
 
@@ -28,9 +33,28 @@ const isActive = (index) => {
     return activeIndex.value === index;
 };
 
+// Observer les changements de activeIndex pour animer l'image
+watch(activeIndex, (newVal) => {
+    // Déclenchement de l'animation AOS pour l'image active
+    setTimeout(() => {
+        AOS.refresh();
+    }, 100);
+});
+
 // Appel au montage
 onMounted(() => {
     fetchServices();
+
+    // Initialisation d'AOS avec des options pour toute la page
+    AOS.init({
+        duration: 1000,
+        once: true,
+        mirror: false,
+        easing: "ease-out-cubic",
+        offset: 50,
+        anchorPlacement: "top-center",
+        startEvent: "DOMContentLoaded",
+    });
 });
 </script>
 
@@ -39,14 +63,37 @@ onMounted(() => {
         <section
             class="flex py-28 px-16 items-start gap-20 bg-[#2D2D2D] text-white"
         >
-            <article class="flex w-1/2 flex-col items-start gap-8 flex-1">
-                <div class="flex flex-col items-start gap-4 self-stretch">
-                    <h3 class="font-inter font-semibold text-base">Services</h3>
+            <article
+                class="flex w-1/2 flex-col items-start gap-8 flex-1"
+                data-aos="fade-right"
+                data-aos-delay="200"
+            >
+                <!-- Partie gauche avec animations -->
+                <div
+                    class="flex flex-col items-start gap-4 self-stretch"
+                    data-aos="fade-up"
+                    data-aos-delay="300"
+                >
+                    <h3
+                        class="font-inter font-semibold text-base"
+                        data-aos="fade-right"
+                        data-aos-delay="400"
+                    >
+                        Services
+                    </h3>
                     <div class="flex flex-col items-start gap-6 self-stretch">
-                        <h2 class="font-poppins text-5xl font-medium">
+                        <h2
+                            class="font-poppins text-5xl font-medium"
+                            data-aos="fade-up"
+                            data-aos-delay="500"
+                        >
                             Nos Services Électriques de Qualité
                         </h2>
-                        <p class="font-inter text-lg">
+                        <p
+                            class="font-inter text-lg"
+                            data-aos="fade-up"
+                            data-aos-delay="600"
+                        >
                             Nous offrons une gamme complète de services
                             électriques adaptés à vos besoins. Découvrez notre
                             expertise en photovoltaïque, mise en conformité,
@@ -56,6 +103,8 @@ onMounted(() => {
                 </div>
                 <div
                     class="flex flex-col items-start self-stretch h-[294px] overflow-y-auto hide-scrollbar"
+                    data-aos="fade-up"
+                    data-aos-delay="700"
                 >
                     <div
                         v-for="(service, index) in services"
@@ -82,28 +131,43 @@ onMounted(() => {
                         </div>
                     </div>
                 </div>
-                <PrimaryButton @click="openDevisModal"> Devis </PrimaryButton>
+                <PrimaryButton
+                    @click="openDevisModal"
+                    data-aos="fade-up"
+                    data-aos-delay="500"
+                >
+                    Devis
+                </PrimaryButton>
             </article>
-            <div class="w-1/2 flex justify-center items-center">
+            <div
+                class="w-1/2 flex justify-center items-center"
+                data-aos="fade-left"
+                data-aos-delay="400"
+            >
                 <div
                     v-if="services.length > 0"
                     class="relative w-full h-[640px]"
                 >
-                    <transition name="fade" mode="out-in">
+                    <!-- Images avec animations -->
+                    <div
+                        v-for="(service, index) in services"
+                        :key="index"
+                        class="absolute top-0 left-0 w-full h-full"
+                        :class="{ hidden: index !== activeIndex }"
+                    >
                         <img
-                            :key="activeIndex"
-                            :src="
-                                services[activeIndex]?.image ||
-                                '/images/placeholder.jpg'
-                            "
-                            :alt="services[activeIndex]?.title"
+                            :src="service.image || '/images/placeholder.jpg'"
+                            :alt="service.title"
                             class="w-full h-full object-cover rounded-lg shadow-lg"
+                            data-aos="fade-left"
+                            data-aos-duration="800"
                         />
-                    </transition>
+                    </div>
                 </div>
                 <div
                     v-else
                     class="flex justify-center items-center h-96 w-full bg-gray-800 rounded-lg"
+                    data-aos="fade-in"
                 >
                     <p class="text-gray-400">Chargement des services...</p>
                 </div>
@@ -143,14 +207,12 @@ onMounted(() => {
     opacity: 1;
 }
 
-/* Transition d'image */
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.4s ease;
+/* Animation personnalisée pour le chargement initial */
+[data-aos] {
+    pointer-events: none;
 }
 
-.fade-enter-from,
-.fade-leave-to {
-    opacity: 0;
+[data-aos].aos-animate {
+    pointer-events: auto;
 }
 </style>
