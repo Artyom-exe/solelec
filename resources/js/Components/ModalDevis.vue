@@ -40,21 +40,93 @@ const formStatus = reactive({
         phone: false,
         email: false,
         address: false,
+        description: false,
+        desiredDate: false,
         general: false,
+        services: false,
     },
     message: "",
+    step1Message: "",
+    step2Message: "",
 });
 
 const handleServiceSelection = (serviceIds: number[]) => {
     selectedServiceIds.value = serviceIds;
     formData.services = [...serviceIds];
+    // Réinitialiser l'erreur quand l'utilisateur sélectionne des services
+    if (serviceIds.length > 0) {
+        formStatus.errors.services = false;
+        formStatus.step1Message = "";
+    }
 };
 
 const nextStep = () => {
-    if (step.value < 3) step.value++;
+    if (step.value === 1) {
+        if (validateServiceSelection()) {
+            step.value++;
+        }
+    } else if (step.value === 2) {
+        if (validateProjectForm()) {
+            step.value++;
+        }
+    } else {
+        if (step.value < 3) step.value++;
+    }
 };
+
 const prevStep = () => {
     if (step.value > 1) step.value--;
+};
+
+// Validation de l'étape 1 - Sélection des services
+const validateServiceSelection = () => {
+    // Réinitialiser les erreurs
+    formStatus.errors.services = false;
+    formStatus.step1Message = "";
+
+    let isValid = true;
+
+    // Au moins un service doit être sélectionné
+    if (selectedServiceIds.value.length === 0) {
+        formStatus.errors.services = true;
+        formStatus.step1Message = "Veuillez sélectionner au moins un service.";
+        isValid = false;
+    }
+
+    return isValid;
+};
+
+// Validation de l'étape 2 - Description du projet
+const validateProjectForm = () => {
+    // Réinitialiser les erreurs
+    formStatus.errors.description = false;
+    formStatus.errors.desiredDate = false;
+    formStatus.step2Message = "";
+
+    let isValid = true;
+
+    // La description est obligatoire
+    if (!formData.description.trim()) {
+        formStatus.errors.description = true;
+        isValid = false;
+    }
+
+    // Date souhaitée optionnelle mais si fournie, vérifier qu'elle est valide
+    if (
+        formData.desiredDate &&
+        Array.isArray(formData.desiredDate) &&
+        formData.desiredDate.length === 1
+    ) {
+        formStatus.errors.desiredDate = true;
+        isValid = false;
+    }
+
+    if (!isValid) {
+        formStatus.step2Message =
+            "Veuillez remplir correctement tous les champs obligatoires.";
+    }
+
+    return isValid;
 };
 
 // Ajout d'une fonction de validation
@@ -66,6 +138,9 @@ const validateContactForm = () => {
         phone: false,
         email: false,
         address: false,
+        description: false,
+        desiredDate: false,
+        services: false,
         general: false,
     };
     formStatus.message = "";
@@ -141,11 +216,23 @@ const submitForm = () => {
                 >
                     Je désire :
                 </h3>
+
+                <div
+                    v-if="
+                        formStatus.errors.services &&
+                        selectedServiceIds.length === 0
+                    "
+                    class="mt-2 text-sm text-red-500"
+                >
+                    Veuillez sélectionner au moins un service
+                </div>
+
                 <Services
                     :selectable="true"
                     :selected-services="selectedServiceIds"
                     height="200px"
                     @service-selected="handleServiceSelection"
+                    :class="{ 'border-red-500': formStatus.errors.services }"
                 />
                 <div
                     v-if="selectedServiceIds.length > 0"
@@ -157,7 +244,6 @@ const submitForm = () => {
                     sélectionné{{ selectedServiceIds.length > 1 ? "s" : "" }}
                 </div>
             </div>
-
             <div
                 v-else-if="step === 2"
                 class="flex flex-col gap-11 w-full justify-center text-center max-w-3xl"
@@ -167,25 +253,50 @@ const submitForm = () => {
                 >
                     Dites m'en plus :
                 </h3>
+
                 <div class="flex flex-col gap-4">
-                    <textarea
-                        v-model="formData.description"
-                        rows="4"
-                        placeholder="Décrivez votre projet..."
-                        class="w-full h-[180px] bg-white/10 border border-white/20 text-white rounded-[6px] focus:ring-[#FF8C42] focus:border-[#FF8C42] p-2 font-inter text-base"
-                    ></textarea>
-                    <Datepicker
-                        v-model="formData.desiredDate"
-                        range
-                        :enable-time-picker="false"
-                        text-input
-                        auto-apply
-                        :format="'dd/MM/yyyy'"
-                        input-class-name="w-full sm:w-max bg-white/10 border border-white/20 rounded-[6px] focus:ring-[#FF8C42] focus:border-[#FF8C42] p-2 text-white"
-                        :theme-color="'#FF8C42'"
-                        placeholder="Période souhaitée"
-                        :teleport="true"
-                    />
+                    <div class="flex flex-col items-start">
+                        <textarea
+                            v-model="formData.description"
+                            rows="4"
+                            placeholder="Décrivez votre projet... *"
+                            :class="{
+                                'border-red-500 focus:border-red-500 focus:ring-red-500':
+                                    formStatus.errors.description,
+                            }"
+                            class="w-full h-[180px] bg-white/10 border border-white/20 text-white rounded-[6px] focus:ring-[#FF8C42] focus:border-[#FF8C42] p-2 font-inter text-base"
+                        ></textarea>
+                        <span
+                            v-if="formStatus.errors.description"
+                            class="text-red-400 text-sm mt-1 text-left"
+                        >
+                            Ce champ est requis
+                        </span>
+                    </div>
+                    <div class="flex flex-col items-start">
+                        <Datepicker
+                            v-model="formData.desiredDate"
+                            range
+                            :enable-time-picker="false"
+                            text-input
+                            auto-apply
+                            :format="'dd/MM/yyyy'"
+                            :class="{
+                                'border-red-500 focus:border-red-500 focus:ring-red-500':
+                                    formStatus.errors.desiredDate,
+                            }"
+                            input-class-name="w-full sm:w-max bg-white/10 border border-white/20 rounded-[6px] focus:ring-[#FF8C42] focus:border-[#FF8C42] p-2 text-white"
+                            :theme-color="'#FF8C42'"
+                            placeholder="Période souhaitée"
+                            :teleport="true"
+                        />
+                        <span
+                            v-if="formStatus.errors.desiredDate"
+                            class="text-red-400 text-sm mt-1 text-left"
+                        >
+                            Veuillez sélectionner une date de début et de fin
+                        </span>
+                    </div>
                 </div>
             </div>
 
@@ -303,7 +414,6 @@ const submitForm = () => {
                     v-if="step === 1"
                     @click="nextStep"
                     variant="dark"
-                    :disabled="selectedServiceIds.length === 0"
                     class="transition"
                 >
                     Suivant
@@ -311,7 +421,6 @@ const submitForm = () => {
                 <SecondaryButton
                     v-if="step === 2"
                     @click="prevStep"
-                    :disabled="selectedServiceIds.length === 0"
                     class="transition"
                 >
                     Précédent
@@ -319,7 +428,6 @@ const submitForm = () => {
                 <PrimaryButton
                     v-if="step === 2"
                     @click="nextStep"
-                    :disabled="selectedServiceIds.length === 0"
                     class="transition"
                 >
                     Suivant
@@ -328,7 +436,6 @@ const submitForm = () => {
                     v-if="step === 3"
                     @click="prevStep"
                     variant="dark"
-                    :disabled="selectedServiceIds.length === 0"
                     class="transition"
                 >
                     Suivant
@@ -336,7 +443,6 @@ const submitForm = () => {
                 <PrimaryButton
                     v-if="step === 3"
                     @click="submitForm"
-                    :disabled="selectedServiceIds.length === 0"
                     class="transition"
                 >
                     Terminé
