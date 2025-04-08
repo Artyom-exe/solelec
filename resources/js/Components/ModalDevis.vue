@@ -7,19 +7,26 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import Datepicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
+import axios from "axios";
 
 // Définition d'une prop optionnelle pour le titre du modal
-defineProps<{
+const props = defineProps<{
     title?: string;
 }>();
 
-// Définition d'un événement "submit" pour transmettre les données du formulaire
+// Définition des événements émis
 const emit = defineEmits<{
     (e: "submit", formData: Record<string, any>): void;
+    (e: "close"): void;
+    (e: "success", message: string): void;
+    (e: "error", message: string): void;
 }>();
 
 const step = ref(1);
+const isSubmitting = ref(false);
 const selectedServiceIds = ref<number[]>([]);
+const successMessage = ref("");
+const errorMessage = ref("");
 
 const formData = reactive({
     services: [] as number[],
@@ -121,15 +128,10 @@ const validateProjectForm = () => {
         isValid = false;
     }
 
-    if (!isValid) {
-        formStatus.step2Message =
-            "Veuillez remplir correctement tous les champs obligatoires.";
-    }
-
     return isValid;
 };
 
-// Ajout d'une fonction de validation
+// Ajout d'une fonction de validation pour l'étape 3
 const validateContactForm = () => {
     // Réinitialiser les erreurs
     formStatus.errors = {
@@ -175,18 +177,147 @@ const validateContactForm = () => {
         }
     }
 
-    if (!isValid) {
-        formStatus.message =
-            "Veuillez remplir tous les champs obligatoires correctement.";
-    }
-
     return isValid;
 };
 
-const submitForm = () => {
-    if (validateContactForm()) {
-        emit("submit", formData);
+// Formater une date pour le backend (format YYYY-MM-DD)
+const formatDate = (date) => {
+    if (!date) return null;
+
+    const d = date instanceof Date ? date : new Date(date);
+
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+};
+
+// Nouvelle fonction de soumission avec Axios
+const submitForm = async () => {
+    // Valider le formulaire avant envoi
+    if (!validateContactForm()) {
+        return;
     }
+
+    // Activer l'indicateur de chargement
+    isSubmitting.value = true;
+    errorMessage.value = "";
+    successMessage.value = "";
+
+    try {
+        // Préparer les données pour l'API
+        const requestData = {
+            name: formData.name,
+            lastname: formData.lastName,
+            phone: formData.phone,
+            email: formData.email,
+            adress: formData.address, // Attention à l'orthographe différente (adress vs address)
+            description: formData.description,
+            services: formData.services,
+            requested_date: null,
+        };
+
+        // Ajouter la date souhaitée si elle est définie
+        if (
+            formData.desiredDate &&
+            Array.isArray(formData.desiredDate) &&
+            formData.desiredDate.length === 2
+        ) {
+            requestData.requested_date = formatDate(formData.desiredDate[0]);
+        }
+
+        // Effectuer la requête POST vers l'API
+        const response = await axios.post("/quotes", requestData);
+
+        // En cas de succès
+        successMessage.value =
+            "Votre demande de devis a été envoyée avec succès !";
+        emit("submit", formData);
+        emit("success", successMessage.value);
+
+        // Réinitialiser le formulaire
+        resetForm();
+    } catch (error) {
+        console.error("Erreur lors de la soumission du devis:", error);
+
+        // Gestion spécifique des erreurs de validation (422)
+        if (error.response && error.response.status === 422) {
+            handleValidationErrors(error.response.data.errors);
+        } else {
+            // Erreur générale
+            errorMessage.value =
+                "Une erreur est survenue lors de l'envoi de votre demande.";
+            emit("error", errorMessage.value);
+        }
+    } finally {
+        // Désactiver l'indicateur de chargement
+        isSubmitting.value = false;
+    }
+};
+
+// Gérer les erreurs de validation du backend
+const handleValidationErrors = (errors) => {
+    // Réinitialiser les erreurs
+    formStatus.errors = {
+        name: false,
+        lastName: false,
+        phone: false,
+        email: false,
+        address: false,
+        description: false,
+        desiredDate: false,
+        services: false,
+        general: false,
+    };
+
+    // Mapper les erreurs du backend vers notre structure
+    if (errors.name) formStatus.errors.name = true;
+    if (errors.lastname) formStatus.errors.lastName = true;
+    if (errors.phone) formStatus.errors.phone = true;
+    if (errors.email) formStatus.errors.email = true;
+    if (errors.adress) formStatus.errors.address = true;
+    if (errors.description) formStatus.errors.description = true;
+    if (errors.services) formStatus.errors.services = true;
+    if (errors.requested_date) formStatus.errors.desiredDate = true;
+
+    // Message d'erreur global
+    formStatus.message = "Veuillez corriger les erreurs dans le formulaire.";
+};
+
+// Réinitialiser le formulaire après soumission réussie
+const resetForm = () => {
+    step.value = 1;
+    selectedServiceIds.value = [];
+
+    // Réinitialiser toutes les données du formulaire
+    Object.assign(formData, {
+        services: [],
+        description: "",
+        desiredDate: [],
+        name: "",
+        lastName: "",
+        phone: "",
+        email: "",
+        address: "",
+    });
+
+    // Réinitialiser les erreurs
+    formStatus.errors = {
+        name: false,
+        lastName: false,
+        phone: false,
+        email: false,
+        address: false,
+        description: false,
+        desiredDate: false,
+        general: false,
+        services: false,
+    };
+
+    formStatus.message = "";
+    formStatus.step1Message = "";
+    formStatus.step2Message = "";
 };
 </script>
 
@@ -200,6 +331,22 @@ const submitForm = () => {
         :reserve-scroll-bar-gap="false"
         :lock-scroll="false"
     >
+        <!-- Message de succès -->
+        <div
+            v-if="successMessage"
+            class="absolute top-0 left-0 right-0 bg-green-500 text-white p-3 text-center z-10"
+        >
+            {{ successMessage }}
+        </div>
+
+        <!-- Message d'erreur -->
+        <div
+            v-if="errorMessage"
+            class="absolute top-0 left-0 right-0 bg-red-500 text-white p-3 text-center z-10"
+        >
+            {{ errorMessage }}
+        </div>
+
         <div
             class="flex-1 overflow-y-auto rounded-t-lg flex justify-center"
             :class="{
@@ -438,15 +585,47 @@ const submitForm = () => {
                     variant="dark"
                     class="transition"
                 >
-                    Suivant
+                    Précédent
                 </SecondaryButton>
                 <PrimaryButton
                     v-if="step === 3"
                     @click="submitForm"
                     class="transition"
+                    :disabled="isSubmitting"
                 >
-                    Terminé
+                    <span v-if="isSubmitting">
+                        <svg
+                            class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                        >
+                            <circle
+                                class="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                stroke-width="4"
+                            ></circle>
+                            <path
+                                class="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            ></path>
+                        </svg>
+                        Envoi en cours...
+                    </span>
+                    <span v-else>Terminé</span>
                 </PrimaryButton>
+            </div>
+
+            <!-- Message d'erreur global -->
+            <div
+                v-if="formStatus.message"
+                class="mt-4 text-red-500 text-center"
+            >
+                {{ formStatus.message }}
             </div>
         </div>
     </VueFinalModal>
