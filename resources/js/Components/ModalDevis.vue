@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive } from "vue";
+import { ref, reactive, inject } from "vue";
 import { VueFinalModal } from "vue-final-modal";
 import "vue-final-modal/style.css";
 import Services from "@/Components/Services.vue";
@@ -21,6 +21,11 @@ const emit = defineEmits<{
     (e: "success", message: string): void;
     (e: "error", message: string): void;
 }>();
+
+type NotificationFunction = (message: string, type?: string) => void;
+
+// Récupération des fonctions de notification depuis le contexte
+const showNotification = inject<NotificationFunction>("showNotification");
 
 const step = ref(1);
 const isSubmitting = ref(false);
@@ -193,7 +198,7 @@ const formatDate = (date) => {
     return `${year}-${month}-${day}`;
 };
 
-// Nouvelle fonction de soumission avec Axios
+// Fonction de soumission avec Axios et notifications
 const submitForm = async () => {
     // Valider le formulaire avant envoi
     if (!validateContactForm()) {
@@ -231,13 +236,23 @@ const submitForm = async () => {
         const response = await axios.post("/quotes", requestData);
 
         // En cas de succès
-        successMessage.value =
-            "Votre demande de devis a été envoyée avec succès !";
-        emit("submit", formData);
-        emit("success", successMessage.value);
+        const successMsg = "Votre demande de devis a été envoyée avec succès !";
 
-        // Réinitialiser le formulaire
+        // Émettre les événements pour la compatibilité
+        emit("submit", formData);
+        emit("success", successMsg);
+
+        // Afficher la notification si la fonction est disponible
+        if (showNotification) {
+            showNotification(successMsg, "success");
+        } else {
+            // Fallback au message interne si la fonction n'est pas disponible
+            successMessage.value = successMsg;
+        }
+
+        // Réinitialiser le formulaire et fermer la modal
         resetForm();
+        emit("close");
     } catch (error) {
         console.error("Erreur lors de la soumission du devis:", error);
 
@@ -246,9 +261,19 @@ const submitForm = async () => {
             handleValidationErrors(error.response.data.errors);
         } else {
             // Erreur générale
-            errorMessage.value =
+            const errorMsg =
                 "Une erreur est survenue lors de l'envoi de votre demande.";
-            emit("error", errorMessage.value);
+
+            // Émettre l'événement d'erreur
+            emit("error", errorMsg);
+
+            // Afficher la notification si la fonction est disponible
+            if (showNotification) {
+                showNotification(errorMsg, "error");
+            } else {
+                // Fallback au message interne si la fonction n'est pas disponible
+                errorMessage.value = errorMsg;
+            }
         }
     } finally {
         // Désactiver l'indicateur de chargement
@@ -283,6 +308,14 @@ const handleValidationErrors = (errors) => {
 
     // Message d'erreur global
     formStatus.message = "Veuillez corriger les erreurs dans le formulaire.";
+
+    // Notification d'erreur
+    if (showNotification) {
+        showNotification(
+            "Veuillez corriger les erreurs dans le formulaire.",
+            "error"
+        );
+    }
 };
 
 // Réinitialiser le formulaire après soumission réussie
@@ -318,6 +351,10 @@ const resetForm = () => {
     formStatus.message = "";
     formStatus.step1Message = "";
     formStatus.step2Message = "";
+
+    // Réinitialiser les messages
+    successMessage.value = "";
+    errorMessage.value = "";
 };
 </script>
 
@@ -331,7 +368,7 @@ const resetForm = () => {
         :reserve-scroll-bar-gap="false"
         :lock-scroll="false"
     >
-        <!-- Message de succès -->
+        <!-- Message de succès (fallback) -->
         <div
             v-if="successMessage"
             class="absolute top-0 left-0 right-0 bg-green-500 text-white p-3 text-center z-10"
@@ -339,7 +376,7 @@ const resetForm = () => {
             {{ successMessage }}
         </div>
 
-        <!-- Message d'erreur -->
+        <!-- Message d'erreur (fallback) -->
         <div
             v-if="errorMessage"
             class="absolute top-0 left-0 right-0 bg-red-500 text-white p-3 text-center z-10"
