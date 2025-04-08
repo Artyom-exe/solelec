@@ -14,6 +14,10 @@ Route::get('/', function () {
     return Inertia::render('Accueil');
 })->name('accueil');
 
+Route::get('services-portfolio', function () {
+    return Inertia::render('ServicesPortfolio');
+})->name('services-portfolio');
+
 Route::get('services', [ServiceController::class, 'index']);
 
 Route::get('portfolios', [PortfolioController::class, 'index']);
