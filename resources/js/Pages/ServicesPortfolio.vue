@@ -173,6 +173,25 @@ onMounted(() => {
                 </div>
             </div>
         </section>
+        <section class="flex py-28 px-16 flex-col items-center gap-20">
+            <div class="flex flex-col gap-4 text-[#0D0703]" data-aos="fade-up">
+                <div class="relative flex flex-col gap-6">
+                    <h2
+                        class="font-poppins text-5xl text-center font-medium leading-[57.6px] tracking-[-0.48px]"
+                    >
+                        Nos réalisations
+                    </h2>
+                    <div
+                        class="absolute bottom-10 right-1/2 border-2 border-[#FF8C42] w-[40%] min-w-[353px]"
+                        data-aos="slide-right"
+                        data-aos-duration="1000"
+                    ></div>
+                    <h4 class="font-inter text-lg text-center">
+                        Découvrez nos réalisations en électricité.
+                    </h4>
+                </div>
+            </div>
+        </section>
     </PublicLayout>
 </template>
 
