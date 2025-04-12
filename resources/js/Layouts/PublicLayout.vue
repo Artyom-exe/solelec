@@ -81,6 +81,8 @@ const hideNotification = () => {
 };
 
 const navigateToSection = (sectionId, route) => {
+    console.log("Navigating to section:", sectionId, "on route:", route);
+
     // Récupérer la route actuelle
     const currentRoute = window.location.pathname.substring(1) || "accueil";
 

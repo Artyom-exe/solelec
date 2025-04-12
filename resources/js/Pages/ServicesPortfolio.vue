@@ -1,9 +1,42 @@
 <script setup>
-import { ref, onMounted, watchn inject } from "vue";
+import { ref, onMounted, watch, inject } from "vue";
 import axios from "axios";
 import PublicLayout from "@/Layouts/PublicLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import MasonryWall from "@yeger/vue-masonry-wall";
+
+// Injecter la fonction navigateToSection depuis PublicLayout avec fallback
+const navigateToSection = inject("navigateToSection", (sectionId, route) => {
+    // Version fallback de la fonction
+    const element = document.getElementById(sectionId);
+    if (element) {
+        const offset = 72;
+        const elementPosition =
+            element.getBoundingClientRect().top + window.scrollY;
+        const offsetPosition = elementPosition - offset;
+
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth",
+        });
+    }
+});
+
+// Fonction locale de défilement
+const scrollToSection = (sectionId) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+        const offset = 72; // Hauteur du header + marge additionnelle
+        const elementPosition =
+            element.getBoundingClientRect().top + window.scrollY;
+        const offsetPosition = elementPosition - offset;
+
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth",
+        });
+    }
+};
 
 // Importez AOS
 import AOS from "aos";
@@ -69,6 +102,18 @@ onMounted(() => {
         anchorPlacement: "top-center",
         startEvent: "DOMContentLoaded",
     });
+
+    // Vérifier si l'URL contient un fragment (ancre)
+    const hash = window.location.hash;
+    if (hash) {
+        // Extraire l'ID de la section sans le #
+        const sectionId = hash.substring(1);
+
+        // Laisser le temps à la page de se charger complètement
+        setTimeout(() => {
+            scrollToSection(sectionId);
+        }, 300);
+    }
 });
 </script>
 
