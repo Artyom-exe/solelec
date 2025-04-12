@@ -388,15 +388,14 @@ onMounted(() => {
                     data-aos="fade-left"
                     data-aos-duration="1200"
                 >
-                    <!-- Colonne gauche - modifiée pour toucher le haut -->
                     <div
-                        class="absolute left-0 w-[calc(50%-8px)] h-[110%] flex flex-col gap-4"
-                        style="top: 0"
+                        class="absolute left-0 w-[calc(50%-8px)] h-[130%] flex flex-col gap-4"
+                        style="top: -20%; bottom: 0"
                     >
                         <div
                             v-for="(img, index) in leftImages"
                             :key="'left-' + index"
-                            class="h-[calc((100% - 32px) / 3)] overflow-hidden rounded-lg"
+                            class="h-[33.33%] overflow-hidden rounded-lg"
                             data-aos="fade-up"
                             :data-aos-delay="img.aosDelay"
                             data-aos-anchor="#header"
@@ -410,15 +409,14 @@ onMounted(() => {
                         </div>
                     </div>
 
-                    <!-- Colonne droite - modifiée pour toucher le bas -->
                     <div
-                        class="absolute right-0 w-[calc(50%-8px)] h-[110%] flex flex-col gap-4"
-                        style="top: -10%; bottom: 0"
+                        class="absolute right-0 w-[calc(50%-8px)] h-[130%] flex flex-col gap-4"
+                        style="top: -5%; bottom: 0"
                     >
                         <div
                             v-for="(img, index) in rightImages"
                             :key="'right-' + index"
-                            class="h-[calc((100% - 32px) / 3)] overflow-hidden rounded-lg"
+                            class="h-[33.33%] overflow-hidden rounded-lg"
                             data-aos="fade-up"
                             :data-aos-delay="img.aosDelay"
                             data-aos-anchor="#header"
