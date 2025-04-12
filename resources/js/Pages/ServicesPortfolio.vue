@@ -191,6 +191,11 @@ onMounted(() => {
                     </h4>
                 </div>
             </div>
+            <div class="flex items-start gap-8">
+                <div class="flex flex-col items-start gap-8 flex-1"></div>
+                <div class="flex flex-col items-start gap-8 flex-1"></div>
+                <div class="flex flex-col items-start gap-8 flex-1"></div>
+            </div>
         </section>
     </PublicLayout>
 </template>
