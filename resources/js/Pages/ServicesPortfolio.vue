@@ -258,7 +258,7 @@ onMounted(() => {
                     </div>
                 </div>
                 <div
-                    class="flex flex-col items-start self-stretch h-[294px] overflow-y-auto hide-scrollbar"
+                    class="flex flex-col items-start self-stretch max-h-[294px] overflow-y-auto hide-scrollbar"
                     data-aos="fade-up"
                     data-aos-delay="700"
                 >
@@ -266,10 +266,12 @@ onMounted(() => {
                         v-for="(service, index) in services"
                         :key="index"
                         :id="'service-' + service.id"
-                        class="w-full flex pr-4 py-4 pl-6 flex-col justify-center items-start gap-2 self-stretch cursor-pointer hover:border-l hover:border-[#FF8C42] hover:bg-[#242424] transition duration-300 ease-in-out"
+                        class="w-full flex pr-4 py-4 pl-6 flex-col justify-center items-start gap-2 self-stretch cursor-pointer transition-all duration-300 ease-in-out"
                         :class="{
-                            'border-l border-[#FF8C42] bg-[#242424]':
+                            'border-l border-[#FF8C42] bg-[#242424] translate-x-2 scale-[1.02] z-10 shadow-lg':
                                 isActive(index),
+                            'border-l border-transparent hover:border-[#693a1d] hover:translate-x-2 hover:bg-[#242424] opacity-70 hover:opacity-90':
+                                !isActive(index),
                         }"
                         @click="selectService(index)"
                     >
