@@ -4,6 +4,9 @@ import axios from "axios";
 import PublicLayout from "@/Layouts/PublicLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import MasonryWall from "@yeger/vue-masonry-wall";
+// Importez AOS
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 // Injecter la fonction navigateToSection depuis PublicLayout avec fallback
 const navigateToSection = inject("navigateToSection", (sectionId, route) => {
@@ -37,10 +40,6 @@ const scrollToSection = (sectionId) => {
         });
     }
 };
-
-// Importez AOS
-import AOS from "aos";
-import "aos/dist/aos.css";
 
 const openDevisModal = ref(null);
 const services = ref([]);
