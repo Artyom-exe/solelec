@@ -3,6 +3,8 @@ import { ref, onMounted, watch } from "vue";
 import axios from "axios";
 import PublicLayout from "@/Layouts/PublicLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
+import MasonryWall from "@yeger/vue-masonry-wall";
+
 // Importez AOS
 import AOS from "aos";
 import "aos/dist/aos.css";
@@ -11,6 +13,8 @@ const openDevisModal = ref(null);
 const services = ref([]);
 const activeIndex = ref(0);
 const prevActiveIndex = ref(0);
+// Ajout de la définition de portfolio
+const portfolio = ref([]);
 
 // Récupérer les services depuis l'API Laravel
 const fetchServices = async () => {
@@ -19,6 +23,15 @@ const fetchServices = async () => {
         services.value = response.data;
     } catch (error) {
         console.error("Erreur lors de la récupération des services:", error);
+    }
+};
+
+const fetchPortfolio = async () => {
+    try {
+        const response = await axios.get("/portfolios");
+        portfolio.value = response.data;
+    } catch (error) {
+        console.error("Erreur lors de la récupération du portfolio:", error);
     }
 };
 
@@ -44,6 +57,7 @@ watch(activeIndex, (newVal) => {
 // Appel au montage
 onMounted(() => {
     fetchServices();
+    fetchPortfolio();
 
     // Initialisation d'AOS avec des options pour toute la page
     AOS.init({
@@ -191,10 +205,51 @@ onMounted(() => {
                     </h4>
                 </div>
             </div>
-            <div class="flex items-start gap-8">
-                <div class="flex flex-col items-start gap-8 flex-1"></div>
-                <div class="flex flex-col items-start gap-8 flex-1"></div>
-                <div class="flex flex-col items-start gap-8 flex-1"></div>
+            <div class="w-full" data-aos="fade-up" data-aos-delay="300">
+                <!-- Modification pour 3 colonnes fixes avec "column-count" -->
+                <div class="portfolio-gallery">
+                    <div
+                        v-for="item in portfolio"
+                        :key="item.id"
+                        class="portfolio-item overflow-hidden rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl"
+                    >
+                        <div class="relative group">
+                            <img
+                                :src="item.image"
+                                :alt="item.title"
+                                class="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
+                            />
+                            <div
+                                class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6"
+                            >
+                                <div
+                                    class="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300"
+                                >
+                                    <h3
+                                        class="font-poppins text-xl font-medium text-white mb-2"
+                                    >
+                                        {{ item.title }}
+                                    </h3>
+                                    <!-- Description affichée seulement au hover -->
+                                    <p
+                                        class="text-sm text-white/90 mb-3 line-clamp-3"
+                                    >
+                                        {{ item.description }}
+                                    </p>
+                                    <div class="flex flex-wrap gap-2 mt-2">
+                                        <span
+                                            v-for="tag in item.tags"
+                                            :key="tag.id"
+                                            class="px-2 py-1 bg-[#FF8C42]/80 text-white text-xs rounded-full"
+                                        >
+                                            {{ tag.name }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
     </PublicLayout>
@@ -229,6 +284,41 @@ onMounted(() => {
     max-height: 300px;
     white-space: normal;
     opacity: 1;
+}
+
+/* Styles pour la galerie portfolio */
+.portfolio-gallery {
+    column-count: 3;
+    column-gap: 24px;
+    width: 100%;
+}
+
+.portfolio-item {
+    break-inside: avoid;
+    margin-bottom: 24px;
+    position: relative;
+    background-color: white;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: inline-block;
+    width: 100%;
+}
+
+.portfolio-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Styles responsifs pour les colonnes */
+@media (max-width: 1024px) {
+    .portfolio-gallery {
+        column-count: 2;
+    }
+}
+
+@media (max-width: 640px) {
+    .portfolio-gallery {
+        column-count: 1;
+    }
 }
 
 /* Animation personnalisée pour le chargement initial */
