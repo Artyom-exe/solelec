@@ -169,6 +169,8 @@ onMounted(() => {
         startEvent: "DOMContentLoaded",
     });
 
+    document.documentElement.style.overflowX = "hidden";
+
     // Vérifier si l'URL contient un fragment (ancre)
     const hash = window.location.hash;
     if (hash) {
