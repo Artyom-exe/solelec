@@ -13,39 +13,6 @@ const props = defineProps({
     serviceId: [Number, String],
 });
 
-// Injecter la fonction navigateToSection depuis PublicLayout avec fallback
-const navigateToSection = inject("navigateToSection", (sectionId, route) => {
-    // Version fallback de la fonction
-    const element = document.getElementById(sectionId);
-    if (element) {
-        const offset = 72;
-        const elementPosition =
-            element.getBoundingClientRect().top + window.scrollY;
-        const offsetPosition = elementPosition - offset;
-
-        window.scrollTo({
-            top: offsetPosition,
-            behavior: "smooth",
-        });
-    }
-});
-
-// Fonction locale de défilement
-const scrollToSection = (sectionId) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-        const offset = 72; // Hauteur du header + marge additionnelle
-        const elementPosition =
-            element.getBoundingClientRect().top + window.scrollY;
-        const offsetPosition = elementPosition - offset;
-
-        window.scrollTo({
-            top: offsetPosition,
-            behavior: "smooth",
-        });
-    }
-};
-
 const openDevisModal = ref(null);
 const services = ref([]);
 const activeIndex = ref(0);
@@ -63,6 +30,22 @@ const fetchServices = async () => {
         checkForServiceSelection();
     } catch (error) {
         console.error("Erreur lors de la récupération des services:", error);
+    }
+};
+
+// Fonction locale de défilement
+const scrollToSection = (sectionId) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+        const offset = 72; // Hauteur du header + marge additionnelle
+        const elementPosition =
+            element.getBoundingClientRect().top + window.scrollY;
+        const offsetPosition = elementPosition - offset;
+
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth",
+        });
     }
 };
 
