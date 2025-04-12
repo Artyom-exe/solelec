@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\PortfolioController;
@@ -14,8 +15,10 @@ Route::get('/', function () {
     return Inertia::render('Accueil');
 })->name('accueil');
 
-Route::get('services-portfolio', function () {
-    return Inertia::render('ServicesPortfolio');
+Route::get('services-portfolio', function (Request $request) {
+    return Inertia::render('ServicesPortfolio', [
+        'serviceId' => $request->input('serviceId')
+    ]);
 })->name('services-portfolio');
 
 Route::get('services', [ServiceController::class, 'index']);
