@@ -71,18 +71,15 @@ const checkForServiceSelection = () => {
     // 1. Vérifier d'abord si un serviceId a été passé dans les props
     if (props.serviceId) {
         const serviceId = parseInt(props.serviceId);
-        console.log("Service ID à sélectionner depuis props:", serviceId);
 
         // Trouver l'index du service correspondant à cet ID
         const serviceIndex = services.value.findIndex(
             (service) => service.id === serviceId
         );
-        console.log("Index du service trouvé:", serviceIndex);
 
         if (serviceIndex !== -1) {
             // Mettre à jour l'index actif pour sélectionner le service
             activeIndex.value = serviceIndex;
-            console.log("activeIndex mis à jour:", activeIndex.value);
 
             // Faire défiler jusqu'au service spécifique dans le conteneur
             setTimeout(() => {
@@ -90,12 +87,10 @@ const checkForServiceSelection = () => {
                     "service-" + serviceId
                 );
                 if (serviceElement) {
-                    console.log("Élément service trouvé:", serviceElement);
                     // Faire défiler le conteneur parent (avec la classe overflow-y-auto)
                     const container =
                         serviceElement.closest(".overflow-y-auto");
                     if (container) {
-                        console.log("Conteneur trouvé:", container);
                         // Calcul précis de la position de défilement
                         const containerTop =
                             container.getBoundingClientRect().top;
@@ -103,7 +98,6 @@ const checkForServiceSelection = () => {
                             serviceElement.getBoundingClientRect().top;
                         const scrollOffset = elementTop - containerTop - 20; // 20px de marge pour la lisibilité
 
-                        console.log("Position de défilement:", scrollOffset);
                         container.scrollTop = scrollOffset;
 
                         // Alternative: utiliser scrollIntoView pour un défilement plus naturel
@@ -178,9 +172,6 @@ watch(activeIndex, (newVal) => {
 
 // Appel au montage
 onMounted(() => {
-    console.log("Props reçues:", props);
-    console.log("ServiceId:", props.serviceId);
-
     fetchServices();
     fetchPortfolio();
 
