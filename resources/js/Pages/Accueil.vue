@@ -333,7 +333,7 @@ onMounted(() => {
 
         <header
             id="header"
-            class="flex flex-col items-center gap-2 bg-[#2D2D2D] h-[calc(100vh-72px)] px-16 overflow-hidden mt-[72px]"
+            class="flex flex-col items-center gap-2 bg-[#2D2D2D] h-[calc(100vh-72px)] px-16 overflow-hidden mt-[72px] relative"
         >
             <div
                 class="flex flex-col lg:flex-row items-center flex-1 self-stretch h-full w-full"
@@ -384,18 +384,19 @@ onMounted(() => {
                     </div>
                 </div>
                 <div
-                    class="flex gap-4 flex-1 h-full overflow-hidden"
+                    class="flex-1 h-full relative"
                     data-aos="fade-left"
                     data-aos-duration="1200"
                 >
-                    <!-- Colonne gauche -->
+                    <!-- Colonne gauche - modifiée pour toucher le haut -->
                     <div
-                        class="flex flex-col w-1/2 h-screen gap-4 -translate-y-60"
+                        class="absolute left-0 w-[calc(50%-8px)] h-[110%] flex flex-col gap-4"
+                        style="top: 0"
                     >
                         <div
                             v-for="(img, index) in leftImages"
                             :key="'left-' + index"
-                            class="h-[340px]"
+                            class="h-[calc((100% - 32px) / 3)] overflow-hidden rounded-lg"
                             data-aos="fade-up"
                             :data-aos-delay="img.aosDelay"
                             data-aos-anchor="#header"
@@ -403,19 +404,21 @@ onMounted(() => {
                             <img
                                 :src="img.src"
                                 :alt="img.alt"
-                                class="w-full h-full object-cover rounded-lg"
+                                class="w-full h-full object-cover"
                                 loading="lazy"
                             />
                         </div>
                     </div>
-                    <!-- Colonne droite -->
+
+                    <!-- Colonne droite - modifiée pour toucher le bas -->
                     <div
-                        class="flex flex-col h-screen w-1/2 gap-4 -translate-y-40"
+                        class="absolute right-0 w-[calc(50%-8px)] h-[110%] flex flex-col gap-4"
+                        style="top: -10%; bottom: 0"
                     >
                         <div
                             v-for="(img, index) in rightImages"
                             :key="'right-' + index"
-                            class="h-[340px]"
+                            class="h-[calc((100% - 32px) / 3)] overflow-hidden rounded-lg"
                             data-aos="fade-up"
                             :data-aos-delay="img.aosDelay"
                             data-aos-anchor="#header"
@@ -423,7 +426,7 @@ onMounted(() => {
                             <img
                                 :src="img.src"
                                 :alt="img.alt"
-                                class="w-full h-full object-cover rounded-lg"
+                                class="w-full h-full object-cover"
                                 loading="lazy"
                             />
                         </div>
@@ -953,3 +956,15 @@ onMounted(() => {
         </section>
     </PublicLayout>
 </template>
+
+<style scoped>
+/* Ajoutez ces styles pour gérer l'effet de débordement voulu tout en préservant l'apparence */
+#header {
+    overflow: hidden;
+}
+
+/* Assurez-vous que les colonnes peuvent déborder en toute sécurité */
+#header > div {
+    overflow: visible;
+}
+</style>
