@@ -3,7 +3,7 @@ import { ref, onMounted, inject } from "vue";
 import axios from "axios";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
-import { Head } from "@inertiajs/vue3";
+import { Head, router } from "@inertiajs/vue3";
 import PublicLayout from "@/Layouts/PublicLayout.vue";
 import Services from "@/Components/Services.vue";
 import AOS from "aos";
@@ -11,7 +11,42 @@ import "aos/dist/aos.css";
 import ReviewSlider from "@/Components/ReviewSlider.vue";
 import InterventionMap from "@/Components/InterventionMap.vue";
 
-const navigateToSection = inject("navigateToSection");
+// Injecter la fonction navigateToSection depuis PublicLayout avec fallback
+const navigateToSection = inject("navigateToSection", (sectionId, route) => {
+    // Version fallback de la fonction
+    const element = document.getElementById(sectionId);
+    if (element) {
+        const offset = 72;
+        const elementPosition =
+            element.getBoundingClientRect().top + window.scrollY;
+        const offsetPosition = elementPosition - offset;
+
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth",
+        });
+    } else if (route && route !== "accueil") {
+        // Si on doit naviguer vers une autre page
+        const url = route === "accueil" ? "/" : "/" + route;
+        router.visit(url);
+    }
+});
+
+// Fonction pour le défilement local sur la même page
+const scrollToSection = (sectionId) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+        const offset = 72;
+        const elementPosition =
+            element.getBoundingClientRect().top + window.scrollY;
+        const offsetPosition = elementPosition - offset;
+
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth",
+        });
+    }
+};
 
 const props = defineProps({
     limit: {
@@ -455,7 +490,7 @@ onMounted(() => {
 
         <!-- Portfolio -->
         <section
-            id="portfolio"
+            id="portfolioAccueil"
             class="flex py-[120px] px-16 flex-col items-center gap-20 bg-[#F5F5F5] text-[#0D0703]"
         >
             <div
