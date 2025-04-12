@@ -90,7 +90,6 @@ const navigateToServiceDetail = (serviceId) => {
     if (props.selectable) return;
 
     // Utiliser le router Inertia pour naviguer vers la page services-portfolio avec l'ID du service
-    console.log("Navigation vers le service ID:", serviceId);
     router.visit("/services-portfolio#services", {
         data: { serviceId: serviceId },
         preserveState: true,
