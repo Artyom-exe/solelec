@@ -564,6 +564,8 @@ onMounted(() => {
             </div>
         </section>
 
+        <!-- Avis clients -->
+
         <section
             id="avis-client"
             class="flex py-28 px-16 flex-col items-center gap-20 bg-[#2D2D2D] text-white"
