@@ -1,12 +1,17 @@
 <script setup>
 import { ref, onMounted, watch, inject } from "vue";
 import axios from "axios";
+import { router, usePage } from "@inertiajs/vue3";
 import PublicLayout from "@/Layouts/PublicLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import MasonryWall from "@yeger/vue-masonry-wall";
 // Importez AOS
 import AOS from "aos";
 import "aos/dist/aos.css";
+
+const props = defineProps({
+    serviceId: [Number, String],
+});
 
 // Injecter la fonction navigateToSection depuis PublicLayout avec fallback
 const navigateToSection = inject("navigateToSection", (sectionId, route) => {
@@ -53,8 +58,93 @@ const fetchServices = async () => {
     try {
         const response = await axios.get("/services");
         services.value = response.data;
+
+        // Après avoir chargé les services, vérifier si un service spécifique doit être sélectionné
+        checkForServiceSelection();
     } catch (error) {
         console.error("Erreur lors de la récupération des services:", error);
+    }
+};
+
+// Fonction pour vérifier et sélectionner un service à partir du hash de l'URL ou des props
+const checkForServiceSelection = () => {
+    // 1. Vérifier d'abord si un serviceId a été passé dans les props
+    if (props.serviceId) {
+        const serviceId = parseInt(props.serviceId);
+        console.log("Service ID à sélectionner depuis props:", serviceId);
+
+        // Trouver l'index du service correspondant à cet ID
+        const serviceIndex = services.value.findIndex(
+            (service) => service.id === serviceId
+        );
+        console.log("Index du service trouvé:", serviceIndex);
+
+        if (serviceIndex !== -1) {
+            // Mettre à jour l'index actif pour sélectionner le service
+            activeIndex.value = serviceIndex;
+            console.log("activeIndex mis à jour:", activeIndex.value);
+
+            // Faire défiler jusqu'au service spécifique dans le conteneur
+            setTimeout(() => {
+                const serviceElement = document.getElementById(
+                    "service-" + serviceId
+                );
+                if (serviceElement) {
+                    console.log("Élément service trouvé:", serviceElement);
+                    // Faire défiler le conteneur parent (avec la classe overflow-y-auto)
+                    const container =
+                        serviceElement.closest(".overflow-y-auto");
+                    if (container) {
+                        console.log("Conteneur trouvé:", container);
+                        // Calcul précis de la position de défilement
+                        const containerTop =
+                            container.getBoundingClientRect().top;
+                        const elementTop =
+                            serviceElement.getBoundingClientRect().top;
+                        const scrollOffset = elementTop - containerTop - 20; // 20px de marge pour la lisibilité
+
+                        console.log("Position de défilement:", scrollOffset);
+                        container.scrollTop = scrollOffset;
+
+                        // Alternative: utiliser scrollIntoView pour un défilement plus naturel
+                        serviceElement.scrollIntoView({
+                            behavior: "smooth",
+                            block: "center",
+                        });
+                    }
+                }
+            }, 500); // Augmentation du délai pour s'assurer que le DOM est prêt
+        }
+    }
+    // 2. Sinon vérifier le hash de l'URL
+    else {
+        const hash = window.location.hash;
+        if (hash && hash.startsWith("#service-")) {
+            const serviceId = parseInt(hash.replace("#service-", ""));
+            // Trouver l'index du service correspondant à cet ID
+            const serviceIndex = services.value.findIndex(
+                (service) => service.id === serviceId
+            );
+            if (serviceIndex !== -1) {
+                // Mettre à jour l'index actif pour sélectionner le service
+                activeIndex.value = serviceIndex;
+                // Faire défiler vers le service
+                setTimeout(() => {
+                    const serviceElement = document.getElementById(
+                        hash.substring(1)
+                    );
+                    if (serviceElement) {
+                        // Faire défiler le conteneur parent
+                        const container =
+                            serviceElement.closest(".overflow-y-auto");
+                        if (container) {
+                            container.scrollTop =
+                                serviceElement.offsetTop - container.offsetTop;
+                        }
+                    }
+                }, 300);
+            }
+        }
     }
 };
 
@@ -88,6 +178,9 @@ watch(activeIndex, (newVal) => {
 
 // Appel au montage
 onMounted(() => {
+    console.log("Props reçues:", props);
+    console.log("ServiceId:", props.serviceId);
+
     fetchServices();
     fetchPortfolio();
 
@@ -111,6 +204,19 @@ onMounted(() => {
         // Laisser le temps à la page de se charger complètement
         setTimeout(() => {
             scrollToSection(sectionId);
+
+            // Si le hash commence par "service-", on extrait l'ID du service
+            if (sectionId.startsWith("service-")) {
+                const serviceId = parseInt(sectionId.replace("service-", ""));
+                // Trouver l'index du service correspondant à cet ID
+                const serviceIndex = services.value.findIndex(
+                    (service) => service.id === serviceId
+                );
+                if (serviceIndex !== -1) {
+                    // Mettre à jour l'index actif pour sélectionner le service
+                    activeIndex.value = serviceIndex;
+                }
+            }
         }, 300);
     }
 });
@@ -168,6 +274,7 @@ onMounted(() => {
                     <div
                         v-for="(service, index) in services"
                         :key="index"
+                        :id="'service-' + service.id"
                         class="w-full flex pr-4 py-4 pl-6 flex-col justify-center items-start gap-2 self-stretch cursor-pointer hover:border-l hover:border-[#FF8C42] hover:bg-[#242424] transition duration-300 ease-in-out"
                         :class="{
                             'border-l border-[#FF8C42] bg-[#242424]':

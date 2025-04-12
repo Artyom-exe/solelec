@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed } from "vue";
 import axios from "axios";
+import { router } from "@inertiajs/vue3";
 
 const props = defineProps({
     limit: {
@@ -83,6 +84,19 @@ const handleMouseLeave = () => {
     activeIndex.value = props.selectable ? null : 0;
 };
 
+// Fonction pour naviguer vers la page services-portfolio avec le service concerné
+const navigateToServiceDetail = (serviceId) => {
+    // Si nous sommes en mode sélection, ne pas naviguer
+    if (props.selectable) return;
+
+    // Utiliser le router Inertia pour naviguer vers la page services-portfolio avec l'ID du service
+    console.log("Navigation vers le service ID:", serviceId);
+    router.visit("/services-portfolio#services", {
+        data: { serviceId: serviceId },
+        preserveState: true,
+    });
+};
+
 fetchServices();
 </script>
 
@@ -114,7 +128,11 @@ fetchServices();
             ]"
             @mouseenter="handleMouseEnter(index)"
             @mouseleave="handleMouseLeave"
-            @click="props.selectable ? toggleService(service) : null"
+            @click="
+                props.selectable
+                    ? toggleService(service)
+                    : navigateToServiceDetail(service.id)
+            "
             v-bind="
                 props.selectable
                     ? {
@@ -125,7 +143,9 @@ fetchServices();
                     : {}
             "
             @keydown.enter.prevent="
-                props.selectable ? toggleService(service) : null
+                props.selectable
+                    ? toggleService(service)
+                    : navigateToServiceDetail(service.id)
             "
         >
             <!-- Indicateur de sélection (mode modal uniquement) -->
@@ -238,6 +258,7 @@ fetchServices();
                             ? 'text-[#FF8C42]'
                             : ''
                     "
+                    @click.prevent="navigateToServiceDetail(service.id)"
                 >
                     <a href="#" class="font-inter text-base font-medium">
                         En savoir plus
