@@ -13,7 +13,6 @@ const { open, close } = useModal({
     attrs: {
         title: "Demande de devis",
         onSubmit(formData) {
-            console.log("Form data soumis :", formData);
             close();
         },
         onSuccess(message) {
@@ -81,8 +80,6 @@ const hideNotification = () => {
 };
 
 const navigateToSection = (sectionId, route) => {
-    console.log("Navigating to section:", sectionId, "on route:", route);
-
     // Récupérer la route actuelle
     const currentRoute = window.location.pathname.substring(1) || "accueil";
 
