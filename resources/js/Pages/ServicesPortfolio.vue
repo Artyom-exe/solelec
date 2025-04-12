@@ -75,6 +75,7 @@ onMounted(() => {
 <template>
     <PublicLayout @devisModalOpened="openDevisModal = $event">
         <section
+            id="services"
             class="flex py-28 px-16 items-start gap-20 bg-[#2D2D2D] text-white"
         >
             <article
@@ -187,7 +188,10 @@ onMounted(() => {
                 </div>
             </div>
         </section>
-        <section class="flex py-28 px-16 flex-col items-center gap-20">
+        <section
+            id="portfolio"
+            class="flex py-28 px-16 flex-col items-center gap-20"
+        >
             <div class="flex flex-col gap-4 text-[#0D0703]" data-aos="fade-up">
                 <div class="relative flex flex-col gap-6">
                     <h2
@@ -206,7 +210,6 @@ onMounted(() => {
                 </div>
             </div>
             <div class="w-full" data-aos="fade-up" data-aos-delay="300">
-                <!-- Modification pour 3 colonnes fixes avec "column-count" -->
                 <div class="portfolio-gallery">
                     <div
                         v-for="item in portfolio"

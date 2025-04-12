@@ -1,8 +1,10 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from "vue";
-import { Link } from "@inertiajs/vue3";
+import { ref, onMounted, onBeforeUnmount, inject } from "vue";
+import { Link, router } from "@inertiajs/vue3";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import logo from "./logo.vue";
+
+const navigateToSection = inject("navigateToSection");
 
 const props = defineProps({
     openDevisModal: {
@@ -39,52 +41,20 @@ const toggleAboutDropdown = (event) => {
 };
 
 const navItems = [
-    { name: "Accueil", route: "accueil" },
-    { name: "Services", route: "services" },
-    { name: "Réalisations", route: "realisations" },
+    { name: "Accueil", route: "accueil", path: "/" },
+    { name: "Services", anchor: "#services", route: "services-portfolio" },
+    { name: "Réalisations", anchor: "#portfolio", route: "services-portfolio" },
 ];
 
 const aboutSubItems = [
-    { name: "Contact", anchor: "#contact", route: "accueil" },
-    { name: "Zones d'intervention", anchor: "#zones", route: "accueil" },
+    { name: "Contact", anchor: "#contact", route: "accueil", path: "/" },
+    {
+        name: "Zones d'intervention",
+        anchor: "#zones",
+        route: "accueil",
+        path: "/",
+    },
 ];
-
-// Fonction pour naviguer vers une section spécifique
-const navigateToSection = (sectionId, route) => {
-    // Récupérer la route actuelle
-    const currentRoute = window.location.pathname.substring(1) || "accueil";
-
-    if (currentRoute === route) {
-        // Si on est déjà sur la bonne page, on défile simplement vers la section
-        scrollToSection(sectionId);
-    } else {
-        // Sinon, on navigue vers la page puis on défile
-        router.visit("/" + route, {
-            onSuccess: () => {
-                // Une fois la navigation terminée, on défile vers la section
-                setTimeout(() => {
-                    scrollToSection(sectionId);
-                }, 100);
-            },
-        });
-    }
-};
-
-// Fonction de défilement vers une section
-const scrollToSection = (sectionId) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-        const offset = 72; // Hauteur du header + marge additionnelle
-        const elementPosition =
-            element.getBoundingClientRect().top + window.scrollY;
-        const offsetPosition = elementPosition - offset;
-
-        window.scrollTo({
-            top: offsetPosition,
-            behavior: "smooth",
-        });
-    }
-};
 
 const emit = defineEmits(["scrollToSection"]);
 </script>
@@ -101,19 +71,42 @@ const emit = defineEmits(["scrollToSection"]);
             <div class="hidden md:flex items-center space-x-8">
                 <div class="flex space-x-6">
                     <!-- Items de navigation standard -->
-                    <Link
-                        v-for="item in navItems"
-                        :key="item.name"
-                        :href="route('accueil')"
-                        class="font-inter text-white text-base hover:text-[#FF8C42] transition-colors duration-200"
-                        :class="{
-                            'text-[#FF8C42] font-medium': route().current(
-                                item.route
-                            ),
-                        }"
-                    >
-                        {{ item.name }}
-                    </Link>
+                    <template v-for="item in navItems" :key="item.name">
+                        <!-- Lien standard sans ancre -->
+                        <Link
+                            v-if="!item.anchor"
+                            :href="route(item.route)"
+                            class="font-inter text-white text-base hover:text-[#FF8C42] transition-colors duration-200"
+                            :class="{
+                                'text-[#FF8C42] font-medium': route().current(
+                                    item.route
+                                ),
+                            }"
+                        >
+                            {{ item.name }}
+                        </Link>
+
+                        <!-- Lien avec ancre -->
+                        <a
+                            v-else
+                            href="#"
+                            @click.prevent="
+                                navigateToSection(
+                                    item.anchor.substring(1),
+                                    item.route,
+                                    item.path
+                                )
+                            "
+                            class="font-inter text-white text-base hover:text-[#FF8C42] transition-colors duration-200"
+                            :class="{
+                                'text-[#FF8C42] font-medium': route().current(
+                                    item.route
+                                ),
+                            }"
+                        >
+                            {{ item.name }}
+                        </a>
+                    </template>
 
                     <!-- Menu À propos avec dropdown -->
                     <div class="relative about-dropdown">
@@ -203,7 +196,7 @@ const emit = defineEmits(["scrollToSection"]);
                 <Link
                     v-for="item in navItems"
                     :key="item.name"
-                    :href="route('accueil')"
+                    :href="route(item.route)"
                     class="font-inter text-gray-700 py-2 hover:text-[#FF8C42]"
                     :class="{
                         'text-[#FF8C42] font-medium': route().current(
@@ -228,7 +221,8 @@ const emit = defineEmits(["scrollToSection"]);
                             @click.prevent="
                                 navigateToSection(
                                     item.anchor.substring(1),
-                                    item.route
+                                    item.route,
+                                    item.path
                                 );
                                 toggleMobileMenu();
                             "
