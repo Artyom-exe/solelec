@@ -1,6 +1,6 @@
 <script setup>
 import { ref, provide, onMounted } from "vue";
-import { Head, router } from "@inertiajs/vue3";
+import { Head, router, Link } from "@inertiajs/vue3";
 import NavBarPublic from "@/Components/NavBarPublic.vue";
 import logo from "@/Components/logo.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
@@ -42,16 +42,20 @@ onMounted(() => {
 });
 
 const navItems = [
-    { name: "Accueil", route: "accueil" },
-    { name: "Services", route: "services" },
-    { name: "Réalisations", route: "realisations" },
+    { name: "Accueil", route: "accueil", path: "/" },
+    { name: "Services", anchor: "#services", route: "services-portfolio" },
+    { name: "Réalisations", anchor: "#portfolio", route: "services-portfolio" },
 ];
 
 const aboutSubItems = [
-    { name: "Contact", anchor: "#contact", route: "accueil" },
-    { name: "Zones d'intervention", anchor: "#zones", route: "accueil" },
+    { name: "Contact", anchor: "#contact", route: "accueil", path: "/" },
+    {
+        name: "Zones d'intervention",
+        anchor: "#zones",
+        route: "accueil",
+        path: "/",
+    },
 ];
-
 // Système de notification global
 const notification = ref({
     show: false,
@@ -85,13 +89,16 @@ const navigateToSection = (sectionId, route) => {
         scrollToSection(sectionId);
     } else {
         // Sinon, on navigue vers la page puis on défile
-        router.visit("/" + route, {
+        const url = route === "accueil" ? "/" : "/" + route;
+
+        // Naviguer vers la page puis défiler
+        router.visit(url, {
+            preserveState: true,
             onSuccess: () => {
                 // Une fois la navigation terminée, on défile vers la section
-                // On ajoute un petit délai pour que le DOM soit bien chargé
                 setTimeout(() => {
                     scrollToSection(sectionId);
-                }, 100);
+                }, 300); // Augmentation du délai pour s'assurer que tout est chargé
             },
         });
     }
@@ -260,8 +267,26 @@ provide("navigateToSection", navigateToSection);
                 <div class="flex flex-col items-start w-auto">
                     <ul class="flex flex-col gap-2">
                         <li v-for="item in navItems" :key="item.name">
+                            <!-- Lien standard sans ancre -->
+                            <Link
+                                v-if="!item.anchor"
+                                :href="route(item.route)"
+                                class="text-white text-sm underline underline-offset-2 decoration-solid decoration-1 hover:text-[#FF8C42] transition-colors"
+                            >
+                                {{ item.name }}
+                            </Link>
+
+                            <!-- Lien avec ancre -->
                             <a
-                                :href="'/' + item.route"
+                                v-else
+                                href="#"
+                                @click.prevent="
+                                    navigateToSection(
+                                        item.anchor.substring(1),
+                                        item.route,
+                                        item.path
+                                    )
+                                "
                                 class="text-white text-sm underline underline-offset-2 decoration-solid decoration-1 hover:text-[#FF8C42] transition-colors"
                             >
                                 {{ item.name }}
@@ -275,7 +300,8 @@ provide("navigateToSection", navigateToSection);
                                 @click.prevent="
                                     navigateToSection(
                                         item.anchor.substring(1),
-                                        item.route
+                                        item.route,
+                                        item.path
                                     )
                                 "
                                 class="text-white text-sm underline underline-offset-2 decoration-solid decoration-1 hover:text-[#FF8C42] transition-colors"
