@@ -24,6 +24,7 @@
         "@splidejs/splide-extension-auto-scroll": "^0.5.3",
         "@splidejs/vue-splide": "^0.6.12",
         "@vuepic/vue-datepicker": "^11.0.2",
+        "@yeger/vue-masonry-wall": "^5.0.18",
         "aos": "^2.3.4",
         "vue-final-modal": "^4.5.5"
     }
