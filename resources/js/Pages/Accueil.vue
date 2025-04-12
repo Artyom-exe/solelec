@@ -294,6 +294,9 @@ onMounted(() => {
         startEvent: "DOMContentLoaded",
     });
 
+    // Empêcher le débordement horizontal
+    document.documentElement.style.overflowX = "hidden";
+
     fetchPortfolio();
     fetchTags();
     fetchFaq();
