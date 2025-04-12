@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, inject } from "vue";
 import axios from "axios";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
@@ -10,6 +10,8 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import ReviewSlider from "@/Components/ReviewSlider.vue";
 import InterventionMap from "@/Components/InterventionMap.vue";
+
+const navigateToSection = inject("navigateToSection");
 
 const props = defineProps({
     limit: {
@@ -245,41 +247,6 @@ const rightImages = ref([
     },
 ]);
 
-const navigateToSection = (sectionId, route) => {
-    // Récupérer la route actuelle
-    const currentRoute = window.location.pathname.substring(1) || "accueil";
-
-    if (currentRoute === route) {
-        // Si on est déjà sur la bonne page, on défile simplement vers la section
-        scrollToSection(sectionId);
-    } else {
-        // Sinon, on navigue vers la page puis on défile
-        router.visit("/" + route, {
-            onSuccess: () => {
-                // Une fois la navigation terminée, on défile vers la section
-                setTimeout(() => {
-                    scrollToSection(sectionId);
-                }, 100);
-            },
-        });
-    }
-};
-
-// Fonction de défilement vers une section
-const scrollToSection = (sectionId) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-        const offset = 72; // Hauteur du header + marge additionnelle
-        const elementPosition =
-            element.getBoundingClientRect().top + window.scrollY;
-        const offsetPosition = elementPosition - offset;
-
-        window.scrollTo({
-            top: offsetPosition,
-            behavior: "smooth",
-        });
-    }
-};
 onMounted(() => {
     // Configuration AOS
     AOS.init({
@@ -291,17 +258,6 @@ onMounted(() => {
         anchorPlacement: "top-center",
         startEvent: "DOMContentLoaded",
     });
-
-    // Gestion des liens d'ancrage dans la page
-    document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
-        anchor.addEventListener("click", function (e) {
-            e.preventDefault();
-            const targetId = this.getAttribute("href").substring(1);
-            scrollToSection(targetId, e);
-        });
-    });
-
-    document.documentElement.style.overflowX = "hidden";
 
     fetchPortfolio();
     fetchTags();
@@ -559,7 +515,11 @@ onMounted(() => {
                         </div>
                     </article>
                 </div>
-                <SecondaryButton variant="dark" @click="$inertia.visit('#')"
+                <SecondaryButton
+                    variant="dark"
+                    @click="
+                        navigateToSection('portfolio', 'services-portfolio')
+                    "
                     >Voir plus</SecondaryButton
                 >
             </div>
