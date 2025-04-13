@@ -7,9 +7,37 @@ use App\Models\Quote;
 use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Inertia\Inertia;
 
 class QuoteController extends Controller
 {
+    /**
+     * Affiche la liste des devis
+     */
+    public function index()
+    {
+        $quotes = Quote::with(['client', 'services'])->latest()->get();
+
+        return Inertia::render('Admin/Quotes/Index', [
+            'quotes' => $quotes
+        ]);
+    }
+
+    /**
+     * Affiche les détails d'un devis
+     */
+    public function show(Quote $quote)
+    {
+        $quote->load(['client', 'services', 'interventions']);
+
+        return Inertia::render('Admin/Quotes/Show', [
+            'quote' => $quote
+        ]);
+    }
+
+    /**
+     * Traite la création d'un nouveau devis depuis le formulaire public
+     */
     public function store(Request $request)
     {
         // 1) Valider les données du formulaire
@@ -80,5 +108,23 @@ class QuoteController extends Controller
             'message' => 'Devis créé avec succès !',
             'quote'   => $quote->load('client', 'services'),
         ], 201);
+    }
+
+    /**
+     * Supprime un devis
+     */
+    public function destroy(Quote $quote)
+    {
+        // Suppression des relations avant de supprimer le devis
+        $quote->services()->detach();
+
+        // Vérifier s'il y a des interventions liées
+        if ($quote->interventions()->count() > 0) {
+            return redirect()->back()->with('error', 'Ce devis ne peut pas être supprimé car il possède des interventions associées.');
+        }
+
+        $quote->delete();
+
+        return redirect()->route('devis')->with('success', 'Devis supprimé avec succès');
     }
 }
