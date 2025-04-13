@@ -50,7 +50,7 @@ Route::middleware([
             abort(403);
         }
 
-        return Inertia::render('Dashboard');
+        return Inertia::render('Admin/Dashboard');
     })->name('dashboard');
 
     // Routes pour les clients
