@@ -73,10 +73,7 @@ Route::middleware([
 
     // Routes pour les devis
     Route::get('/devis', [QuoteController::class, 'index'])->name('devis');
-    Route::get('/devis/create', [QuoteController::class, 'create'])->name('devis.create');
     Route::get('/devis/{quote}', [QuoteController::class, 'show'])->name('devis.show');
-    Route::get('/devis/{quote}/edit', [QuoteController::class, 'edit'])->name('devis.edit');
-    Route::put('/devis/{quote}', [QuoteController::class, 'update'])->name('devis.update');
     Route::delete('/devis/{quote}', [QuoteController::class, 'destroy'])->name('devis.destroy');
 });
 

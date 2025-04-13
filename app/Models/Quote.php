@@ -25,4 +25,9 @@ class Quote extends Model
     {
         return $this->belongsToMany(Service::class, 'quotes_services');
     }
+
+    public function interventions()
+    {
+        return $this->hasMany(Intervention::class, 'devis_id');
+    }
 }
