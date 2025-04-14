@@ -18,7 +18,7 @@ const props = defineProps({
     flash: Object,
 });
 
-// Liste de couleurs harmonieuses
+// Liste de couleurs
 const colors = [
     "#65558F",
     "#82AD84",
