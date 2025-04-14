@@ -139,6 +139,15 @@ const cancelCreatingClient = () => {
 
 // Fonction pour sauvegarder le nouveau client
 const saveNewClient = () => {
+    // Valider le formulaire avant soumission
+    const validationErrors = validateClient(newClientForm.value);
+
+    if (Object.keys(validationErrors).length > 0) {
+        formErrors.value = validationErrors;
+        showNotification(getErrorMessage(validationErrors), "error");
+        return;
+    }
+
     formErrors.value = {};
     router.post("/admin/clients", newClientForm.value, {
         onSuccess: () => {
@@ -187,6 +196,15 @@ const cancelEditing = () => {
 
 // Fonction pour sauvegarder les modifications
 const saveClient = () => {
+    // Valider le formulaire avant soumission
+    const validationErrors = validateClient(editForm.value);
+
+    if (Object.keys(validationErrors).length > 0) {
+        formErrors.value = validationErrors;
+        showNotification(getErrorMessage(validationErrors), "error");
+        return;
+    }
+
     formErrors.value = {};
     router.put(`/admin/clients/${editForm.value.id}`, editForm.value, {
         onSuccess: () => {

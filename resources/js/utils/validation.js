@@ -30,10 +30,18 @@ export const validateClient = (form) => {
 
     // Validation du téléphone
     if (form.phone) {
+        // Supprime tous les espaces, tirets et points pour la validation
+        const cleanedPhone = form.phone.replace(/[\s.-]/g, "");
         const phoneRegex = /^(\+33|0)[1-9](\d{2}){4}$/;
-        if (!phoneRegex.test(form.phone.replace(/\s/g, ""))) {
+
+        if (!phoneRegex.test(cleanedPhone)) {
             errors.phone = ["Veuillez entrer un numéro de téléphone valide"];
         }
+    }
+
+    // Validation de l'adresse
+    if (form.adress && form.adress.length > 255) {
+        errors.adress = ["L'adresse ne doit pas dépasser 255 caractères"];
     }
 
     return errors;
@@ -47,12 +55,15 @@ export const validateClient = (form) => {
 export const getErrorMessage = (errors) => {
     if (!errors || Object.keys(errors).length === 0) return "";
 
-    let errorMessage = "Veuillez corriger les erreurs suivantes :";
-    Object.entries(errors).forEach(([field, messages]) => {
+    let errorMessage = "";
+    Object.entries(errors).forEach(([field, messages], index) => {
+        if (index > 0) {
+            errorMessage += "\n";
+        }
         if (Array.isArray(messages)) {
-            errorMessage += "\n- " + messages[0];
+            errorMessage += messages[0];
         } else {
-            errorMessage += "\n- " + messages;
+            errorMessage += messages;
         }
     });
     return errorMessage;
