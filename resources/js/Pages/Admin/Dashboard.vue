@@ -58,87 +58,92 @@ defineProps({
         </header>
 
         <!-- Section des activités récentes -->
-        <section class="bg-white py-16 px-16">
-            <h2
-                class="text-[#2D2D2D] font-poppins text-[1.75rem] font-medium mb-8"
-            >
-                Activités récentes
-            </h2>
-
-            <div
-                class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-100"
-            >
+        <section class="bg-white py-28 px-16 items-center flex flex-col gap-20">
+            <div class="relative flex flex-col gap-6">
+                <h2
+                    class="font-poppins text-5xl text-center font-medium leading-[57.6px] tracking-[-0.48px] mb-6"
+                >
+                    Activités Récentes
+                </h2>
+                <div
+                    class="absolute bottom-0 right-1/2 border-2 border-[#FF8C42] w-[70%] max-w-[353px] min-w-[200px]"
+                ></div>
+            </div>
+            <div class="bg-white w-full">
                 <div
                     v-if="recentActivities && recentActivities.length"
                     class="overflow-x-auto"
                 >
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
+                    <table class="w-full border-collapse">
+                        <thead>
                             <tr>
                                 <th
                                     scope="col"
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                    class="px-6 py-5 text-left font-poppins text-sm font-medium text-[#0D0703]"
                                 >
                                     Type
                                 </th>
                                 <th
                                     scope="col"
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                    class="px-6 py-5 text-left font-poppins text-sm font-medium text-[#0D0703]"
                                 >
                                     Description
                                 </th>
                                 <th
                                     scope="col"
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                    class="px-6 py-5 text-left font-poppins text-sm font-medium text-[#0D0703]"
                                 >
                                     Utilisateur
                                 </th>
                                 <th
                                     scope="col"
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                    class="px-6 py-5 text-left font-poppins text-sm font-medium text-[#0D0703]"
                                 >
                                     Date
                                 </th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
+                        <tbody>
                             <tr
-                                v-for="activity in recentActivities"
+                                v-for="(activity, index) in recentActivities"
                                 :key="activity.id"
-                                class="hover:bg-gray-50"
+                                :class="{
+                                    'bg-white': index % 2 === 1,
+                                    'bg-[#F9F9F9]': index % 2 === 0,
+                                }"
                             >
-                                <td class="px-6 py-4 whitespace-nowrap">
+                                <td class="px-6 py-5 whitespace-nowrap">
                                     <span
                                         :class="{
-                                            'bg-green-100 text-green-800':
+                                            'bg-[#E7F6E7] text-[#28A745]':
                                                 activity.type === 'create',
-                                            'bg-blue-100 text-blue-800':
+                                            'bg-[#E6F3FF] text-[#0D6EFD]':
                                                 activity.type === 'update',
-                                            'bg-red-100 text-red-800':
+                                            'bg-[#FEECEC] text-[#DC3545]':
                                                 activity.type === 'delete',
-                                            'bg-orange-100 text-orange-800':
+                                            'bg-[#FFF4EC] text-[#FF8C42]':
                                                 activity.type === 'quote',
-                                            'bg-purple-100 text-purple-800':
+                                            'bg-[#F3EBFF] text-[#6F42C1]':
                                                 activity.type ===
                                                 'intervention',
                                         }"
-                                        class="px-3 py-1 rounded-full text-xs font-medium"
+                                        class="px-4 py-1.5 rounded-full text-xs font-medium font-inter inline-block min-w-[90px] text-center"
                                     >
                                         {{ activity.typeLabel }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4">
-                                    <p class="text-sm text-gray-900">
+                                <td class="px-6 py-5">
+                                    <p class="font-inter text-[#0D0703]">
                                         {{ activity.description }}
                                     </p>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <p class="text-sm text-gray-900">
+                                <td class="px-6 py-5 whitespace-nowrap">
+                                    <p class="font-inter text-[#0D0703]">
                                         {{ activity.user }}
                                     </p>
                                 </td>
                                 <td
-                                    class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                                    class="px-6 py-5 whitespace-nowrap font-inter text-[#6C757D]"
                                     :title="activity.date"
                                 >
                                     {{ activity.timeAgo }}
@@ -147,7 +152,10 @@ defineProps({
                         </tbody>
                     </table>
                 </div>
-                <div v-else class="py-8 px-6 text-center text-gray-500">
+                <div
+                    v-else
+                    class="py-12 px-6 text-center font-inter text-[#6C757D]"
+                >
                     Aucune activité récente à afficher
                 </div>
             </div>
