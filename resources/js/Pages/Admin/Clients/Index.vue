@@ -94,14 +94,6 @@ onMounted(() => {
         });
         clientColors.value = tempColors;
     }
-
-    // Vérifier s'il y a des messages flash initiaux et les afficher
-    if (page.props.flash?.success) {
-        showNotification(page.props.flash.success, "success");
-    }
-    if (page.props.flash?.error) {
-        showNotification(page.props.flash.error, "error");
-    }
 });
 
 // État d'édition pour chaque client
@@ -147,14 +139,6 @@ const cancelCreatingClient = () => {
 
 // Fonction pour sauvegarder le nouveau client
 const saveNewClient = () => {
-    // Validation côté client
-    const clientErrors = validateClient(newClientForm.value);
-    if (Object.keys(clientErrors).length > 0) {
-        formErrors.value = clientErrors;
-        showNotification(getErrorMessage(clientErrors), "error");
-        return;
-    }
-
     formErrors.value = {};
     router.post("/admin/clients", newClientForm.value, {
         onSuccess: () => {
@@ -203,14 +187,6 @@ const cancelEditing = () => {
 
 // Fonction pour sauvegarder les modifications
 const saveClient = () => {
-    // Validation côté client
-    const clientErrors = validateClient(editForm.value);
-    if (Object.keys(clientErrors).length > 0) {
-        formErrors.value = clientErrors;
-        showNotification(getErrorMessage(clientErrors), "error");
-        return;
-    }
-
     formErrors.value = {};
     router.put(`/admin/clients/${editForm.value.id}`, editForm.value, {
         onSuccess: () => {

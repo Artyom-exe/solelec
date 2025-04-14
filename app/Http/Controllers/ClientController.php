@@ -53,25 +53,20 @@ class ClientController extends Controller
     }
 
     public function destroy(Client $client)
-{
-    if ($client->quotes()->count() > 0) {
-        return back()->with('error', 'Ce client ne peut pas être supprimé car il possède des devis associés.');
+    {
+        if ($client->quotes()->count() > 0) {
+            return back()->with('error', 'Ce client ne peut pas être supprimé car il possède des devis associés.');
+        }
+
+        // Stocker les informations du client AVANT de le supprimer
+        $clientName = $client->name . ' ' . $client->lastname;
+
+        // Logger l'activité AVANT de supprimer le client
+        ActivityLogger::log('delete', $client, 'Client ' . $clientName . ' supprimé');
+
+        // Maintenant on peut supprimer le client
+        $client->delete();
+
+        return back()->with('success', 'Client supprimé avec succès');
     }
-
-    $clientName = $client->name . ' ' . $client->lastname;
-
-    // Stocker les informations du client AVANT de le supprimer
-    $clientData = [
-        'id' => $client->id,
-        'name' => $client->name,
-        'lastname' => $client->lastname
-    ];
-
-    $client->delete();
-
-    // Utiliser les données sauvegardées pour le logging
-    ActivityLogger::log('delete', $clientData, 'Client ' . $clientName . ' supprimé');
-
-    return back()->with('success', 'Client supprimé avec succès');
-}
 }
