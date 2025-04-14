@@ -2,16 +2,20 @@
 import AdminLayout from "@/Layouts/AdminLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import { Link } from "@inertiajs/vue3";
-import { ref, onMounted, nextTick, inject } from "vue";
-import { router } from "@inertiajs/vue3";
+import { ref, onMounted, nextTick, inject, watch } from "vue";
+import { router, usePage } from "@inertiajs/vue3";
 
 // Import des fonctions de validation
 import { validateClient, getErrorMessage } from "@/utils/validation";
 
 // Injection des fonctions de notification
 const showNotification = inject("showNotification");
+const page = usePage();
+
 const props = defineProps({
     clients: Array,
+    errors: Object,
+    flash: Object,
 });
 
 // Liste de couleurs harmonieuses
@@ -67,6 +71,20 @@ const getColorForClient = (clientId) => {
     return assignedColor;
 };
 
+// Surveiller les changements dans les propriétés flash pour afficher les notifications
+watch(
+    () => page.props.flash,
+    (newFlash) => {
+        if (newFlash?.success) {
+            showNotification(newFlash.success, "success");
+        }
+        if (newFlash?.error) {
+            showNotification(newFlash.error, "error");
+        }
+    },
+    { deep: true, immediate: true }
+);
+
 // Initialiser les couleurs des clients au chargement du composant
 onMounted(() => {
     if (props.clients && props.clients.length) {
@@ -75,6 +93,14 @@ onMounted(() => {
             tempColors[client.id] = getColorForClient(client.id);
         });
         clientColors.value = tempColors;
+    }
+
+    // Vérifier s'il y a des messages flash initiaux et les afficher
+    if (page.props.flash?.success) {
+        showNotification(page.props.flash.success, "success");
+    }
+    if (page.props.flash?.error) {
+        showNotification(page.props.flash.error, "error");
     }
 });
 
@@ -131,10 +157,7 @@ const saveNewClient = () => {
 
     formErrors.value = {};
     router.post("/admin/clients", newClientForm.value, {
-        onSuccess: (response) => {
-            if (response?.props?.flash?.success) {
-                showNotification(response.props.flash.success, "success");
-            }
+        onSuccess: () => {
             isCreatingClient.value = false;
 
             // Récupérer les couleurs existantes
@@ -190,10 +213,7 @@ const saveClient = () => {
 
     formErrors.value = {};
     router.put(`/admin/clients/${editForm.value.id}`, editForm.value, {
-        onSuccess: (response) => {
-            if (response?.props?.flash?.success) {
-                showNotification(response.props.flash.success, "success");
-            }
+        onSuccess: () => {
             editingClient.value = null;
         },
         onError: (errors) => {
@@ -211,15 +231,19 @@ const deleteClient = (clientId) => {
         )
     ) {
         router.delete(`/admin/clients/${clientId}`, {
-            onSuccess: (response) => {
-                if (response?.props?.flash?.success) {
-                    showNotification(response.props.flash.success, "success");
-                }
-                if (response?.props?.flash?.error) {
-                    showNotification(response.props.flash.error, "error");
+            preserveScroll: true, // Ajout pour préserver la position de défilement
+            preserveState: true, // Ajout pour préserver l'état
+            onSuccess: (page) => {
+                // Vérifier si un message est présent dans la réponse
+                const flashMessages = page?.props?.flash || {};
+
+                if (flashMessages.error) {
+                    showNotification(flashMessages.error, "error");
+                } else if (flashMessages.success) {
+                    showNotification(flashMessages.success, "success");
                 }
             },
-            onError: () => {
+            onError: (errors) => {
                 showNotification(
                     "Une erreur est survenue lors de la suppression du client.",
                     "error"
@@ -283,7 +307,6 @@ const deleteClient = (clientId) => {
                                 v-model="newClientForm.name"
                                 type="text"
                                 class="w-auto bg-transparent border-0 shadow-none text-white font-medium font-poppins text-2xl focus:outline-none focus:ring-0 focus:shadow-none p-0 m-0"
-                                :class="{ 'border-red-500': formErrors.name }"
                                 placeholder="Prénom"
                                 style="
                                     width: auto;
@@ -291,18 +314,10 @@ const deleteClient = (clientId) => {
                                     display: inline-block;
                                 "
                             />
-                            <span
-                                v-if="formErrors.name"
-                                class="text-red-500 text-xs mt-1"
-                                >{{ formErrors.name[0] }}</span
-                            >
                             <input
                                 v-model="newClientForm.lastname"
                                 type="text"
                                 class="w-auto bg-transparent border-0 shadow-none text-white font-medium font-poppins text-2xl focus:outline-none focus:ring-0 focus:shadow-none p-0 m-0"
-                                :class="{
-                                    'border-red-500': formErrors.lastname,
-                                }"
                                 placeholder="Nom"
                                 style="
                                     width: auto;
@@ -310,11 +325,6 @@ const deleteClient = (clientId) => {
                                     display: inline-block;
                                 "
                             />
-                            <span
-                                v-if="formErrors.lastname"
-                                class="text-red-500 text-xs mt-1"
-                                >{{ formErrors.lastname[0] }}</span
-                            >
                         </div>
                         <div
                             class="font-inter text-white text-base font-normal flex items-center gap-2"
@@ -335,15 +345,9 @@ const deleteClient = (clientId) => {
                                 v-model="newClientForm.email"
                                 type="email"
                                 class="bg-transparent border-0 shadow-none text-white font-inter text-base font-normal focus:outline-none focus:ring-0 focus:shadow-none p-0 inline-size-auto"
-                                :class="{ 'border-red-500': formErrors.email }"
                                 placeholder="Email"
                                 style="width: min-content"
                             />
-                            <span
-                                v-if="formErrors.email"
-                                class="text-red-500 text-xs mt-1"
-                                >{{ formErrors.email[0] }}</span
-                            >
                         </div>
                         <div
                             class="font-inter text-[#FF8C42] text-base font-normal flex items-center gap-2"
@@ -364,15 +368,9 @@ const deleteClient = (clientId) => {
                                 v-model="newClientForm.phone"
                                 type="tel"
                                 class="bg-transparent border-0 shadow-none text-[#FF8C42] font-inter text-base font-normal focus:outline-none focus:ring-0 focus:shadow-none p-0 inline-size-auto"
-                                :class="{ 'border-red-500': formErrors.phone }"
                                 placeholder="Téléphone"
                                 style="width: min-content"
                             />
-                            <span
-                                v-if="formErrors.phone"
-                                class="text-red-500 text-xs mt-1"
-                                >{{ formErrors.phone[0] }}</span
-                            >
                         </div>
                         <div
                             class="font-inter text-blue-300 text-base font-normal flex items-center gap-2"
@@ -396,15 +394,9 @@ const deleteClient = (clientId) => {
                                 v-model="newClientForm.adress"
                                 type="text"
                                 class="bg-transparent border-0 shadow-none text-blue-300 font-inter text-base font-normal focus:outline-none focus:ring-0 focus:shadow-none p-0 inline-size-auto"
-                                :class="{ 'border-red-500': formErrors.adress }"
                                 placeholder="Adresse"
                                 style="width: min-content"
                             />
-                            <span
-                                v-if="formErrors.adress"
-                                class="text-red-500 text-xs mt-1"
-                                >{{ formErrors.adress[0] }}</span
-                            >
                         </div>
                         <div class="flex gap-2 mt-2">
                             <button
@@ -561,9 +553,6 @@ const deleteClient = (clientId) => {
                                         v-model="editForm.name"
                                         type="text"
                                         class="w-auto bg-transparent border-0 shadow-none text-white font-medium font-poppins text-2xl focus:outline-none focus:ring-0 focus:shadow-none p-0 m-0"
-                                        :class="{
-                                            'border-red-500': formErrors.name,
-                                        }"
                                         placeholder="Prénom"
                                         style="
                                             width: auto;
@@ -571,19 +560,10 @@ const deleteClient = (clientId) => {
                                             display: inline-block;
                                         "
                                     />
-                                    <span
-                                        v-if="formErrors.name"
-                                        class="text-red-500 text-xs mt-1"
-                                        >{{ formErrors.name[0] }}</span
-                                    >
                                     <input
                                         v-model="editForm.lastname"
                                         type="text"
                                         class="w-auto bg-transparent border-0 shadow-none text-white font-medium font-poppins text-2xl focus:outline-none focus:ring-0 focus:shadow-none p-0 m-0"
-                                        :class="{
-                                            'border-red-500':
-                                                formErrors.lastname,
-                                        }"
                                         placeholder="Nom"
                                         style="
                                             width: auto;
@@ -591,11 +571,6 @@ const deleteClient = (clientId) => {
                                             display: inline-block;
                                         "
                                     />
-                                    <span
-                                        v-if="formErrors.lastname"
-                                        class="text-red-500 text-xs mt-1"
-                                        >{{ formErrors.lastname[0] }}</span
-                                    >
                                 </div>
                                 <div
                                     class="font-inter text-white text-base font-normal flex items-center gap-2"
@@ -616,17 +591,9 @@ const deleteClient = (clientId) => {
                                         v-model="editForm.email"
                                         type="email"
                                         class="bg-transparent border-0 shadow-none text-white font-inter text-base font-normal focus:outline-none focus:ring-0 focus:shadow-none p-0 inline-size-auto"
-                                        :class="{
-                                            'border-red-500': formErrors.email,
-                                        }"
                                         placeholder="Email"
                                         style="width: min-content"
                                     />
-                                    <span
-                                        v-if="formErrors.email"
-                                        class="text-red-500 text-xs mt-1"
-                                        >{{ formErrors.email[0] }}</span
-                                    >
                                 </div>
                                 <div
                                     class="font-inter text-[#FF8C42] text-base font-normal flex items-center gap-2"
@@ -647,17 +614,9 @@ const deleteClient = (clientId) => {
                                         v-model="editForm.phone"
                                         type="tel"
                                         class="bg-transparent border-0 shadow-none text-[#FF8C42] font-inter text-base font-normal focus:outline-none focus:ring-0 focus:shadow-none p-0 inline-size-auto"
-                                        :class="{
-                                            'border-red-500': formErrors.phone,
-                                        }"
                                         placeholder="Téléphone"
                                         style="width: min-content"
                                     />
-                                    <span
-                                        v-if="formErrors.phone"
-                                        class="text-red-500 text-xs mt-1"
-                                        >{{ formErrors.phone[0] }}</span
-                                    >
                                 </div>
                                 <div
                                     class="font-inter text-blue-300 text-base font-normal flex items-center gap-2"
@@ -681,17 +640,9 @@ const deleteClient = (clientId) => {
                                         v-model="editForm.adress"
                                         type="text"
                                         class="bg-transparent border-0 shadow-none text-blue-300 font-inter text-base font-normal focus:outline-none focus:ring-0 focus:shadow-none p-0 inline-size-auto"
-                                        :class="{
-                                            'border-red-500': formErrors.adress,
-                                        }"
                                         placeholder="Adresse"
                                         style="width: min-content"
                                     />
-                                    <span
-                                        v-if="formErrors.adress"
-                                        class="text-red-500 text-xs mt-1"
-                                        >{{ formErrors.adress[0] }}</span
-                                    >
                                 </div>
                                 <div class="flex gap-2 mt-2">
                                     <button
