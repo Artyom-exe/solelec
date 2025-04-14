@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Client;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -42,6 +43,9 @@ class ClientController extends Controller
         ]);
 
         $client = Client::create($validated);
+
+        // Journalisation de l'activité
+        ActivityLogger::log('create', $client, 'Client ' . $client->name . ' ' . $client->lastname . ' ajouté');
 
         return redirect()->route('clients')->with('success', 'Client ajouté avec succès');
     }
@@ -83,6 +87,9 @@ class ClientController extends Controller
 
         $client->update($validated);
 
+        // Journalisation de l'activité
+        ActivityLogger::log('update', $client, 'Client ' . $client->name . ' ' . $client->lastname . ' mis à jour');
+
         return redirect()->route('clients')->with('success', 'Client mis à jour avec succès');
     }
 
@@ -96,7 +103,14 @@ class ClientController extends Controller
             return redirect()->back()->with('error', 'Ce client ne peut pas être supprimé car il possède des devis associés.');
         }
 
+        // Récupérer le nom du client avant de le supprimer pour la journalisation
+        $clientName = $client->name . ' ' . $client->lastname;
+
         $client->delete();
+
+        // Journalisation de l'activité
+        // Note: nous passons le client même s'il est supprimé car il contient encore son ID
+        ActivityLogger::log('delete', $client, 'Client ' . $clientName . ' supprimé');
 
         return redirect()->route('clients')->with('success', 'Client supprimé avec succès');
     }

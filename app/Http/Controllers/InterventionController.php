@@ -6,6 +6,7 @@ use App\Models\Intervention;
 use App\Models\Client;
 use App\Models\Quote;
 use App\Models\InterventionImage;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
@@ -68,6 +69,13 @@ class InterventionController extends Controller
             }
         }
 
+        // Récupérer le client pour le message
+        $client = Client::find($validated['clients_id']);
+        $clientName = $client ? $client->name . ' ' . $client->lastname : 'client #' . $validated['clients_id'];
+
+        // Journalisation de l'activité
+        ActivityLogger::log('intervention', $intervention, 'Nouvelle intervention ' . $validated['status'] . ' créée pour ' . $clientName);
+
         return redirect()->route('interventions')->with('success', 'Intervention créée avec succès');
     }
 
@@ -116,6 +124,10 @@ class InterventionController extends Controller
             'delete_images.*' => 'exists:intervention_images,id'
         ]);
 
+        // Vérifier si le statut a changé pour le message de journalisation
+        $statusChanged = $intervention->status !== $validated['status'];
+        $oldStatus = $intervention->status;
+
         // Mise à jour de l'intervention
         $intervention->update([
             'status' => $validated['status'],
@@ -147,6 +159,17 @@ class InterventionController extends Controller
             }
         }
 
+        // Récupérer le client pour le message
+        $client = Client::find($validated['clients_id']);
+        $clientName = $client ? $client->name . ' ' . $client->lastname : 'client #' . $validated['clients_id'];
+
+        // Journalisation de l'activité
+        if ($statusChanged) {
+            ActivityLogger::log('intervention', $intervention, 'Intervention pour ' . $clientName . ' mise à jour: ' . $oldStatus . ' → ' . $validated['status']);
+        } else {
+            ActivityLogger::log('update', $intervention, 'Intervention #' . $intervention->id . ' mise à jour');
+        }
+
         return redirect()->route('interventions')->with('success', 'Intervention mise à jour avec succès');
     }
 
@@ -155,6 +178,11 @@ class InterventionController extends Controller
      */
     public function destroy(Intervention $intervention)
     {
+        // Récupérer des informations pour la journalisation
+        $client = $intervention->client;
+        $clientName = $client ? $client->name . ' ' . $client->lastname : 'client inconnu';
+        $interventionStatus = $intervention->status;
+
         // Suppression des images associées
         foreach ($intervention->images as $image) {
             Storage::disk('public')->delete($image->path);
@@ -162,6 +190,9 @@ class InterventionController extends Controller
         }
 
         $intervention->delete();
+
+        // Journalisation de l'activité
+        ActivityLogger::log('delete', $intervention, 'Intervention ' . $interventionStatus . ' pour ' . $clientName . ' supprimée');
 
         return redirect()->route('interventions')->with('success', 'Intervention supprimée avec succès');
     }
