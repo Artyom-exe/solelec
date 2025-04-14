@@ -653,22 +653,4 @@ const deleteClient = (clientId) => {
     opacity: 0;
     transform: translateY(10px);
 }
-
-/* Animation pour la suppression des clients */
-.list-enter-active,
-.list-leave-active {
-    transition: all 0.5s ease;
-}
-.list-enter-from {
-    opacity: 0;
-    transform: translateY(30px);
-}
-.list-leave-to {
-    opacity: 0;
-    transform: translateX(30px);
-    position: absolute;
-}
-.list-move {
-    transition: transform 0.5s ease;
-}
 </style>
