@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Quote;
 use App\Models\Intervention;
 use App\Models\Activity;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class DashboardController extends Controller
