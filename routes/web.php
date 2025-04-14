@@ -12,6 +12,7 @@ use App\Http\Controllers\CustomerReviewController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\InterventionController;
+use App\Http\Controllers\DashboardController;
 
 Route::get('/', function () {
     return Inertia::render('Accueil');
@@ -45,13 +46,7 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->prefix('admin')->group(function () {
-    Route::get('/', function () {
-        if (auth()->id() !== 1) {
-            abort(403);
-        }
-
-        return Inertia::render('Admin/Dashboard');
-    })->name('dashboard');
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     // Routes pour les clients
     Route::get('/clients', [ClientController::class, 'index'])->name('clients');
