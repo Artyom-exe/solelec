@@ -65,7 +65,6 @@ Route::middleware([
 
     // Routes pour les devis
     Route::get('/devis', [QuoteController::class, 'index'])->name('devis');
-    Route::get('/devis/{quote}', [QuoteController::class, 'show'])->name('devis.show');
     Route::delete('/devis/{quote}', [QuoteController::class, 'destroy'])->name('devis.destroy');
 });
 

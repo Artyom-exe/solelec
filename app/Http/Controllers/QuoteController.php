@@ -29,11 +29,6 @@ class QuoteController extends Controller
      */
     public function show(Quote $quote)
     {
-        $quote->load(['client', 'services', 'interventions']);
-
-        return Inertia::render('Admin/Quotes/Show', [
-            'quote' => $quote
-        ]);
     }
 
     /**
