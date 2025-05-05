@@ -1,6 +1,7 @@
 <script setup>
 import AdminLayout from "@/Layouts/AdminLayout.vue";
 import { Link } from "@inertiajs/vue3";
+import { ref, computed } from "vue";
 
 const props = defineProps({
     clients: Object,
@@ -9,6 +10,65 @@ const props = defineProps({
     errors: Object,
     flash: Object,
 });
+
+// État pour suivre le filtre actuel
+const currentFilter = ref("all"); // 'all', 'type', ou 'client'
+const selectedType = ref(null);
+const selectedClient = ref(null);
+
+// Récupération des types de services uniques depuis les devis
+const serviceTypes = computed(() => {
+    const types = new Set();
+    props.quotes.forEach((quote) => {
+        quote.services?.forEach((service) => {
+            types.add(service.title);
+        });
+    });
+    return Array.from(types);
+});
+
+// Récupération des clients uniques
+const uniqueClients = computed(() => {
+    const clients = new Set();
+    props.quotes.forEach((quote) => {
+        if (quote.client?.name && quote.client?.lastname) {
+            clients.add(`${quote.client.name} ${quote.client.lastname}`);
+        }
+    });
+    return Array.from(clients);
+});
+
+// Filtrage des devis en fonction du filtre actuel
+const filteredQuotes = computed(() => {
+    if (currentFilter.value === "all") {
+        return props.quotes;
+    } else if (currentFilter.value === "type" && selectedType.value) {
+        return props.quotes.filter((quote) =>
+            quote.services?.some(
+                (service) => service.title === selectedType.value
+            )
+        );
+    } else if (currentFilter.value === "client" && selectedClient.value) {
+        return props.quotes.filter(
+            (quote) =>
+                `${quote.client?.name} ${quote.client?.lastname}` ===
+                selectedClient.value
+        );
+    }
+    return props.quotes;
+});
+
+// Fonction pour définir le filtre
+const setFilter = (filter) => {
+    if (currentFilter.value === filter) {
+        // Si on clique sur le même filtre, on revient à "tout"
+        currentFilter.value = "all";
+        selectedType.value = null;
+        selectedClient.value = null;
+    } else {
+        currentFilter.value = filter;
+    }
+};
 
 // Fonction pour formater une date au format jour/mois/année
 const formatDate = (dateString) => {
@@ -39,28 +99,83 @@ const formatDate = (dateString) => {
                 </div>
             </div>
             <article class="flex flex-col items-start gap-12 w-full">
-                <div class="flex items-center w-full">
-                    <button
-                        class="flex py-2 px-4 justify-center items-center gap-2 text-white font-inter border-none text-base transition-all duration-300 ease-in-out hover:bg-[#0D0703] hover:border hover:border-white/20"
+                <div class="flex flex-col w-full gap-4">
+                    <div class="flex items-center w-full">
+                        <button
+                            @click="setFilter('all')"
+                            :class="{
+                                'bg-[#0D0703] border border-white/20':
+                                    currentFilter === 'all',
+                            }"
+                            class="flex py-2 px-4 justify-center items-center gap-2 text-white font-inter border-none text-base transition-all duration-300 ease-in-out hover:bg-[#0D0703] hover:border hover:border-white/20"
+                        >
+                            Voir tout
+                        </button>
+                        <button
+                            @click="setFilter('type')"
+                            :class="{
+                                'bg-[#0D0703] border border-white/20':
+                                    currentFilter === 'type',
+                            }"
+                            class="flex py-2 px-4 justify-center items-center gap-2 text-white font-inter border-transparent text-base transition-all duration-300 ease-in-out hover:bg-[#0D0703] hover:border hover:border-white/20"
+                        >
+                            Types
+                        </button>
+                        <button
+                            @click="setFilter('client')"
+                            :class="{
+                                'bg-[#0D0703] border border-white/20':
+                                    currentFilter === 'client',
+                            }"
+                            class="flex py-2 px-4 justify-center items-center gap-2 text-white font-inter border-transparent text-base transition-all duration-300 ease-in-out hover:bg-[#0D0703] hover:border hover:border-white/20"
+                        >
+                            Clients
+                        </button>
+                    </div>
+
+                    <!-- Options de filtre pour les types -->
+                    <div
+                        v-if="currentFilter === 'type'"
+                        class="flex flex-wrap gap-2 mb-2"
                     >
-                        Voir tout
-                    </button>
-                    <button
-                        class="flex py-2 px-4 justify-center items-center gap-2 text-white font-inter border-transparent text-base transition-all duration-300 ease-in-out hover:bg-[#0D0703] hover:border hover:border-white/20"
+                        <button
+                            v-for="type in serviceTypes"
+                            :key="type"
+                            @click="selectedType = type"
+                            :class="{
+                                'bg-[#FF8C42] text-white':
+                                    selectedType === type,
+                            }"
+                            class="px-3 py-1 text-sm rounded-md border border-white/20 text-white hover:bg-[#FF8C42] hover:text-white transition-colors duration-300"
+                        >
+                            {{ type }}
+                        </button>
+                    </div>
+
+                    <!-- Options de filtre pour les clients -->
+                    <div
+                        v-if="currentFilter === 'client'"
+                        class="flex flex-wrap gap-2 mb-2"
                     >
-                        Types
-                    </button>
-                    <button
-                        class="flex py-2 px-4 justify-center items-center gap-2 text-white font-inter border-transparent text-base transition-all duration-300 ease-in-out hover:bg-[#0D0703] hover:border hover:border-white/20"
-                    >
-                        Clients
-                    </button>
+                        <button
+                            v-for="client in uniqueClients"
+                            :key="client"
+                            @click="selectedClient = client"
+                            :class="{
+                                'bg-[#FF8C42] text-white':
+                                    selectedClient === client,
+                            }"
+                            class="px-3 py-1 text-sm rounded-md border border-white/20 text-white hover:bg-[#FF8C42] hover:text-white transition-colors duration-300"
+                        >
+                            {{ client }}
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Liste des devis -->
                 <div class="flex flex-col gap-8 items-start w-full">
                     <div
-                        v-for="quote in quotes"
+                        v-for="quote in filteredQuotes"
                         :key="quote.id"
                         class="bg-[#242424] rounded-lg border border-white/20 text-white p-8 gap-6 items-start w-full"
                     >
@@ -235,11 +350,13 @@ const formatDate = (dateString) => {
 
                 <!-- Message si aucun devis -->
                 <div
-                    v-if="quotes.length === 0"
+                    v-if="filteredQuotes.length === 0"
                     class="text-white text-center w-full py-10"
                 >
                     <p class="font-inter text-lg">
-                        Aucun devis disponible pour le moment.
+                        Aucun devis disponible pour le moment{{
+                            currentFilter !== "all" ? " avec ce filtre" : ""
+                        }}.
                     </p>
                 </div>
             </article>
