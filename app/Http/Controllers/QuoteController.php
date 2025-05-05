@@ -48,6 +48,7 @@ class QuoteController extends Controller
             'adress'           => 'nullable|string',
             'description'      => 'required|string',
             'requested_date'   => 'nullable|date',
+            'end_date'         => 'nullable|date|after_or_equal:requested_date',
             'services'         => 'required|array',    // liste d'IDs de services
             'services.*'       => 'exists:services,id', // chaque service doit exister
         ]);
@@ -98,6 +99,7 @@ class QuoteController extends Controller
             'client_id'      => $client->id,
             'description'    => $data['description'],
             'requested_date' => $data['requested_date'] ?? null,
+            'end_date'       => $data['end_date'] ?? null,
             'status'         => 'pending',
         ]);
 

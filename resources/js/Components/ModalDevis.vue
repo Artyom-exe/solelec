@@ -221,15 +221,17 @@ const submitForm = async () => {
             description: formData.description,
             services: formData.services,
             requested_date: null,
+            end_date: null,
         };
 
-        // Ajouter la date souhaitée si elle est définie
+        // Ajouter les dates souhaitées si elles sont définies
         if (
             formData.desiredDate &&
             Array.isArray(formData.desiredDate) &&
             formData.desiredDate.length === 2
         ) {
             requestData.requested_date = formatDate(formData.desiredDate[0]);
+            requestData.end_date = formatDate(formData.desiredDate[1]);
         }
 
         // Effectuer la requête POST vers l'API

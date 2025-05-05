@@ -13,6 +13,7 @@ class Quote extends Model
         'client_id',
         'description',
         'requested_date',
+        'end_date',
         'status',
     ];
 
