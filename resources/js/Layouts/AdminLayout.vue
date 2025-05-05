@@ -1,12 +1,44 @@
 <script setup>
-import { ref, provide, inject, onMounted, onUnmounted } from "vue";
+import { ref, provide, inject, onMounted, onUnmounted, watchEffect } from "vue";
 import NavBarAdmin from "@/Components/NavBarAdmin.vue";
+import { usePage } from "@inertiajs/vue3";
+
+const page = usePage();
 
 // Injection du système de notification global
 const notification = ref({
     show: false,
     message: "",
     type: "success",
+});
+
+// Surveiller les messages flash pour les afficher automatiquement
+watchEffect(() => {
+    if (page.props.flash.success) {
+        notification.value = {
+            show: true,
+            message: page.props.flash.success,
+            type: "success",
+        };
+
+        // Cacher la notification après 5 secondes
+        setTimeout(() => {
+            notification.value.show = false;
+        }, 5000);
+    }
+
+    if (page.props.flash.error) {
+        notification.value = {
+            show: true,
+            message: page.props.flash.error,
+            type: "error",
+        };
+
+        // Cacher la notification après 5 secondes
+        setTimeout(() => {
+            notification.value.show = false;
+        }, 5000);
+    }
 });
 
 const showNotificationHandler = (event) => {
@@ -29,6 +61,11 @@ const hideNotificationHandler = () => {
 onMounted(() => {
     window.addEventListener("show-notification", showNotificationHandler);
     window.addEventListener("hide-notification", hideNotificationHandler);
+});
+
+onUnmounted(() => {
+    window.removeEventListener("show-notification", showNotificationHandler);
+    window.removeEventListener("hide-notification", hideNotificationHandler);
 });
 </script>
 
