@@ -2,6 +2,7 @@
 import AdminLayout from "@/Layouts/AdminLayout.vue";
 import { Link } from "@inertiajs/vue3";
 import { ref, computed } from "vue";
+import { router } from "@inertiajs/vue3";
 
 const props = defineProps({
     clients: Object,
@@ -15,6 +16,18 @@ const props = defineProps({
 const currentFilter = ref("all"); // 'all', 'type', ou 'client'
 const selectedType = ref(null);
 const selectedClient = ref(null);
+
+// Fonction pour supprimer un devis
+const deleteQuote = (id) => {
+    if (confirm("Êtes-vous sûr de vouloir supprimer ce devis ?")) {
+        router.delete(`/admin/devis/${id}`, {
+            preserveScroll: true,
+            onSuccess: () => {
+                // Le serveur s'occupe de la redirection ou du rechargement des données
+            },
+        });
+    }
+};
 
 // Récupération des types de services uniques depuis les devis
 const serviceTypes = computed(() => {
@@ -179,8 +192,23 @@ const formatDate = (dateString) => {
                     <div
                         v-for="quote in filteredQuotes"
                         :key="quote.id"
-                        class="bg-[#242424] rounded-lg border border-white/20 text-white p-8 gap-6 items-start w-full"
+                        class="bg-[#242424] rounded-lg border border-white/20 text-white p-8 gap-6 items-start w-full group relative"
                     >
+                        <!-- Actions d'édition/suppression qui apparaissent au survol -->
+                        <div
+                            class="absolute top-[-0.5rem] right-[-0.5rem] opacity-0 group-hover:opacity-100 transition-opacity flex gap-2"
+                        >
+                            <button
+                                @click="deleteQuote(quote.id)"
+                                title="Supprimer"
+                            >
+                                <img
+                                    src="/assets/icons/clients/delete-icon.svg"
+                                    alt="Delete"
+                                    class="w-5 h-5 hover:scale-110 transition-transform"
+                                />
+                            </button>
+                        </div>
                         <div
                             class="flex flex-col items-start gap-8 self-stretch"
                         >
