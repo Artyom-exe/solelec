@@ -82,7 +82,9 @@ const formatDate = (dateString) => {
 
 <template>
     <AdminLayout>
-        <section class="flex py-28 px-16 items-start gap-20 bg-[#2D2D2D]">
+        <section
+            class="flex py-28 px-16 items-start gap-20 bg-[#2D2D2D] min-h-screen"
+        >
             <div class="flex flex-col items-start gap-4 text-white w-3/4">
                 <h2 class="text-center font-inter text-base font-semibold">
                     Devis
@@ -107,7 +109,7 @@ const formatDate = (dateString) => {
                                 'bg-[#0D0703] border border-white/20':
                                     currentFilter === 'all',
                             }"
-                            class="flex py-2 px-4 justify-center items-center gap-2 text-white font-inter border-none text-base transition-all duration-300 ease-in-out hover:bg-[#0D0703] hover:border hover:border-white/20"
+                            class="flex py-2 px-4 justify-center items-center gap-2 text-white font-inter border-transparent text-base transition-all duration-300 ease-in-out hover:bg-[#0D0703] hover:border hover:border-white/20"
                         >
                             Voir tout
                         </button>
