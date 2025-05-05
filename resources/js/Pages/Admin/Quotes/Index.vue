@@ -1,7 +1,9 @@
 <script setup>
 import AdminLayout from "@/Layouts/AdminLayout.vue";
+import { Link } from "@inertiajs/vue3";
 
 const props = defineProps({
+    clients: Object,
     quotes: Array,
     quoteService: Object,
     errors: Object,
@@ -30,7 +32,7 @@ const props = defineProps({
             <article class="flex flex-col items-start gap-12 w-full">
                 <div class="flex items-center w-full">
                     <button
-                        class="flex py-2 px-4 justify-center items-center gap-2 text-white font-inter border-transparent text-base transition-all duration-300 ease-in-out hover:bg-[#0D0703] hover:border hover:border-white/20"
+                        class="flex py-2 px-4 justify-center items-center gap-2 text-white font-inter border-none text-base transition-all duration-300 ease-in-out hover:bg-[#0D0703] hover:border hover:border-white/20"
                     >
                         Voir tout
                     </button>
@@ -53,43 +55,48 @@ const props = defineProps({
                         :key="quote.id"
                         class="bg-[#242424] rounded-lg border border-white/20 text-white p-8 gap-6 items-start w-full"
                     >
-                        <div class="flex justify-between items-start mb-4">
-                            <h4 class="font-poppins text-xl font-medium">
-                                {{ quote.title || "Devis #" + quote.id }}
-                            </h4>
-                            <span
-                                class="px-3 py-1 bg-[#FF8C42]/10 text-[#FF8C42] rounded-full text-sm"
-                            >
-                                {{ quote.status || "En attente" }}
-                            </span>
-                        </div>
-
-                        <div class="mb-4">
-                            <p class="text-white/70 mb-1">Client:</p>
-                            <p class="font-inter">
-                                {{ quote.client?.name || "Non spécifié" }}
+                        <div
+                            class="flex flex-col items-start gap-8 self-stretch"
+                        >
+                            <div class="flex gap-4 self-stretch">
+                                <div
+                                    class="flex items-center gap-4 flex-1 flex-wrap"
+                                >
+                                    <h4
+                                        class="font-poppins text-2xl font-medium tracking-[-0.24px]"
+                                    >
+                                        {{ quote.client?.name }}
+                                        {{ quote.client?.lastname }}
+                                    </h4>
+                                    <span
+                                        v-for="service in quote.services"
+                                        :key="service.id"
+                                        class="flex py-1 px-[10px] items-start rounded-[4px] border border-white/5 bg-white/5 text-[#FF8C42] font-inter font-semibold text-sm"
+                                    >
+                                        {{ service.title }}
+                                    </span>
+                                </div>
+                                <div class="flex gap-2 h-max items-center">
+                                    <Link
+                                        :href="`/admin/devis/${quote.id}/convert`"
+                                        class="text-[#FF8C42] font-inter text-base font-medium group flex items-center"
+                                    >
+                                        Convertir
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 256 512"
+                                            class="w-4 h-4 fill-current text-[#FF8C42] ml-1"
+                                        >
+                                            <path
+                                                d="M246.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L178.7 256 41.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"
+                                            />
+                                        </svg>
+                                    </Link>
+                                </div>
+                            </div>
+                            <p class="font-inter text-base font-normal">
+                                {{ quote.description }}
                             </p>
-                        </div>
-
-                        <div class="mb-4">
-                            <p class="text-white/70 mb-1">Date de demande:</p>
-                            <p class="font-inter">
-                                {{
-                                    quote.created_at
-                                        ? new Date(
-                                              quote.created_at
-                                          ).toLocaleDateString("fr-FR")
-                                        : "Non spécifiée"
-                                }}
-                            </p>
-                        </div>
-
-                        <div class="flex justify-end mt-4">
-                            <button
-                                class="flex py-2 px-4 justify-center items-center gap-2 text-[#FF8C42] font-inter text-base transition-all duration-300 ease-in-out hover:bg-[#FF8C42]/10"
-                            >
-                                Voir détails
-                            </button>
                         </div>
                     </div>
                 </div>

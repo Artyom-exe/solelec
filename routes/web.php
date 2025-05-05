@@ -62,6 +62,7 @@ Route::middleware([
     Route::get('/interventions/{intervention}/edit', [InterventionController::class, 'edit'])->name('interventions.edit');
     Route::put('/interventions/{intervention}', [InterventionController::class, 'update'])->name('interventions.update');
     Route::delete('/interventions/{intervention}', [InterventionController::class, 'destroy'])->name('interventions.destroy');
+    Route::get('/devis/{quote}/convert', [InterventionController::class, 'convertToIntervention'])->name('devis.convert');
 
     // Routes pour les devis
     Route::get('/devis', [QuoteController::class, 'index'])->name('devis');

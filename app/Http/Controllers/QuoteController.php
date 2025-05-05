@@ -17,7 +17,10 @@ class QuoteController extends Controller
      */
     public function index()
     {
-        $quotes = Quote::with(['client', 'services'])->latest()->get();
+        $quotes = Quote::with(['client', 'services'])
+            ->where('status', '!=', 'converti')  // Exclusion des devis convertis
+            ->latest()
+            ->get();
 
         return Inertia::render('Admin/Quotes/Index', [
             'quotes' => $quotes

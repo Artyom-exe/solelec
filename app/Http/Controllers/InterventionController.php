@@ -196,4 +196,39 @@ class InterventionController extends Controller
 
         return redirect()->route('interventions')->with('success', 'Intervention supprimée avec succès');
     }
+
+    /**
+     * Convertit un devis en intervention
+     */
+    public function convertToIntervention(Quote $quote)
+    {
+        // Vérifier si le devis est déjà lié à une intervention
+        if ($quote->interventions()->count() > 0) {
+            return redirect()->route('devis')->with('error', 'Ce devis a déjà été converti en intervention.');
+        }
+
+        // Créer une nouvelle intervention basée sur le devis
+        $intervention = new Intervention([
+            'status' => 'planifiée',
+            'date' => now()->addDays(3), // Par défaut: rdv dans 3 jours
+            'notes' => '',
+            'clients_id' => $quote->client_id,
+            'devis_id' => $quote->id,
+        ]);
+
+        $intervention->save();
+
+        // Changer le statut du devis en "converti"
+        $quote->status = 'converti';
+        $quote->save();
+
+        // Récupérer le client pour le message
+        $client = Client::find($quote->client_id);
+        $clientName = $client ? $client->name . ' ' . $client->lastname : 'client #' . $quote->client_id;
+
+        // Journalisation de l'activité
+        ActivityLogger::log('quote', $quote, 'Devis #' . $quote->id . ' converti en intervention');
+
+        return redirect()->route('devis')->with('success', 'Le devis a été converti en intervention avec succès.');
+    }
 }
