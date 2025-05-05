@@ -12,25 +12,23 @@ const props = defineProps({
 <template>
     <AdminLayout>
         <section class="flex py-28 px-16 items-start gap-20 bg-[#2D2D2D]">
-            <div
-                class="flex max-w-[768px] flex-col items-start gap-4 text-white"
-            >
+            <div class="flex flex-col items-start gap-4 text-white w-3/4">
                 <h2 class="text-center font-inter text-base font-semibold">
                     Devis
                 </h2>
                 <div class="relative flex flex-col gap-6">
                     <h3
-                        class="font-poppins text-5xl text-center font-medium leading-[57.6px] tracking-[-0.48px] mb-6"
+                        class="font-poppins text-5xl text-left font-medium leading-[57.6px] tracking-[-0.48px] mb-6"
                     >
                         Mes demande de devis
                     </h3>
                     <div
-                        class="absolute bottom-0 right-1/3 border-2 border-[#FF8C42] w-[80%] max-w-[353px] min-w-[200px]"
+                        class="absolute bottom-0 right border-2 border-[#FF8C42] w-[70%] max-w-[353px] min-w-[200px]"
                     ></div>
                 </div>
             </div>
-            <article class="flex flex-col items-start gap-12 flex-1">
-                <div class="flex items-center">
+            <article class="flex flex-col items-start gap-12 w-full">
+                <div class="flex items-center w-full">
                     <button
                         class="flex py-2 px-4 justify-center items-center gap-2 text-white font-inter border-transparent text-base transition-all duration-300 ease-in-out hover:bg-[#0D0703] hover:border hover:border-white/20"
                     >
@@ -49,11 +47,11 @@ const props = defineProps({
                 </div>
 
                 <!-- Liste des devis -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+                <div class="flex flex-col gap-8 items-start w-full">
                     <div
                         v-for="quote in quotes"
                         :key="quote.id"
-                        class="bg-[#1A1A1A] p-6 rounded-lg border border-white/10 text-white hover:border-white/30 transition-all duration-300"
+                        class="bg-[#242424] rounded-lg border border-white/20 text-white p-8 gap-6 items-start w-full"
                     >
                         <div class="flex justify-between items-start mb-4">
                             <h4 class="font-poppins text-xl font-medium">
