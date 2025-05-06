@@ -124,7 +124,7 @@ const selectedStatus = ref(null);
 
 // Variables pour le tri
 const sortBy = ref("date"); // "date" ou "status"
-const sortDirection = ref("desc"); // "asc" ou "desc"
+const sortDirection = ref("asc"); // "asc" ou "desc"
 
 // Liste des statuts disponibles
 const statusOptions = ["planifiée", "en cours", "terminée"];
@@ -425,7 +425,7 @@ const sortedInterventions = computed(() => {
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Section de sélection du client -->
                     <div class="w-full mb-4">
                         <!-- Sélection d'un client existant -->
