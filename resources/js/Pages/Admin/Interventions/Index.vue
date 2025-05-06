@@ -176,7 +176,7 @@ const sortedInterventions = computed(() => {
                             Liste de mes interventions
                         </h3>
                         <div
-                            class="absolute bottom-0 left-1/3 border-2 border-[#FF8C42] w-[80%] max-w-[353px] min-w-[200px]"
+                            class="absolute bottom-0 right-[-20%] border-2 border-[#FF8C42] w-[80%] max-w-[353px] min-w-[200px]"
                         ></div>
                     </div>
                 </div>
@@ -301,7 +301,7 @@ const sortedInterventions = computed(() => {
                         }"
                         @mouseover="$event.target.style.backgroundColor = statusColors[status]; $event.target.style.color = status === 'planifiée' ? '#2D2D2D' : 'white';"
                         @mouseout="$event.target.style.backgroundColor = selectedStatus === status ? statusColors[status] : 'transparent'; $event.target.style.color = selectedStatus === status ? (status === 'planifiée' ? '#2D2D2D' : '#fff') : '#fff';"
-                        
+
                     >
                         {{ status }}
                     </button>
