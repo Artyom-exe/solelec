@@ -2,8 +2,15 @@
 import AdminLayout from "@/Layouts/AdminLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import secondaryButton from "@/Components/SecondaryButton.vue";
-import { computed, ref, reactive } from "vue";
-import { router } from "@inertiajs/vue3";
+import { computed, ref, reactive, inject, watch } from "vue";
+import { router, usePage } from "@inertiajs/vue3";
+
+// Import des fonctions de validation
+import { validateIntervention, getErrorMessage } from "@/utils/interventionValidation";
+
+// Injection des fonctions de notification
+const showNotification = inject("showNotification");
+const page = usePage();
 
 const props = defineProps({
     interventions: Array,
@@ -33,6 +40,12 @@ function updateStatus(intervention) {
         { status: newStatus },
         {
             preserveScroll: true,
+            onSuccess: () => {
+                showNotification(`Le statut a été mis à jour en "${newStatus}"`, "success");
+            },
+            onError: (errors) => {
+                showNotification(getErrorMessage(errors), "error");
+            }
         }
     );
 }
@@ -91,17 +104,19 @@ function toggleClientMode() {
 
 // Fonction pour soumettre la nouvelle intervention
 function submitNewIntervention() {
-    // Vérifier que les champs obligatoires sont remplis
-    if ((!newIntervention.clients_id && !newIntervention.isNewClient) ||
-        (newIntervention.isNewClient && !newIntervention.new_client_name) ||
-        newIntervention.services.length === 0) {
-        alert('Veuillez sélectionner un client (ou créer un nouveau) et au moins un service');
+    // Valider les données du formulaire
+    const validationErrors = validateIntervention(newIntervention);
+    
+    // Si des erreurs sont présentes, afficher une notification et arrêter
+    if (Object.keys(validationErrors).length > 0) {
+        showNotification(getErrorMessage(validationErrors), "error");
         return;
     }
 
     router.post('/admin/interventions', newIntervention, {
         preserveScroll: true,
         onSuccess: () => {
+            showNotification("L'intervention a été créée avec succès", "success");
             showAddForm.value = false;
             // Réinitialiser le formulaire
             newIntervention.status = "planifiée";
@@ -112,9 +127,26 @@ function submitNewIntervention() {
             newIntervention.new_client_phone = "";
             newIntervention.new_client_email = "";
             newIntervention.isNewClient = false;
+        },
+        onError: (errors) => {
+            showNotification(getErrorMessage(errors), "error");
         }
     });
 }
+
+// Surveiller les changements dans les propriétés flash pour afficher les notifications
+watch(
+    () => page.props.flash,
+    (newFlash) => {
+        if (newFlash?.success) {
+            showNotification(newFlash.success, "success");
+        }
+        if (newFlash?.error) {
+            showNotification(newFlash.error, "error");
+        }
+    },
+    { deep: true, immediate: true }
+);
 
 // Variables pour le filtrage
 const currentFilter = ref("all");
