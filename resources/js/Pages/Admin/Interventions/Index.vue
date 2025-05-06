@@ -49,6 +49,14 @@ function formatDate(dateString) {
 const currentFilter = ref("all");
 const selectedType = ref(null);
 const selectedClient = ref(null);
+const selectedStatus = ref(null);
+
+// Variables pour le tri
+const sortBy = ref("date"); // "date" ou "status"
+const sortDirection = ref("desc"); // "asc" ou "desc"
+
+// Liste des statuts disponibles
+const statusOptions = ["planifiée", "en cours", "terminée"];
 
 // Définir le type de filtre actif
 function setFilter(filter) {
@@ -57,6 +65,7 @@ function setFilter(filter) {
     if (filter === "all") {
         selectedType.value = null;
         selectedClient.value = null;
+        selectedStatus.value = null;
     }
 }
 
@@ -87,6 +96,18 @@ const uniqueClients = computed(() => {
     return Array.from(clients);
 });
 
+// Fonction pour changer le tri
+function toggleSort(field) {
+    if (sortBy.value === field) {
+        // Si on clique sur le même champ, on inverse la direction
+        sortDirection.value = sortDirection.value === "asc" ? "desc" : "asc";
+    } else {
+        // Sinon on change le champ et on met la direction par défaut
+        sortBy.value = field;
+        sortDirection.value = field === "date" ? "desc" : "asc"; // Par défaut: dates récentes d'abord, statuts alphabétiques
+    }
+}
+
 // Interventions filtrées et triées
 const sortedInterventions = computed(() => {
     let filtered = [...props.interventions];
@@ -106,14 +127,34 @@ const sortedInterventions = computed(() => {
             }`.trim();
             return fullName === selectedClient.value;
         });
+    } else if (currentFilter.value === "status" && selectedStatus.value) {
+        filtered = filtered.filter((intervention) => {
+            return intervention.status === selectedStatus.value;
+        });
     }
 
-    // Trier avec les interventions terminées à la fin
-    return filtered.sort((a, b) => {
+    // Appliquer le tri
+    filtered.sort((a, b) => {
+        // Toujours mettre les interventions terminées à la fin, peu importe le tri
         if (a.status === "terminée" && b.status !== "terminée") return 1;
         if (a.status !== "terminée" && b.status === "terminée") return -1;
+
+        // Tri par date ou statut
+        if (sortBy.value === "date") {
+            const dateA = new Date(a.date || a.created_at);
+            const dateB = new Date(b.date || b.created_at);
+            return sortDirection.value === "asc" ? dateA - dateB : dateB - dateA;
+        } else if (sortBy.value === "status") {
+            // Ordre des statuts: planifiée, en cours, terminée
+            const statusOrder = { "planifiée": 1, "en cours": 2, "terminée": 3 };
+            const orderA = statusOrder[a.status] || 0;
+            const orderB = statusOrder[b.status] || 0;
+            return sortDirection.value === "asc" ? orderA - orderB : orderB - orderA;
+        }
         return 0;
     });
+
+    return filtered;
 });
 </script>
 <template>
@@ -143,7 +184,8 @@ const sortedInterventions = computed(() => {
                     <PrimaryButton class="h-max">Ajouter</PrimaryButton>
                 </div>
             </div>
-            <div class="flex flex-col w-full gap-4">
+            <div class="flex flex-col gap-6 w-full">
+                <!-- Filtres -->
                 <div class="flex items-center w-full">
                     <button
                         @click="setFilter('all')"
@@ -153,7 +195,7 @@ const sortedInterventions = computed(() => {
                         }"
                         class="flex py-2 px-4 justify-center items-center gap-2 text-white font-inter border-transparent text-base transition-all duration-300 ease-in-out hover:bg-[#0D0703] hover:border hover:border-white/20"
                     >
-                        Voir tout
+                        Tous
                     </button>
                     <button
                         @click="setFilter('type')"
@@ -175,6 +217,30 @@ const sortedInterventions = computed(() => {
                     >
                         Clients
                     </button>
+                    <button
+                        @click="setFilter('status')"
+                        :class="{
+                            'bg-[#0D0703] border border-white/20':
+                                currentFilter === 'status',
+                        }"
+                        class="flex py-2 px-4 justify-center items-center gap-2 text-white font-inter border-transparent text-base transition-all duration-300 ease-in-out hover:bg-[#0D0703] hover:border hover:border-white/20"
+                    >
+                        Statuts
+                    </button>
+                    <button
+                        @click="toggleSort('date')"
+                        :class="{
+                            'bg-[#0D0703] border border-white/20': sortBy === 'date',
+                        }"
+                        class="flex py-2 px-4 justify-center items-center gap-2 text-white font-inter border-transparent text-base transition-all duration-300 ease-in-out hover:bg-[#0D0703] hover:border hover:border-white/20"
+                    >
+                        Date
+                        <svg v-if="sortBy === 'date'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" class="ml-1">
+                            <path v-if="sortDirection === 'asc'" d="M18 15l-6-6-6 6"/>
+                            <path v-else d="M6 9l6 6 6-6"/>
+                        </svg>
+                    </button>
+
                 </div>
 
                 <!-- Options de filtre pour les types -->
@@ -213,6 +279,33 @@ const sortedInterventions = computed(() => {
                         {{ client }}
                     </button>
                 </div>
+
+                <!-- Options de filtre pour les statuts -->
+                <div
+                    v-if="currentFilter === 'status'"
+                    class="flex flex-wrap gap-2 mb-2"
+                >
+                    <button
+                        v-for="status in statusOptions"
+                        :key="status"
+                        @click="selectedStatus = status"
+                        :style="{
+                            backgroundColor: selectedStatus === status ? statusColors[status] : 'transparent',
+                            color: selectedStatus === status ? (status === 'planifiée' ? '#2D2D2D' : '#fff') : '#fff'
+                        }"
+                        class="px-3 py-1 text-sm rounded-md border border-white/20 transition-colors duration-300"
+                        :class="{
+                            'bg-[#DAD9D9] text-[#2D2D2D]': selectedStatus === status && status === 'planifiée',
+                            'bg-[#4A90E2] text-white': selectedStatus === status && status === 'en cours',
+                            'bg-[#82AD84] text-white': selectedStatus === status && status === 'terminée'
+                        }"
+                        @mouseover="$event.target.style.backgroundColor = statusColors[status]; $event.target.style.color = status === 'planifiée' ? '#2D2D2D' : 'white';"
+                        @mouseout="$event.target.style.backgroundColor = selectedStatus === status ? statusColors[status] : 'transparent'; $event.target.style.color = selectedStatus === status ? (status === 'planifiée' ? '#2D2D2D' : '#fff') : '#fff';"
+                        
+                    >
+                        {{ status }}
+                    </button>
+                </div>
             </div>
             <div class="grid grid-cols-2 gap-8 w-full">
                 <div
@@ -242,10 +335,12 @@ const sortedInterventions = computed(() => {
                             Intervention #{{ intervention.id }}
                         </p>
                         <button
-                            class="flex py-1 px-[10px] items-start rounded border border-white/5 font-inter font-semibold text-sm"
+                            class="flex py-1 px-[10px] items-start rounded border border-white/5 font-inter font-semibold text-sm transition-colors duration-300"
                             :style="{
-                                color: statusColors[intervention.status],
+                                color: statusColors[intervention.status]
                             }"
+                            @mouseover="$event.target.style.backgroundColor = statusColors[intervention.status]; $event.target.style.color = intervention.status === 'planifiée' ? '#2D2D2D' : 'white';"
+                            @mouseout="$event.target.style.backgroundColor = 'transparent'; $event.target.style.color = statusColors[intervention.status];"
                             @click="updateStatus(intervention)"
                         >
                             {{ intervention.status }}
