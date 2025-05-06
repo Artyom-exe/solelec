@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, inject } from "vue";
+import { ref, reactive, inject, onMounted, watch } from "vue";
 import { VueFinalModal } from "vue-final-modal";
 import "vue-final-modal/style.css";
 import Services from "@/Components/Services.vue";
@@ -8,6 +8,19 @@ import SecondaryButton from "@/Components/SecondaryButton.vue";
 import Datepicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
 import axios from "axios";
+import { marked } from "marked";
+// Remplacer l'importation de Quill par TipTap
+import { useEditor, EditorContent } from "@tiptap/vue-3";
+import StarterKit from "@tiptap/starter-kit";
+import Link from "@tiptap/extension-link";
+import Placeholder from "@tiptap/extension-placeholder";
+
+// Configuration de marked pour une conversion sécurisée
+marked.setOptions({
+    gfm: true,
+    breaks: true,
+    sanitize: true,
+});
 
 // Définition d'une prop optionnelle pour le titre du modal
 const props = defineProps<{
@@ -32,6 +45,7 @@ const isSubmitting = ref(false);
 const selectedServiceIds = ref<number[]>([]);
 const successMessage = ref("");
 const errorMessage = ref("");
+const markdownContent = ref("");
 
 const formData = reactive({
     services: [] as number[],
@@ -42,6 +56,61 @@ const formData = reactive({
     phone: "",
     email: "",
     address: "",
+});
+
+// Configuration de l'éditeur TipTap
+const editor = useEditor({
+    content: "",
+    extensions: [
+        StarterKit.configure({
+            bulletList: {
+                keepMarks: true,
+                keepAttributes: true,
+            },
+            orderedList: {
+                keepMarks: true,
+                keepAttributes: true,
+            },
+            heading: false, // Désactiver les titres pour simplifier l'interface
+        }),
+        Link.configure({
+            openOnClick: false,
+        }),
+        Placeholder.configure({
+            placeholder: "Décrivez votre projet... *",
+        }),
+    ],
+    onUpdate: ({ editor }) => {
+        // Convertir le contenu HTML en Markdown
+        const content = editor.getHTML();
+        markdownContent.value = content;
+        formData.description = content;
+    },
+    editorProps: {
+        handleKeyDown: (view, event) => {
+            // Gérer Tab pour les indentations
+            if (event.key === "Tab") {
+                // Utiliser les commandes de base au lieu de outdent/indent
+                if (event.shiftKey) {
+                    // Reculer une liste
+                    editor.value
+                        ?.chain()
+                        .focus()
+                        .liftListItem("listItem")
+                        .run();
+                } else {
+                    // Avancer une liste
+                    editor.value
+                        ?.chain()
+                        .focus()
+                        .sinkListItem("listItem")
+                        .run();
+                }
+                return true;
+            }
+            return false;
+        },
+    },
 });
 
 // Ajout du statut de formulaire pour gérer les erreurs
@@ -324,6 +393,7 @@ const handleValidationErrors = (errors) => {
 const resetForm = () => {
     step.value = 1;
     selectedServiceIds.value = [];
+    markdownContent.value = "";
 
     // Réinitialiser toutes les données du formulaire
     Object.assign(formData, {
@@ -358,6 +428,21 @@ const resetForm = () => {
     successMessage.value = "";
     errorMessage.value = "";
 };
+
+// Synchroniser le contenu Markdown avec le champ description du formulaire
+const syncMarkdownContent = (content) => {
+    formData.description = content;
+};
+
+// Watcher pour la mise à jour du contenu markdown
+watch(markdownContent, (newContent) => {
+    syncMarkdownContent(newContent);
+});
+
+onMounted(() => {
+    // Réinitialiser le formulaire quand le composant est monté
+    resetForm();
+});
 </script>
 
 <template>
@@ -442,16 +527,68 @@ const resetForm = () => {
 
                 <div class="flex flex-col gap-4">
                     <div class="flex flex-col items-start">
-                        <textarea
-                            v-model="formData.description"
-                            rows="4"
-                            placeholder="Décrivez votre projet... *"
-                            :class="{
-                                'border-red-500 focus:border-red-500 focus:ring-red-500':
-                                    formStatus.errors.description,
-                            }"
-                            class="w-full h-[180px] bg-white/10 border border-white/20 text-white rounded-[6px] focus:ring-[#FF8C42] focus:border-[#FF8C42] p-2 font-inter text-base"
-                        ></textarea>
+                        <!-- Ajout de la barre d'outils pour TipTap -->
+                        <div
+                            class="toolbar w-full bg-white/10 border border-white/20 border-b-0 rounded-t-[6px] p-2"
+                        >
+                            <button
+                                @click="
+                                    editor?.chain().focus().toggleBold().run()
+                                "
+                                :class="{
+                                    'is-active': editor?.isActive('bold'),
+                                }"
+                                title="Gras"
+                            >
+                                B
+                            </button>
+                            <button
+                                @click="
+                                    editor?.chain().focus().toggleItalic().run()
+                                "
+                                :class="{
+                                    'is-active': editor?.isActive('italic'),
+                                }"
+                                title="Italique"
+                            >
+                                I
+                            </button>
+                            <button
+                                @click="
+                                    editor
+                                        ?.chain()
+                                        .focus()
+                                        .toggleBulletList()
+                                        .run()
+                                "
+                                :class="{
+                                    'is-active': editor?.isActive('bulletList'),
+                                }"
+                                title="Liste à puces"
+                            >
+                                • Liste
+                            </button>
+                            <button
+                                @click="
+                                    editor
+                                        ?.chain()
+                                        .focus()
+                                        .toggleOrderedList()
+                                        .run()
+                                "
+                                :class="{
+                                    'is-active':
+                                        editor?.isActive('orderedList'),
+                                }"
+                                title="Liste numérotée"
+                            >
+                                1. Liste
+                            </button>
+                        </div>
+                        <EditorContent
+                            :editor="editor"
+                            class="w-full min-h-[180px max-h-[250px] overflow-y-auto bg-white/10 border border-white/20 text-white rounded-b-[6px] focus:ring-[#FF8C42] focus:border-[#FF8C42] p-2 font-inter text-base text-left"
+                        />
                         <span
                             v-if="formStatus.errors.description"
                             class="text-red-400 text-sm mt-1 text-left"
@@ -682,13 +819,100 @@ const resetForm = () => {
 
 .vfm-scale-fade-enter-active,
 .vfm-scale-fade-leave-active {
-    transition: opacity 0.4s cubic-bezier(0.25, 0.1, 0.25, 1),
-        transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+    transition: opacity 0.4s cubic-bezier(0.25, 0.1, 0.25, 0.25),
+        transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 0.25);
     transform-origin: center center;
 }
 .vfm-scale-fade-enter-from,
 .vfm-scale-fade-leave-to {
     opacity: 0;
     transform: scale(0.9);
+}
+
+/* Styles pour l'éditeur TipTap */
+:deep(.ProseMirror) {
+    min-height: 150px;
+    padding: 0.75rem;
+    color: white;
+    outline: none !important;
+    overflow-y: auto;
+}
+
+:deep(.ProseMirror p.is-editor-empty:first-child::before) {
+    color: rgba(255, 255, 255, 0.5);
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
+}
+
+:deep(.tiptap) {
+    width: 100%;
+    min-height: 180px;
+}
+
+/* Styles pour la barre d'outils */
+:deep(.toolbar) {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+:deep(.toolbar button) {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    padding: 0.3rem 0.6rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+:deep(.toolbar button:hover) {
+    background: rgba(255, 140, 66, 0.6);
+}
+
+:deep(.toolbar button.is-active) {
+    background: #ff8c42;
+    color: white;
+}
+
+/* Styles pour le contenu */
+:deep(.ProseMirror ul) {
+    padding-left: 1.5rem;
+    list-style: disc;
+}
+
+:deep(.ProseMirror ol) {
+    padding-left: 1.5rem;
+    list-style: decimal;
+}
+
+:deep(.ProseMirror a) {
+    color: #ff8c42;
+    text-decoration: underline;
+}
+
+:deep(.ProseMirror blockquote) {
+    padding-left: 1rem;
+    border-left: 2px solid #ff8c42;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+:deep(.ProseMirror p) {
+    margin-bottom: 0.75rem;
+}
+
+:deep(.ProseMirror h1),
+:deep(.ProseMirror h2),
+:deep(.ProseMirror h3),
+:deep(.ProseMirror h4),
+:deep(.ProseMirror h5),
+:deep(.ProseMirror h6) {
+    font-weight: 600;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
 }
 </style>

@@ -3,6 +3,7 @@ import AdminLayout from "@/Layouts/AdminLayout.vue";
 import { Link } from "@inertiajs/vue3";
 import { ref, computed } from "vue";
 import { router } from "@inertiajs/vue3";
+import { marked } from "marked";
 
 const props = defineProps({
     clients: Object,
@@ -90,6 +91,12 @@ const formatDate = (dateString) => {
     return `${String(date.getDate()).padStart(2, "0")}/${String(
         date.getMonth() + 1
     ).padStart(2, "0")}/${date.getFullYear()}`;
+};
+
+// Fonction pour convertir le markdown en HTML
+const renderMarkdown = (text) => {
+    if (!text) return "";
+    return marked(text);
 };
 </script>
 
@@ -248,9 +255,10 @@ const formatDate = (dateString) => {
                                     </Link>
                                 </div>
                             </div>
-                            <p class="font-inter text-base font-normal">
-                                {{ quote.description }}
-                            </p>
+                            <div
+                                class="font-inter text-base font-normal markdown-content"
+                                v-html="renderMarkdown(quote.description)"
+                            ></div>
                             <div
                                 class="flex flex-start content-start gap-6 self-stretch font-inter text-base font-normal"
                             >
@@ -398,5 +406,59 @@ const formatDate = (dateString) => {
 <style>
 .convert-link:hover svg {
     transform: translateX(4px);
+}
+
+/* Styles pour le contenu Markdown */
+.markdown-content {
+    width: 100%;
+}
+
+.markdown-content ul {
+    list-style-type: disc;
+    margin-left: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.markdown-content ol {
+    list-style-type: decimal;
+    margin-left: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.markdown-content p {
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+}
+
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4,
+.markdown-content h5,
+.markdown-content h6 {
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.markdown-content a {
+    color: #ff8c42;
+    text-decoration: underline;
+}
+
+.markdown-content code {
+    font-family: monospace;
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 0.2rem 0.4rem;
+    border-radius: 3px;
+}
+
+.markdown-content blockquote {
+    border-left: 4px solid #ff8c42;
+    padding-left: 1rem;
+    margin-left: 0;
+    margin-right: 0;
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.8);
 }
 </style>
