@@ -18,7 +18,7 @@ class InterventionController extends Controller
      */
     public function index()
     {
-        $interventions = Intervention::with(['client', 'devis'])->latest()->get();
+        $interventions = Intervention::with(['client', 'devis', "devis.services"])->latest()->get();
 
         return Inertia::render('Admin/Interventions/Index', [
             'interventions' => $interventions
@@ -171,6 +171,32 @@ class InterventionController extends Controller
         }
 
         return redirect()->route('interventions')->with('success', 'Intervention mise à jour avec succès');
+    }
+
+    /**
+     * Met à jour uniquement le statut d'une intervention
+     */
+    public function updateStatus(Request $request, Intervention $intervention)
+    {
+        $validated = $request->validate([
+            'status' => 'required|string|in:planifiée,en cours,terminée,annulée',
+        ]);
+
+        $oldStatus = $intervention->status;
+
+        // Mise à jour du statut de l'intervention
+        $intervention->update([
+            'status' => $validated['status'],
+        ]);
+
+        // Récupérer le client pour le message
+        $client = $intervention->client;
+        $clientName = $client ? $client->name . ' ' . $client->lastname : 'client #' . $intervention->clients_id;
+
+        // Journalisation de l'activité
+        ActivityLogger::log('intervention', $intervention, 'Statut de l\'intervention pour ' . $clientName . ' mis à jour: ' . $oldStatus . ' → ' . $validated['status']);
+
+        return redirect()->back()->with('success', 'Statut de l\'intervention mis à jour avec succès');
     }
 
     /**
