@@ -902,7 +902,7 @@ onMounted(() => {
 }
 
 :deep(.ProseMirror p) {
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.1rem;
 }
 
 :deep(.ProseMirror h1),
