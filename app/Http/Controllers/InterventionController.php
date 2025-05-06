@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Intervention;
 use App\Models\Client;
 use App\Models\Quote;
+use App\Models\Service;
 use App\Models\InterventionImage;
 use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
@@ -19,9 +20,15 @@ class InterventionController extends Controller
     public function index()
     {
         $interventions = Intervention::with(['client', 'devis', "devis.services"])->latest()->get();
+        $clients = Client::select('id', 'name', 'lastname', 'email', 'phone')->get();
+        $quotes = Quote::select('id', 'description', 'client_id')->get();
+        $services = Service::select('id', 'title', 'short_description')->get();
 
         return Inertia::render('Admin/Interventions/Index', [
-            'interventions' => $interventions
+            'interventions' => $interventions,
+            'clients' => $clients,
+            'quotes' => $quotes,
+            'services' => $services
         ]);
     }
 
@@ -44,37 +51,65 @@ class InterventionController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        // Valider les données de base
+        $request->validate([
             'status' => 'required|string|in:planifiée,en cours,terminée,annulée',
-            'date' => 'required|date',
-            'notes' => 'nullable|string',
-            'clients_id' => 'required|exists:clients,id',
-            'devis_id' => 'nullable|exists:quotes,id',
-            'images' => 'nullable|array',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
+            'services' => 'required|array',
+            'services.*' => 'exists:services,id'
         ]);
-
-        // Création de l'intervention
-        $intervention = Intervention::create($validated);
-
-        // Traitement des images si présentes
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $image) {
-                $path = $image->store('interventions', 'public');
-
-                InterventionImage::create([
-                    'intervention_id' => $intervention->id,
-                    'path' => $path
-                ]);
-            }
+        
+        // Gérer le client (existant ou nouveau)
+        $clientId = null;
+        $clientName = '';
+        
+        if ($request->has('clients_id') && !empty($request->clients_id)) {
+            // Client existant
+            $clientId = $request->clients_id;
+            $client = Client::find($clientId);
+            $clientName = $client ? $client->name . ' ' . $client->lastname : 'client #' . $clientId;
+        } elseif ($request->has('new_client_name') && !empty($request->new_client_name)) {
+            // Création d'un nouveau client
+            $client = Client::create([
+                'name' => $request->new_client_name,
+                'lastname' => $request->new_client_lastname ?? '',
+                'phone' => $request->new_client_phone ?? null,
+                'email' => $request->new_client_email ?? null,
+            ]);
+            
+            $clientId = $client->id;
+            $clientName = $client->name . ' ' . $client->lastname;
+            
+            // Journalisation de la création du client
+            ActivityLogger::log('client', $client, 'Nouveau client créé lors de la création d\'une intervention');
+        } else {
+            return redirect()->back()->with('error', 'Vous devez sélectionner un client ou en créer un nouveau');
         }
 
-        // Récupérer le client pour le message
-        $client = Client::find($validated['clients_id']);
-        $clientName = $client ? $client->name . ' ' . $client->lastname : 'client #' . $validated['clients_id'];
+        // 1. Créer un devis avec statut 'converti'
+        $quote = Quote::create([
+            'client_id' => $clientId,
+            'description' => 'Devis créé automatiquement pour intervention',
+            'requested_date' => now(),
+            'status' => 'converti'
+        ]);
+
+        // Associer les services au devis
+        $quote->services()->attach($request->services);
+
+        // Journalisation de la création du devis
+        ActivityLogger::log('quote', $quote, 'Devis #' . $quote->id . ' créé automatiquement pour ' . $clientName);
+
+        // 2. Créer l'intervention avec le devis créé
+        $intervention = Intervention::create([
+            'status' => $request->status,
+            'date' => now(), // Date actuelle
+            'notes' => '',
+            'clients_id' => $clientId,
+            'devis_id' => $quote->id
+        ]);
 
         // Journalisation de l'activité
-        ActivityLogger::log('intervention', $intervention, 'Nouvelle intervention ' . $validated['status'] . ' créée pour ' . $clientName);
+        ActivityLogger::log('intervention', $intervention, 'Nouvelle intervention ' . $request->status . ' créée pour ' . $clientName);
 
         return redirect()->route('interventions')->with('success', 'Intervention créée avec succès');
     }
