@@ -2,13 +2,16 @@
 import AdminLayout from "@/Layouts/AdminLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import secondaryButton from "@/Components/SecondaryButton.vue";
-import { computed, ref } from "vue";
+import { computed, ref, reactive } from "vue";
 import { router } from "@inertiajs/vue3";
 
 const props = defineProps({
     interventions: Array,
     errors: Object,
     flash: Object,
+    clients: Array,
+    quotes: Array,
+    services: Array,
 });
 
 const statusColors = {
@@ -43,6 +46,74 @@ function formatDate(dateString) {
     const year = String(date.getFullYear()).slice(-2); // Prendre seulement les 2 derniers chiffres
 
     return `${day}/${month}/${year}`;
+}
+
+// Variable pour gérer l'affichage du formulaire d'ajout
+const showAddForm = ref(false);
+
+// Nouvelle intervention - simplifiée pour ne garder que l'essentiel
+const newIntervention = reactive({
+    status: "planifiée", // Statut par défaut: planifiée (non modifiable)
+    clients_id: "",
+    services: [], // Services sélectionnés pour le devis
+    new_client_name: "",
+    new_client_lastname: "",
+    new_client_phone: "",
+    new_client_email: "",
+    isNewClient: false, // Pour basculer entre client existant et nouveau client
+});
+
+// Fonction pour basculer la sélection d'un service
+function toggleService(serviceId) {
+    const index = newIntervention.services.indexOf(serviceId);
+    if (index === -1) {
+        // Si le service n'est pas déjà sélectionné, l'ajouter
+        newIntervention.services.push(serviceId);
+    } else {
+        // Sinon, le retirer
+        newIntervention.services.splice(index, 1);
+    }
+}
+
+// Fonction pour basculer entre client existant et nouveau client
+function toggleClientMode() {
+    newIntervention.isNewClient = !newIntervention.isNewClient;
+    // Réinitialiser les champs correspondants
+    if (newIntervention.isNewClient) {
+        newIntervention.clients_id = "";
+    } else {
+        newIntervention.new_client_name = "";
+        newIntervention.new_client_lastname = "";
+        newIntervention.new_client_phone = "";
+        newIntervention.new_client_email = "";
+    }
+}
+
+// Fonction pour soumettre la nouvelle intervention
+function submitNewIntervention() {
+    // Vérifier que les champs obligatoires sont remplis
+    if ((!newIntervention.clients_id && !newIntervention.isNewClient) ||
+        (newIntervention.isNewClient && !newIntervention.new_client_name) ||
+        newIntervention.services.length === 0) {
+        alert('Veuillez sélectionner un client (ou créer un nouveau) et au moins un service');
+        return;
+    }
+
+    router.post('/admin/interventions', newIntervention, {
+        preserveScroll: true,
+        onSuccess: () => {
+            showAddForm.value = false;
+            // Réinitialiser le formulaire
+            newIntervention.status = "planifiée";
+            newIntervention.clients_id = "";
+            newIntervention.services = [];
+            newIntervention.new_client_name = "";
+            newIntervention.new_client_lastname = "";
+            newIntervention.new_client_phone = "";
+            newIntervention.new_client_email = "";
+            newIntervention.isNewClient = false;
+        }
+    });
 }
 
 // Variables pour le filtrage
@@ -181,7 +252,9 @@ const sortedInterventions = computed(() => {
                     </div>
                 </div>
                 <div class="flex items-end">
-                    <PrimaryButton class="h-max">Ajouter</PrimaryButton>
+                    <PrimaryButton @click="showAddForm = !showAddForm" class="h-max">
+                        {{ showAddForm ? 'Annuler' : 'Ajouter' }}
+                    </PrimaryButton>
                 </div>
             </div>
             <div class="flex flex-col gap-6 w-full">
@@ -307,6 +380,149 @@ const sortedInterventions = computed(() => {
                     </button>
                 </div>
             </div>
+            <!-- Formulaire d'ajout d'intervention -->
+            <div class="grid grid-cols-2 gap-8 w-full items-start mb-8">
+                <div
+                    v-if="showAddForm"
+                    class="flex p-8 flex-col items-start gap-6 rounded-lg border border-white/20 bg-[#242424] h-auto"
+                >
+                    <!-- En-tête avec Nouveau client à gauche et Services à droite -->
+                    <div class="flex justify-between w-full items-center mb-4">
+                        <div>
+                            <button
+                                @click="toggleClientMode"
+                                class="text-[#FF8C42] hover:text-white transition-colors text-sm flex items-center gap-1"
+                            >
+                                <span v-if="!newIntervention.isNewClient">Nouveau client</span>
+                                <span v-else>Client existant</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="relative group">
+                            <div
+                                class="flex py-1 px-[10px] items-start rounded-[4px] border border-white/5 bg-white/5 text-[#FF8C42] font-inter font-semibold text-sm cursor-pointer"
+                            >
+                                {{ newIntervention.services.length > 0 ? props.services.find(s => s.id === newIntervention.services[0])?.title || 'Services' : 'Services' }}
+                                <span v-if="newIntervention.services.length > 1" class="ml-1">
+                                    +{{ newIntervention.services.length - 1 }}
+                                </span>
+                            </div>
+                            <!-- Popup qui apparaît au survol -->
+                            <div
+                                v-if="newIntervention.services.length > 1"
+                                class="absolute z-10 top-full right-0 mt-1 bg-[#1A1A1A] border border-white/10 rounded-md p-2 shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 min-w-[150px]"
+                            >
+                                <div
+                                    v-for="serviceId in newIntervention.services"
+                                    :key="serviceId"
+                                    class="py-1 px-2 text-[#FF8C42] font-inter font-semibold text-sm whitespace-nowrap"
+                                >
+                                    {{ props.services.find(s => s.id === serviceId)?.title }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Section de sélection du client -->
+                    <div class="w-full mb-4">
+                        <!-- Sélection d'un client existant -->
+                        <div v-if="!newIntervention.isNewClient">
+                            <select
+                                v-model="newIntervention.clients_id"
+                                class="bg-[#242424] text-white font-poppins text-lg p-2 rounded-md border border-white/20 w-full"
+                                required
+                            >
+                                <option value="" disabled>Sélectionner un client</option>
+                                <option v-for="client in props.clients" :key="client.id" :value="client.id">
+                                    {{ client.name }} {{ client.lastname }}
+                                </option>
+                            </select>
+                        </div>
+
+                        <!-- Création d'un nouveau client -->
+                        <div v-else class="flex flex-col gap-2">
+                            <div class="flex gap-2">
+                                <input
+                                    v-model="newIntervention.new_client_name"
+                                    type="text"
+                                    class="bg-[#242424] text-white font-poppins text-xl font-medium p-2 rounded-md border border-white/20 w-1/2"
+                                    placeholder="Prénom"
+                                    required
+                                />
+                                <input
+                                    v-model="newIntervention.new_client_lastname"
+                                    type="text"
+                                    class="bg-[#242424] text-white font-poppins text-xl font-medium p-2 rounded-md border border-white/20 w-1/2"
+                                    placeholder="Nom"
+                                />
+                            </div>
+                            <div class="flex gap-2">
+                                <div class="relative w-1/2">
+                                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#FF8C42" class="bi bi-telephone" viewBox="0 0 16 16">
+                                            <path d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.6 17.6 0 0 0 4.168 6.608 17.6 17.6 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.678.678 0 0 0-.58-.122l-2.19.547a1.75 1.75 0 0 1-1.657-.459L5.482 8.062a1.75 1.75 0 0 1-.46-1.657l.548-2.19a.678.678 0 0 0-.122-.58L3.654 1.328zM1.884.511a1.745 1.745 0 0 1 2.612.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.68.68 0 0 0 .178.643l2.457 2.457a.68.68 0 0 0 .644.178l2.189-.547a1.75 1.75 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.6 18.6 0 0 1-7.01-4.42 18.6 18.6 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877L1.885.511z"/>
+                                        </svg>
+                                    </div>
+                                    <input
+                                        v-model="newIntervention.new_client_phone"
+                                        type="tel"
+                                        class="bg-[#242424] text-[#FF8C42] font-inter text-base p-2 pl-10 rounded-md border border-white/20 w-full"
+                                        placeholder="Téléphone"
+                                    />
+                                </div>
+                                <div class="relative w-1/2">
+                                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-envelope" viewBox="0 0 16 16">
+                                            <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4Zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2Zm13 2.383-4.708 2.825L15 11.105V5.383Zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741ZM1 11.105l4.708-2.897L1 5.383v5.722Z"/>
+                                        </svg>
+                                    </div>
+                                    <input
+                                        v-model="newIntervention.new_client_email"
+                                        type="email"
+                                        class="bg-[#242424] text-white font-inter text-base p-2 pl-10 rounded-md border border-white/20 w-full"
+                                        placeholder="Email"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex flex-col w-full gap-4">
+                        <p class="text-white font-inter font-medium text-base">Services :</p>
+                        <div class="flex flex-wrap gap-2 mb-2">
+                            <button
+                                v-for="service in props.services"
+                                :key="service.id"
+                                @click="toggleService(service.id)"
+                                :class="{
+                                    'bg-[#FF8C42] text-white': newIntervention.services.includes(service.id),
+                                    'bg-[#333] text-white': !newIntervention.services.includes(service.id)
+                                }"
+                                class="px-3 py-1 text-sm rounded-md border border-white/20 hover:bg-[#FF8C42] hover:text-white transition-colors duration-300"
+                            >
+                                {{ service.title }}
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex gap-2 mt-2">
+                        <button
+                            @click="submitNewIntervention"
+                            class="text-white bg-[#FF8C42] hover:bg-orange-700 transition-colors rounded-full px-4 py-1 text-sm"
+                        >
+                            Confirmer
+                        </button>
+                        <button
+                            @click="showAddForm = false"
+                            class="text-white hover:text-gray-400 transition-colors text-sm"
+                        >
+                            Annuler
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <div class="grid grid-cols-2 gap-8 w-full items-start">
                 <div
                     v-for="intervention in sortedInterventions"
@@ -399,7 +615,20 @@ const sortedInterventions = computed(() => {
                             </svg>
                             {{ intervention.client?.phone }}
                         </a>
-                        <template v-else>non renseigné</template>
+                        <div v-else class="flex gap-3 text-white hover:text-gray-300 transition-colors duration-300">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="currentColor"
+                            >
+                                <path
+                                    d="M6.54 5C6.6 5.89 6.75 6.76 6.99 7.59L5.79 8.79C5.38 7.59 5.12 6.32 5.03 5H6.54ZM16.4 17.02C17.25 17.26 18.12 17.41 19 17.47V18.96C17.68 18.87 16.41 18.61 15.2 18.21L16.4 17.02ZM7.5 3H4C3.45 3 3 3.45 3 4C3 13.39 10.61 21 20 21C20.55 21 21 20.55 21 20V16.51C21 15.96 20.55 15.51 20 15.51C18.76 15.51 17.55 15.31 16.43 14.94C16.331 14.903 16.2256 14.886 16.12 14.89C15.86 14.89 15.61 14.99 15.41 15.18L13.21 17.38C10.3755 15.9303 8.06966 13.6245 6.62 10.79L8.82 8.59C9.1 8.31 9.18 7.92 9.07 7.57C8.69132 6.41789 8.4989 5.21274 8.5 4C8.5 3.45 8.05 3 7.5 3Z"
+                                />
+                            </svg>
+                            Non renseigné
+                        </div>
                     </div>
                     <secondaryButton
                         @click="
