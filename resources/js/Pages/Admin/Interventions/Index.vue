@@ -380,10 +380,10 @@ const sortedInterventions = computed(() => {
                     </button>
                 </div>
             </div>
+            
             <!-- Formulaire d'ajout d'intervention -->
-            <div class="grid grid-cols-2 gap-8 w-full items-start mb-8">
+            <div v-if="showAddForm" class="grid grid-cols-2 gap-8 w-full items-start">
                 <div
-                    v-if="showAddForm"
                     class="flex p-8 flex-col items-start gap-6 rounded-lg border border-white/20 bg-[#242424] h-auto"
                 >
                     <!-- En-tête avec Nouveau client à gauche et Services à droite -->
@@ -522,8 +522,9 @@ const sortedInterventions = computed(() => {
                     </div>
                 </div>
             </div>
-
-            <div class="grid grid-cols-2 gap-8 w-full items-start">
+            
+            <!-- Liste des interventions -->
+            <div class="grid grid-cols-2 gap-8 w-full items-start mt-4">
                 <div
                     v-for="intervention in sortedInterventions"
                     :key="intervention.id"
