@@ -307,11 +307,11 @@ const sortedInterventions = computed(() => {
                     </button>
                 </div>
             </div>
-            <div class="grid grid-cols-2 gap-8 w-full">
+            <div class="grid grid-cols-2 gap-8 w-full items-start">
                 <div
                     v-for="intervention in sortedInterventions"
                     :key="intervention.id"
-                    class="flex p-8 flex-col items-start gap-6 rounded-lg border border-white/20 bg-[#242424]"
+                    class="flex p-8 flex-col items-start gap-6 rounded-lg border border-white/20 bg-[#242424] h-auto"
                 >
                     <div class="flex justify-between w-full">
                         <h4
@@ -320,13 +320,27 @@ const sortedInterventions = computed(() => {
                             {{ intervention.client?.name }}
                             {{ intervention.client?.lastname }}
                         </h4>
-                        <div class="flex flex-col gap-3">
+                        <div class="relative group">
                             <div
-                                v-for="services in intervention.devis?.services"
-                                :key="services.id"
-                                class="flex py-1 px-[10px] items-start rounded-[4px] border border-white/5 bg-white/5 text-[#FF8C42] font-inter font-semibold text-sm"
+                                class="flex py-1 px-[10px] items-start rounded-[4px] border border-white/5 bg-white/5 text-[#FF8C42] font-inter font-semibold text-sm cursor-pointer"
                             >
-                                {{ services.title }}
+                                {{ intervention.devis?.services && intervention.devis.services.length > 0 ? intervention.devis.services[0].title : 'Aucun service' }}
+                                <span v-if="intervention.devis?.services && intervention.devis.services.length > 1" class="ml-1">
+                                    +{{ intervention.devis.services.length - 1 }}
+                                </span>
+                            </div>
+                            <!-- Popup qui apparaît au survol -->
+                            <div
+                                v-if="intervention.devis?.services && intervention.devis.services.length > 1"
+                                class="absolute z-10 top-full right-0 mt-1 bg-[#1A1A1A] border border-white/10 rounded-md p-2 shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 min-w-[150px]"
+                            >
+                                <div
+                                    v-for="service in intervention.devis.services"
+                                    :key="service.id"
+                                    class="py-1 px-2 text-[#FF8C42] font-inter font-semibold text-sm whitespace-nowrap"
+                                >
+                                    {{ service.title }}
+                                </div>
                             </div>
                         </div>
                     </div>
