@@ -23,9 +23,16 @@
     "dependencies": {
         "@splidejs/splide-extension-auto-scroll": "^0.5.3",
         "@splidejs/vue-splide": "^0.6.12",
+        "@tiptap/extension-link": "^2.12.0",
+        "@tiptap/extension-placeholder": "^2.12.0",
+        "@tiptap/pm": "^2.12.0",
+        "@tiptap/starter-kit": "^2.12.0",
+        "@tiptap/vue-3": "^2.12.0",
         "@vuepic/vue-datepicker": "^11.0.2",
+        "@vueup/vue-quill": "^1.2.0",
         "@yeger/vue-masonry-wall": "^5.0.18",
         "aos": "^2.3.4",
+        "marked": "^4.3.0",
         "vue-final-modal": "^4.5.5"
     }
 }
