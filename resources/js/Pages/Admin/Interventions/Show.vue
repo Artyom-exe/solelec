@@ -345,7 +345,7 @@ function compiledMarkdown(text) {
         <!-- Contenu principal -->
         <main class="container">
             <!-- Détails de l'intervention -->
-            <section class="flex content-center items-start gap-20 py-28 px-16">
+            <section class="flex content-center items-start gap-20 py-28 px-16 flex-wrap">
                 <div class="relative flex flex-col gap-6">
                     <h2
                         class="text-[#0D0703] font-poppins text-[2.5rem] font-medium leading-[120%] tracking-[-.4px] mb-3"
@@ -357,7 +357,7 @@ function compiledMarkdown(text) {
                     ></div>
                 </div>
                 <div
-                    class="flex min-w-[672px] h-[304px] p-8 flex-col items-start gap-6 rounded-lg border border-white/20 bg-[#F2F2F2] overflow-y-auto"
+                    class="flex w-[672px] h-[304px] p-8 flex-col items-start gap-6 rounded-lg border border-white/20 bg-[#F2F2F2] overflow-y-auto hide-scrollbar"
                 >
                     <p
                         class="text-[#0D0703] font-inter text-xl font-normal"
@@ -477,6 +477,16 @@ function compiledMarkdown(text) {
 </template>
 
 <style scoped>
+/* Styles pour cacher la barre de défilement tout en gardant la fonctionnalité */
+.hide-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari and Opera */
+}
+
 /* Styles pour le popup de services qui apparaît uniquement au survol de l'élément de service */
 .service-group:hover .service-popup {
     opacity: 1 !important;
