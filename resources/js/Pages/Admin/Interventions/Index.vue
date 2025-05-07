@@ -714,7 +714,7 @@ const sortedInterventions = computed(() => {
                         @click="
                             $inertia.visit(
                                 route(
-                                    'admin.interventions.show',
+                                    'interventions.show',
                                     intervention.id
                                 )
                             )

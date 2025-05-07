@@ -57,11 +57,11 @@ class InterventionController extends Controller
             'services' => 'required|array',
             'services.*' => 'exists:services,id'
         ]);
-        
+
         // Gérer le client (existant ou nouveau)
         $clientId = null;
         $clientName = '';
-        
+
         if ($request->has('clients_id') && !empty($request->clients_id)) {
             // Client existant
             $clientId = $request->clients_id;
@@ -75,10 +75,10 @@ class InterventionController extends Controller
                 'phone' => $request->new_client_phone ?? null,
                 'email' => $request->new_client_email ?? null,
             ]);
-            
+
             $clientId = $client->id;
             $clientName = $client->name . ' ' . $client->lastname;
-            
+
             // Journalisation de la création du client
             ActivityLogger::log('client', $client, 'Nouveau client créé lors de la création d\'une intervention');
         } else {
@@ -119,7 +119,7 @@ class InterventionController extends Controller
      */
     public function show(Intervention $intervention)
     {
-        $intervention->load(['client', 'devis', 'images']);
+        $intervention->load(['client', 'devis', 'devis.services', 'images']);
 
         return Inertia::render('Admin/Interventions/Show', [
             'intervention' => $intervention
