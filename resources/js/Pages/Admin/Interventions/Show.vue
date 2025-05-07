@@ -67,7 +67,7 @@ function updateStatus(intervention) {
 <template>
     <AdminLayout>
         <!-- En-tête noir avec les informations principales -->
-        <header class="bg-[#2D2D2D] text-white py-28 px-16">
+        <header class="bg-[#2D2D2D] text-white py-28 px-16 mt-[56px]">
             <div class="container flex items-start gap-20 self-stretch">
                 <!-- Côté gauche: Titre et statut -->
                 <div class="flex flex-col items-start gap-6 flex-1">
