@@ -250,12 +250,22 @@ class InterventionController extends Controller
             $image->delete();
         }
 
+        // Récupérer le devis associé avant de supprimer l'intervention
+        $devis = $intervention->devis;
+
         $intervention->delete();
+
+        // Supprimer le devis associé s'il existe
+        if ($devis) {
+            $devis->delete();
+            // Journalisation de la suppression du devis
+            ActivityLogger::log('delete', $devis, 'Devis associé à l\'intervention pour ' . $clientName . ' supprimé');
+        }
 
         // Journalisation de l'activité
         ActivityLogger::log('delete', $intervention, 'Intervention ' . $interventionStatus . ' pour ' . $clientName . ' supprimée');
 
-        return redirect()->route('interventions')->with('success', 'Intervention supprimée avec succès');
+        return redirect()->route('interventions')->with('success', 'Intervention et devis associé supprimés avec succès');
     }
 
     /**
