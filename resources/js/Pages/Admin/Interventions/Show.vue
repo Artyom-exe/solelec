@@ -3,6 +3,7 @@ import AdminLayout from "@/Layouts/AdminLayout.vue";
 import { Link, router } from "@inertiajs/vue3";
 import { computed, inject } from "vue";
 import { marked } from "marked";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
 
 // Injection des fonctions de notification
 const showNotification = inject("showNotification");
@@ -345,7 +346,9 @@ function compiledMarkdown(text) {
         <!-- Contenu principal -->
         <main class="container">
             <!-- Détails de l'intervention -->
-            <section class="flex content-center items-start gap-20 py-28 px-16 flex-wrap">
+            <section
+                class="flex content-center items-start gap-20 py-28 px-16 flex-wrap"
+            >
                 <div class="relative flex flex-col gap-6">
                     <h2
                         class="text-[#0D0703] font-poppins text-[2.5rem] font-medium leading-[120%] tracking-[-.4px] mb-3"
@@ -371,15 +374,37 @@ function compiledMarkdown(text) {
             </section>
 
             <!-- Photos -->
-            <section class="mb-12">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-bold">Photos</h2>
-                    <Link
-                        :href="route('interventions.edit', intervention.id)"
-                        class="bg-[#FF8C42] text-white px-4 py-1 rounded-full text-sm hover:bg-orange-600 transition-colors"
+            <section
+                class="flex py-28 px-16 flex-col gap-20 content-center items-start bg-[#2D2D2D]"
+            >
+                <div class="flex justify-between self-stretch">
+                    <div
+                        class="flex max-w-[768px] flex-col items-start gap-4 text-white"
                     >
-                        Ajouter
-                    </Link>
+                        <h2
+                            class="text-center font-inter text-base font-semibold"
+                        >
+                            Photos
+                        </h2>
+                        <div class="relative flex flex-col gap-6">
+                            <h3
+                                class="font-poppins text-5xl text-center font-medium leading-[57.6px] tracking-[-0.48px] mb-6"
+                            >
+                                Mes photos
+                            </h3>
+                            <div
+                                class="absolute bottom-0 left-[-25%] border-2 border-[#FF8C42] w-[180%] max-w-[370px] min-w-[200px]"
+                            ></div>
+                        </div>
+                    </div>
+                    <div class="flex items-end">
+                        <PrimaryButton
+                            @click="showAddForm = !showAddForm"
+                            class="h-max"
+                        >
+                            Ajouter
+                        </PrimaryButton>
+                    </div>
                 </div>
 
                 <!-- Galerie de photos -->
@@ -479,12 +504,12 @@ function compiledMarkdown(text) {
 <style scoped>
 /* Styles pour cacher la barre de défilement tout en gardant la fonctionnalité */
 .hide-scrollbar {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
 }
 
 .hide-scrollbar::-webkit-scrollbar {
-    display: none;  /* Chrome, Safari and Opera */
+    display: none; /* Chrome, Safari and Opera */
 }
 
 /* Styles pour le popup de services qui apparaît uniquement au survol de l'élément de service */
