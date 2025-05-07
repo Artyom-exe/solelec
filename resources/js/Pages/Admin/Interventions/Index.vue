@@ -186,7 +186,7 @@ const selectedStatus = ref(null);
 
 // Variables pour le tri
 const sortBy = ref("date"); // "date" ou "status"
-const sortDirection = ref("asc"); // "asc" ou "desc"
+const sortDirection = ref("desc"); // "asc" ou "desc" - desc pour afficher les plus récentes d'abord
 
 // Liste des statuts disponibles
 const statusOptions = ["planifiée", "en cours", "terminée"];
@@ -586,7 +586,11 @@ const sortedInterventions = computed(() => {
             </div>
 
             <!-- Liste des interventions -->
-            <div class="grid grid-cols-2 gap-8 w-full items-start mt-4">
+            <div v-if="sortedInterventions.length === 0" class="w-full text-center p-8 rounded-lg border border-white/20 bg-[#242424] mt-4">
+                <p class="text-white font-inter text-lg">Aucune intervention à afficher</p>
+                <p class="text-[#FF8C42] text-sm mt-2">Utilisez le bouton "Ajouter" pour créer une nouvelle intervention</p>
+            </div>
+            <div v-else class="grid grid-cols-2 gap-8 w-full items-start mt-4">
                 <div
                     v-for="intervention in sortedInterventions"
                     :key="intervention.id"
