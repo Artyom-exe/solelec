@@ -2,6 +2,7 @@
 import AdminLayout from "@/Layouts/AdminLayout.vue";
 import { Link, router } from "@inertiajs/vue3";
 import { computed, inject } from "vue";
+import { marked } from "marked";
 
 // Injection des fonctions de notification
 const showNotification = inject("showNotification");
@@ -61,6 +62,10 @@ function updateStatus(intervention) {
             },
         }
     );
+}
+
+function compiledMarkdown(text) {
+    return text ? marked(text) : "";
 }
 </script>
 
@@ -343,19 +348,26 @@ function updateStatus(intervention) {
             <section class="flex content-center items-start gap-20 py-28 px-16">
                 <div class="relative flex flex-col gap-6">
                     <h2
-                        class="text-[#0D0703] font-poppins text-[2.5rem] font-medium leading-[120%] tracking-[-.4px]"
+                        class="text-[#0D0703] font-poppins text-[2.5rem] font-medium leading-[120%] tracking-[-.4px] mb-3"
                     >
                         Détails de l'intervention
                     </h2>
                     <div
-                        class="absolute bottom-0 right-[-20%] border-2 border-[#FF8C42] w-[80%] max-w-[353px] min-w-[200px]"
+                        class="absolute bottom-0 right-[-10%] border-2 border-[#FF8C42] w-[75%] max-w-[353px] min-w-[200px]"
                     ></div>
                 </div>
-                <p
-                    class="flex min-w-[672px] p-8 flex-col items-start gap-6 rounded-lg border border-white/20 bg-[#F2F2F2p]"
+                <div
+                    class="flex min-w-[672px] h-[304px] p-8 flex-col items-start gap-6 rounded-lg border border-white/20 bg-[#F2F2F2] overflow-y-auto"
                 >
-                    {{ intervention.devis.description }}
-                </p>
+                    <p
+                        class="text-[#0D0703] font-inter text-xl font-normal"
+                        v-html="
+                            compiledMarkdown(
+                                intervention.devis.description || ''
+                            )
+                        "
+                    ></p>
+                </div>
             </section>
 
             <!-- Photos -->
