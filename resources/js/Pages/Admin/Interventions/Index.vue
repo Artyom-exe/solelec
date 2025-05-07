@@ -594,10 +594,10 @@ const sortedInterventions = computed(() => {
                 <div
                     v-for="intervention in sortedInterventions"
                     :key="intervention.id"
-                    class="flex p-8 flex-col items-start gap-6 rounded-lg border border-white/20 bg-[#242424] h-auto relative group"
+                    class="flex p-8 flex-col items-start gap-6 rounded-lg border border-white/20 bg-[#242424] h-auto relative hover-card"
                 >
                     <!-- Actions d'édition/suppression qui apparaissent au survol -->
-                    <div class="absolute top-[-0.5rem] right-[-0.5rem] opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
+                    <div class="absolute top-[-0.5rem] right-[-0.5rem] opacity-0 delete-button transition-opacity flex gap-2">
                         <button
                             @click="deleteIntervention(intervention.id)"
                             title="Supprimer"
@@ -616,7 +616,7 @@ const sortedInterventions = computed(() => {
                             {{ intervention.client?.name }}
                             {{ intervention.client?.lastname }}
                         </h4>
-                        <div class="relative group">
+                        <div class="relative service-group">
                             <div
                                 class="flex py-1 px-[10px] items-start rounded-[4px] border border-white/5 bg-white/5 text-[#FF8C42] font-inter font-semibold text-sm cursor-pointer"
                             >
@@ -628,7 +628,7 @@ const sortedInterventions = computed(() => {
                             <!-- Popup qui apparaît au survol -->
                             <div
                                 v-if="intervention.devis?.services && intervention.devis.services.length > 1"
-                                class="absolute z-10 top-full right-0 mt-1 bg-[#1A1A1A] border border-white/10 rounded-md p-2 shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 min-w-[150px]"
+                                class="absolute z-10 top-full right-0 mt-1 bg-[#1A1A1A] border border-white/10 rounded-md p-2 shadow-lg opacity-0 invisible service-popup transition-all duration-200 min-w-[150px]"
                             >
                                 <div
                                     v-for="service in intervention.devis.services"
@@ -727,3 +727,16 @@ const sortedInterventions = computed(() => {
         </section>
     </AdminLayout>
 </template>
+
+<style scoped>
+/* Style pour le bouton de suppression qui apparaît au survol de la carte */
+.hover-card:hover .delete-button {
+    opacity: 1;
+}
+
+/* Style pour le popup de services qui apparaît uniquement au survol de l'élément de service */
+.service-group:hover .service-popup {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+</style>
