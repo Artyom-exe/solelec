@@ -185,9 +185,9 @@ function updateStatus(intervention) {
                                 />
                             </svg>
                             <span class="font-inter text-base font-normal">
-                                {{ intervention.devis.requested_date ? formatDate(intervention.devis.requested_date) : "Non renseigné" }}
+                                <span :class="{'text-gray-400': !intervention.devis.requested_date}">{{ intervention.devis.requested_date ? formatDate(intervention.devis.requested_date) : "Non renseigné" }}</span>
                                 -
-                                {{ intervention.devis.end_date ? formatDate(intervention.devis.end_date) : "Non renseigné" }}</span
+                                <span :class="{'text-gray-400': !intervention.devis.end_date}">{{ intervention.devis.end_date ? formatDate(intervention.devis.end_date) : "Non renseigné" }}</span></span
                             >
                         </div>
                     </div>
