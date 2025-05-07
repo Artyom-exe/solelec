@@ -106,7 +106,7 @@ function toggleClientMode() {
 function submitNewIntervention() {
     // Valider les données du formulaire
     const validationErrors = validateIntervention(newIntervention);
-    
+
     // Si des erreurs sont présentes, afficher une notification et arrêter
     if (Object.keys(validationErrors).length > 0) {
         showNotification(getErrorMessage(validationErrors), "error");
@@ -135,6 +135,36 @@ function submitNewIntervention() {
 }
 
 // Surveiller les changements dans les propriétés flash pour afficher les notifications
+// Fonction pour supprimer une intervention
+function deleteIntervention(interventionId) {
+    if (
+        confirm(
+            "Êtes-vous sûr de vouloir supprimer cette intervention ? Cette action est irréversible."
+        )
+    ) {
+        router.delete(`/admin/interventions/${interventionId}`, {
+            preserveScroll: true, // Préserver la position de défilement
+            preserveState: true, // Préserver l'état
+            onSuccess: (page) => {
+                // Vérifier si un message est présent dans la réponse
+                const flashMessages = page?.props?.flash || {};
+
+                if (flashMessages.error) {
+                    showNotification(flashMessages.error, "error");
+                } else if (flashMessages.success) {
+                    showNotification(flashMessages.success, "success");
+                }
+            },
+            onError: (errors) => {
+                showNotification(
+                    "Une erreur est survenue lors de la suppression de l'intervention.",
+                    "error"
+                );
+            },
+        });
+    }
+}
+
 watch(
     () => page.props.flash,
     (newFlash) => {
@@ -412,7 +442,7 @@ const sortedInterventions = computed(() => {
                     </button>
                 </div>
             </div>
-            
+
             <!-- Formulaire d'ajout d'intervention -->
             <div v-if="showAddForm" class="grid grid-cols-2 gap-8 w-full items-start">
                 <div
@@ -554,14 +584,27 @@ const sortedInterventions = computed(() => {
                     </div>
                 </div>
             </div>
-            
+
             <!-- Liste des interventions -->
             <div class="grid grid-cols-2 gap-8 w-full items-start mt-4">
                 <div
                     v-for="intervention in sortedInterventions"
                     :key="intervention.id"
-                    class="flex p-8 flex-col items-start gap-6 rounded-lg border border-white/20 bg-[#242424] h-auto"
+                    class="flex p-8 flex-col items-start gap-6 rounded-lg border border-white/20 bg-[#242424] h-auto relative group"
                 >
+                    <!-- Actions d'édition/suppression qui apparaissent au survol -->
+                    <div class="absolute top-[-0.5rem] right-[-0.5rem] opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
+                        <button
+                            @click="deleteIntervention(intervention.id)"
+                            title="Supprimer"
+                        >
+                            <img
+                                src="/assets/icons/clients/delete-icon.svg"
+                                alt="Delete"
+                                class="w-5 h-5 hover:scale-110 transition-transform"
+                            />
+                        </button>
+                    </div>
                     <div class="flex justify-between w-full">
                         <h4
                             class="text-white font-poppins text-2xl font-medium"
