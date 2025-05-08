@@ -73,6 +73,32 @@ function uploadPhotos() {
     });
 }
 
+// Fonction pour supprimer une image
+function deleteImage(imageId) {
+    if (!confirm('Voulez-vous vraiment supprimer cette image ?')) {
+        return;
+    }
+    
+    router.delete(route('interventions.delete-image', { image: imageId }), {
+        preserveScroll: true,
+        onSuccess: () => {
+            showNotification("Image supprimée avec succès", "success");
+            
+            // Mettre à jour localement la liste des images
+            if (intervention.images) {
+                const index = intervention.images.findIndex(img => img.id === imageId);
+                if (index !== -1) {
+                    intervention.images.splice(index, 1);
+                }
+            }
+        },
+        onError: (errors) => {
+            console.error(errors);
+            showNotification("Erreur lors de la suppression de l'image", "error");
+        }
+    });
+}
+
 // Fonction pour formater la date au format JJ/MM/AA
 function formatDate(dateString) {
     if (!dateString) return "";
@@ -493,8 +519,21 @@ function compiledMarkdown(text) {
                         <SplideSlide 
                             v-for="image in intervention.images" 
                             :key="image.id"
-                            class="relative group"
+                            class="relative group hover-card"
                         >
+                            <!-- Bouton de suppression qui apparaît au survol -->
+                            <div class="absolute top-[-0.5rem] right-[-0.5rem] opacity-0 delete-button transition-opacity z-10">
+                                <button
+                                    @click.prevent="deleteImage(image.id)"
+                                    title="Supprimer"
+                                    class="bg-white rounded-full p-1 shadow-md hover:bg-red-100 transition-colors"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                            
                             <img
                                 :src="`/storage/${image.url_image}`"
                                 :alt="`Intervention ${intervention.id}`"
@@ -583,12 +622,18 @@ function compiledMarkdown(text) {
 <style scoped>
 /* Styles pour cacher la barre de défilement tout en gardant la fonctionnalité */
 .hide-scrollbar {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Pour Internet Explorer et Edge */
+    scrollbar-width: none; /* Pour Firefox */
+    overflow-y: auto;
 }
 
 .hide-scrollbar::-webkit-scrollbar {
-    display: none; /* Chrome, Safari and Opera */
+    display: none; /* Pour Chrome, Safari et Opera */
+}
+
+/* Style pour le bouton de suppression qui apparaît au survol de l'image */
+.hover-card:hover .delete-button {
+    opacity: 1;
 }
 
 /* Styles pour le carrousel Splide */

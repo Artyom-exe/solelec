@@ -282,6 +282,28 @@ class InterventionController extends Controller
     }
 
     /**
+     * Supprime une image d'intervention
+     */
+    public function deleteImage(InterventionImage $image)
+    {
+        // Récupérer l'intervention associée pour la journalisation
+        $intervention = $image->intervention;
+        $client = $intervention->client;
+        $clientName = $client ? $client->name . ' ' . $client->lastname : 'client #' . $intervention->clients_id;
+        
+        // Supprimer le fichier du stockage
+        Storage::disk('public')->delete($image->url_image);
+        
+        // Supprimer l'enregistrement de la base de données
+        $image->delete();
+        
+        // Journalisation de l'activité
+        ActivityLogger::log('intervention', $intervention, 'Image supprimée de l\'intervention pour ' . $clientName);
+        
+        return back()->with('success', 'Image supprimée avec succès');
+    }
+
+    /**
      * Supprime une intervention
      */
     public function destroy(Intervention $intervention)
