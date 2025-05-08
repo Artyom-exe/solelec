@@ -498,7 +498,7 @@ function compiledMarkdown(text) {
                 </div>
 
                 <!-- Galerie de photos avec Splide ou message si pas de photos -->
-                <div v-if="intervention.images && intervention.images.length > 0" class="w-full">
+                <div v-if="intervention.images && intervention.images.length > 0" class="w-screen -mx-16 relative">
                     <Splide
                         :options="{
                             perPage: 1,
@@ -513,7 +513,7 @@ function compiledMarkdown(text) {
                             trimSpace: false,
                             focus: 0,
                             omitEnd: true,
-                            padding: { right: '15%' }
+                            padding: { left: '4rem', right: '15%' }
                         }"
                     >
                         <SplideSlide 
