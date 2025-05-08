@@ -44,19 +44,32 @@ function uploadPhotos() {
     selectedFiles.value.forEach(file => {
         formData.append('images[]', file);
     });
-    // L'ID de l'intervention est déjà dans l'URL, pas besoin de l'ajouter dans formData
     
+    // Désactiver le bouton pendant l'upload
+    const isUploading = ref(true);
+    
+    // Revenir à l'utilisation de router.post mais en mode preserveState pour éviter le rechargement
     router.post(route('interventions.upload-images', { intervention: intervention.id }), formData, {
-        onSuccess: () => {
+        onSuccess: (response) => {
+            // Les données sont dans response.props.flash.data
+            const data = response.props.flash.data || {};
+            
             showNotification("Photos ajoutées avec succès", "success");
-            selectedFiles.value = [];
-            // Recharger la page pour afficher les nouvelles images
+            
+            // Recharger uniquement les données de l'intervention
             router.reload({ only: ['intervention'] });
+            
+            // Réinitialiser les fichiers sélectionnés
+            selectedFiles.value = [];
+            isUploading.value = false;
         },
         onError: (errors) => {
-            showNotification("Erreur lors de l'ajout des photos", "error");
             console.error(errors);
-        }
+            showNotification("Erreur lors de l'ajout des photos", "error");
+            isUploading.value = false;
+        },
+        preserveScroll: true,  // Conserver la position de défilement
+        preserveState: true    // Éviter un rechargement complet
     });
 }
 
@@ -513,12 +526,12 @@ function compiledMarkdown(text) {
                 </div>
 
                 <!-- Message si pas de photos -->
-                <div v-else class="bg-gray-100 p-8 rounded-md text-center">
-                    <p class="text-gray-500">
-                        Aucune photo disponible pour cette intervention
+                <div v-else class="flex flex-col items-center justify-center w-full">
+                    <p class="font-inter text-white text-center text-lg font-light">
+                        Aucune photo disponible
                     </p>
-                    <p class="text-sm text-[#FF8C42] mt-2">
-                        Ajoutez des photos pour documenter l'intervention
+                    <p class="font-inter text-xs text-[#FF8C42] mt-3 text-center font-medium tracking-wide">
+                        Cliquez sur Ajouter pour documenter l'intervention
                     </p>
                 </div>
             </section>
