@@ -513,7 +513,7 @@ function compiledMarkdown(text) {
                             trimSpace: false,
                             focus: 0,
                             omitEnd: true,
-                            padding: { left: '4rem', right: '15%' }
+                            padding: { left: '4rem', right: '4rem' }
                         }"
                     >
                         <SplideSlide 
