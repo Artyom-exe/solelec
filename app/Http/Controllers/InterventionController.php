@@ -177,7 +177,7 @@ class InterventionController extends Controller
             $imagesToDelete = InterventionImage::whereIn('id', $validated['delete_images'])->get();
 
             foreach ($imagesToDelete as $image) {
-                Storage::disk('public')->delete($image->path);
+                Storage::disk('public')->delete($image->url_image);
                 $image->delete();
             }
         }
@@ -189,7 +189,7 @@ class InterventionController extends Controller
 
                 InterventionImage::create([
                     'intervention_id' => $intervention->id,
-                    'path' => $path
+                    'url_image' => $path
                 ]);
             }
         }
@@ -235,6 +235,48 @@ class InterventionController extends Controller
     }
 
     /**
+     * Télécharge des images pour une intervention
+     */
+    public function uploadImages(Request $request, Intervention $intervention)
+    {
+        $request->validate([
+            'images' => 'required|array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
+        ]);
+
+        $uploadedImages = [];
+
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $path = $image->store('interventions', 'public');
+
+                $interventionImage = InterventionImage::create([
+                    'intervention_id' => $intervention->id,
+                    'url_image' => $path
+                ]);
+
+                $uploadedImages[] = [
+                    'id' => $interventionImage->id,
+                    'path' => $path,
+                    'url' => Storage::url($path)
+                ];
+            }
+        }
+
+        // Récupérer le client pour le message de log
+        $client = $intervention->client;
+        $clientName = $client ? $client->name . ' ' . $client->lastname : 'client #' . $intervention->clients_id;
+
+        // Journalisation de l'activité
+        ActivityLogger::log('intervention', $intervention, count($uploadedImages) . ' image(s) ajoutée(s) à l\'intervention pour ' . $clientName);
+
+        return response()->json([
+            'success' => true,
+            'images' => $uploadedImages
+        ]);
+    }
+
+    /**
      * Supprime une intervention
      */
     public function destroy(Intervention $intervention)
@@ -246,7 +288,7 @@ class InterventionController extends Controller
 
         // Suppression des images associées
         foreach ($intervention->images as $image) {
-            Storage::disk('public')->delete($image->path);
+            Storage::disk('public')->delete($image->url_image);
             $image->delete();
         }
 
