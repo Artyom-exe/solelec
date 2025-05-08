@@ -28,7 +28,7 @@ const showImageModal = ref(false);
 const selectedImage = ref(null);
 
 // Variable pour la nouvelle note
-const newNote = ref('');
+const newNote = ref("");
 
 // Fonction pour gérer la sélection de fichiers et uploader directement
 function handleFileSelect(event) {
@@ -103,23 +103,27 @@ function closeImageModal() {
 // Fonction pour ajouter une note
 function addNote() {
     if (!newNote.value.trim()) return;
-    
-    router.post(route('interventions.notes.store', { intervention: intervention.id }), {
-        content: newNote.value
-    }, {
-        preserveScroll: true,
-        onSuccess: () => {
-            showNotification("Note ajoutée avec succès", "success");
-            // Recharger uniquement les données de l'intervention
-            router.reload({ only: ['intervention'] });
-            // Réinitialiser le champ de note
-            newNote.value = '';
+
+    router.post(
+        route("interventions.notes.store", { intervention: intervention.id }),
+        {
+            content: newNote.value,
         },
-        onError: (errors) => {
-            console.error(errors);
-            showNotification("Erreur lors de l'ajout de la note", "error");
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                showNotification("Note ajoutée avec succès", "success");
+                // Recharger uniquement les données de l'intervention
+                router.reload({ only: ["intervention"] });
+                // Réinitialiser le champ de note
+                newNote.value = "";
+            },
+            onError: (errors) => {
+                console.error(errors);
+                showNotification("Erreur lors de l'ajout de la note", "error");
+            },
         }
-    });
+    );
 }
 
 // Fonction pour supprimer une note
@@ -127,21 +131,23 @@ function deleteNote(noteId) {
     if (!confirm("Voulez-vous vraiment supprimer cette note ?")) {
         return;
     }
-    
-    router.delete(route('notes.destroy', { note: noteId }), {
+
+    router.delete(route("notes.destroy", { note: noteId }), {
         preserveScroll: true,
         onSuccess: () => {
             showNotification("Note supprimée avec succès", "success");
             // Recharger uniquement les données de l'intervention
-            router.reload({ only: ['intervention'] });
+            router.reload({ only: ["intervention"] });
         },
         onError: (errors) => {
             console.error(errors);
-            showNotification("Erreur lors de la suppression de la note", "error");
-        }
+            showNotification(
+                "Erreur lors de la suppression de la note",
+                "error"
+            );
+        },
     });
 }
-
 
 // Fonction pour supprimer une image
 function deleteImage(imageId) {
@@ -174,8 +180,18 @@ function deleteImage(imageId) {
     });
 }
 
-// Fonction pour formater la date au format JJ/MM/AA HH:MM
+// Fonction pour formater la date au format JJ/MM/AA (sans l'heure)
 function formatDate(dateString) {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = String(date.getFullYear()).slice(-2);
+    return `${day}/${month}/${year}`;
+}
+
+// Fonction pour formater la date avec l'heure au format JJ/MM/AA HH:MM
+function formatDateWithTime(dateString) {
     if (!dateString) return "";
     const date = new Date(dateString);
     const day = String(date.getDate()).padStart(2, "0");
@@ -663,62 +679,112 @@ function compiledMarkdown(text) {
             </section>
 
             <!-- Notes -->
-            <section class="mb-10">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-bold">Notes</h2>
-                </div>
-
-                <!-- Formulaire pour ajouter des notes -->
-                <div class="bg-white p-6 rounded-md shadow-sm mb-6">
-                    <h3 class="text-lg font-medium mb-3">Ajouter une note</h3>
-                    <textarea
-                        v-model="newNote"
-                        class="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FF8C42]"
-                        rows="4"
-                        placeholder="Écrivez votre note ici..."
-                    ></textarea>
-                    <div class="flex justify-end mt-3">
-                        <button
-                            @click="addNote"
-                            class="bg-[#FF8C42] text-white px-4 py-2 rounded-md hover:bg-orange-600 transition-colors"
-                            :disabled="!newNote.trim()"
+            <section class="flex py-28 px-16 flex-col gap-20">
+                <div
+                    class="flex max-w-[768px] flex-col items-start gap-4 text-[#0D0703]"
+                >
+                    <h2 class="text-center font-inter text-base font-semibold">
+                        Notes
+                    </h2>
+                    <div class="relative flex flex-col gap-6">
+                        <h3
+                            class="font-poppins text-5xl text-center font-medium leading-[57.6px] tracking-[-0.48px] mb-6"
                         >
-                            Ajouter
-                        </button>
+                            Mes notes
+                        </h3>
+                        <div
+                            class="absolute bottom-0 left-[25%] border-2 border-[#FF8C42] w-[180%] max-w-[370px] min-w-[200px]"
+                        ></div>
                     </div>
                 </div>
-
-                <!-- Affichage des notes existantes -->
-                <div v-if="intervention.notes && intervention.notes.length > 0" class="space-y-4">
-                    <h3 class="text-lg font-medium mb-3">Historique des notes</h3>
-                    <div v-for="note in intervention.notes" :key="note.id" class="bg-white p-4 rounded-md shadow-sm border-l-4 border-[#FF8C42]">
-                        <div class="flex justify-between items-start mb-2">
-                            <div>
-                                <span class="text-sm text-gray-500">{{ formatDate(note.created_at) }}</span>
-                                <span v-if="note.user" class="text-sm text-gray-500 ml-2">par {{ note.user.name }}</span>
-                            </div>
-                            <button 
-                                @click="deleteNote(note.id)" 
-                                class="text-red-500 hover:text-red-700 transition-colors"
-                                title="Supprimer cette note"
+                <div class="flex flex-col items-start gap-8 w-full">
+                    <!-- Formulaire pour ajouter des notes -->
+                    <div class="relative w-full">
+                        <textarea
+                            v-model="newNote"
+                            class="w-full flex p-8 flex-col items-start gap-6 rounded-lg border border-white/20 bg-[#F2F2F2] font-inter text-base font-normal focus:outline-none focus:border-[#FF8C42] focus:ring-1 focus:ring-[#FF8C42] resize-none"
+                            rows="4"
+                            placeholder="Écrivez votre note ici..."
+                        ></textarea>
+                        <div class="absolute bottom-0 right-0">
+                            <button
+                                @click="addNote"
+                                :disabled="!newNote.trim()"
                             >
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="33"
+                                    height="33"
+                                    viewBox="0 0 33 33"
+                                    fill="none"
+                                >
+                                    <path
+                                        d="M6.85653 26.644C6.41209 26.8218 5.98987 26.7827 5.58987 26.5267C5.18987 26.2707 4.98987 25.8987 4.98987 25.4107V19.4107L15.6565 16.744L4.98987 14.0773V8.07733C4.98987 7.58844 5.18987 7.21644 5.58987 6.96133C5.98987 6.70622 6.41209 6.66711 6.85653 6.844L27.3899 15.5107C27.9454 15.7551 28.2232 16.1662 28.2232 16.744C28.2232 17.3218 27.9454 17.7329 27.3899 17.9773L6.85653 26.644Z"
+                                        fill="#FF8C42"
+                                    />
                                 </svg>
                             </button>
                         </div>
-                        <p class="whitespace-pre-line text-gray-700">{{ note.content }}</p>
                     </div>
-                </div>
 
-                <!-- Message si pas de notes -->
-                <div v-else class="bg-gray-100 p-8 rounded-md text-center">
-                    <p class="text-gray-500">
-                        Aucune note disponible pour cette intervention
-                    </p>
-                    <p class="text-sm text-[#FF8C42] mt-2">
-                        Utilisez le formulaire ci-dessus pour ajouter des notes
-                    </p>
+                    <!-- Affichage des notes existantes -->
+                    <div
+                        v-if="
+                            intervention.notes && intervention.notes.length > 0
+                        "
+                        class="w-full"
+                    >
+                        <div
+                            v-for="note in intervention.notes"
+                            :key="note.id"
+                            class="bg-white p-4 rounded-md shadow-sm border-l-4 border-[#FF8C42]"
+                        >
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <span class="text-sm text-gray-500">{{
+                                        formatDateWithTime(note.created_at)
+                                    }}</span>
+                                </div>
+                                <button
+                                    @click="deleteNote(note.id)"
+                                    class="text-red-500 hover:text-red-700 transition-colors"
+                                    title="Supprimer cette note"
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        class="h-5 w-5"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                        />
+                                    </svg>
+                                </button>
+                            </div>
+                            <p class="whitespace-pre-line text-gray-700">
+                                {{ note.content }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Message si pas de notes -->
+                    <div
+                        v-else
+                        class="bg-gray-100 p-8 rounded-md text-center font-inter w-full"
+                    >
+                        <p class="text-gray-500">
+                            Aucune note disponible pour cette intervention
+                        </p>
+                        <p class="text-sm text-[#FF8C42] mt-2">
+                            Utilisez le formulaire ci-dessus pour ajouter des
+                            notes
+                        </p>
+                    </div>
                 </div>
             </section>
         </main>
