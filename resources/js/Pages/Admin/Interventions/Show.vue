@@ -504,8 +504,8 @@ function compiledMarkdown(text) {
                             perPage: 1,
                             perMove: 1,
                             gap: '1rem',
-                            pagination: true,
-                            arrows: true,
+                            pagination: false,
+                            arrows: false,
                             drag: 'free',
                             snap: false,
                             fixedWidth: '300px',
@@ -522,15 +522,17 @@ function compiledMarkdown(text) {
                             class="relative group hover-card"
                         >
                             <!-- Bouton de suppression qui apparaît au survol -->
-                            <div class="absolute top-[-0.5rem] right-[-0.5rem] opacity-0 delete-button transition-opacity z-10">
+                            <div class="absolute top-[0.5rem] right-[0.5rem] opacity-0 delete-button transition-opacity z-10">
                                 <button
                                     @click.prevent="deleteImage(image.id)"
                                     title="Supprimer"
-                                    class="bg-white rounded-full p-1 shadow-md hover:bg-red-100 transition-colors"
+                                    class="rounded-full p-1 shadow-md transition-colors"
                                 >
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
+                                    <img
+                                        src="/assets/icons/clients/delete-icon.svg"
+                                        alt="Delete"
+                                        class="w-5 h-5 hover:scale-110 transition-transform"
+                                    />
                                 </button>
                             </div>
                             
