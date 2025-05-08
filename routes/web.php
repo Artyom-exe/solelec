@@ -13,6 +13,7 @@ use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\InterventionController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\NoteController;
 
 Route::get('/', function () {
     return Inertia::render('Accueil');
@@ -66,6 +67,10 @@ Route::middleware([
     Route::delete('/interventions/images/{image}', [InterventionController::class, 'deleteImage'])->name('interventions.delete-image');
     Route::delete('/interventions/{intervention}', [InterventionController::class, 'destroy'])->name('interventions.destroy');
     Route::get('/devis/{quote}/convert', [InterventionController::class, 'convertToIntervention'])->name('devis.convert');
+
+    // Routes pour les notes
+    Route::post('/interventions/{intervention}/notes', [NoteController::class, 'store'])->name('interventions.notes.store');
+    Route::delete('/notes/{note}', [NoteController::class, 'destroy'])->name('notes.destroy');
 
     // Routes pour les devis
     Route::get('/devis', [QuoteController::class, 'index'])->name('devis');
