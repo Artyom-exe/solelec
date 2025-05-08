@@ -23,6 +23,10 @@ const devisDetails = computed(() => {
 const fileInput = ref(null);
 const selectedFiles = ref([]);
 
+// Variables pour le modal d'image
+const showImageModal = ref(false);
+const selectedImage = ref(null);
+
 // Fonction pour gérer la sélection de fichiers et uploader directement
 function handleFileSelect(event) {
     selectedFiles.value = Array.from(event.target.files);
@@ -71,6 +75,22 @@ function uploadPhotos() {
         preserveScroll: true,  // Conserver la position de défilement
         preserveState: true    // Éviter un rechargement complet
     });
+}
+
+// Fonction pour ouvrir le modal d'image
+function openImageModal(image) {
+    selectedImage.value = image;
+    showImageModal.value = true;
+    // Bloquer le défilement du corps de la page
+    document.body.style.overflow = 'hidden';
+}
+
+// Fonction pour fermer le modal d'image
+function closeImageModal() {
+    showImageModal.value = false;
+    selectedImage.value = null;
+    // Rétablir le défilement du corps de la page
+    document.body.style.overflow = 'auto';
 }
 
 // Fonction pour supprimer une image
@@ -544,10 +564,9 @@ function compiledMarkdown(text) {
                             <div
                                 class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
                             >
-                                <a
-                                    :href="`/storage/${image.url_image}`"
-                                    target="_blank"
-                                    class="text-white hover:text-[#FF8C42]"
+                                <button
+                                    @click.prevent="openImageModal(image)"
+                                    class="text-white hover:text-[#FF8C42] cursor-pointer"
                                 >
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -560,7 +579,7 @@ function compiledMarkdown(text) {
                                             d="M15 3l2.3 2.3-2.89 2.87 1.42 1.42L18.7 6.7 21 9V3h-6zM3 9l2.3-2.3 2.87 2.89 1.42-1.42L6.7 5.3 9 3H3v6zm6 12l-2.3-2.3 2.89-2.87-1.42-1.42L5.3 17.3 3 15v6h6zm12-6l-2.3 2.3-2.87-2.89-1.42 1.42 2.89 2.87L15 21h6v-6z"
                                         />
                                     </svg>
-                                </a>
+                                </button>
                             </div>
                         </SplideSlide>
                     </Splide>
@@ -618,6 +637,31 @@ function compiledMarkdown(text) {
                 </div>
             </section>
         </main>
+
+        <!-- Modal pour afficher l'image en grand format -->
+        <div v-if="showImageModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-75 overflow-hidden">
+            <div class="relative max-w-4xl w-full max-h-[90vh] bg-white rounded-lg shadow-xl overflow-hidden">
+                <!-- Bouton de fermeture -->
+                <button 
+                    @click="closeImageModal" 
+                    class="absolute top-2 right-2 z-10 p-2 bg-white rounded-full shadow-md hover:bg-gray-100 transition-colors"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+                
+                <!-- Image agrandie -->
+                <div class="w-full h-full flex items-center justify-center bg-gray-100">
+                    <img 
+                        v-if="selectedImage" 
+                        :src="`/storage/${selectedImage.url_image}`" 
+                        :alt="`Intervention ${intervention.id}`" 
+                        class="max-w-full max-h-[80vh] object-contain"
+                    />
+                </div>
+            </div>
+        </div>
     </AdminLayout>
 </template>
 
