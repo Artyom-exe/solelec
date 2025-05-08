@@ -1,7 +1,7 @@
 <script setup>
 import AdminLayout from "@/Layouts/AdminLayout.vue";
 import { Link, router } from "@inertiajs/vue3";
-import { computed, inject, ref } from "vue";
+import { computed, inject, ref, onMounted, watch } from "vue";
 import { marked } from "marked";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 
@@ -9,6 +9,11 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import { Splide, SplideSlide } from "@splidejs/vue-splide";
 // Import Splide styles
 import "@splidejs/vue-splide/css";
+
+// Import TipTap
+import { useEditor, EditorContent } from "@tiptap/vue-3";
+import StarterKit from "@tiptap/starter-kit";
+import Placeholder from "@tiptap/extension-placeholder";
 
 // Injection des fonctions de notification
 const showNotification = inject("showNotification");
@@ -29,6 +34,59 @@ const selectedImage = ref(null);
 
 // Variable pour la nouvelle note
 const newNote = ref("");
+
+// Configuration de l'éditeur TipTap
+const editor = useEditor({
+    content: "",
+    extensions: [
+        StarterKit.configure({
+            bulletList: {
+                keepMarks: true,
+                keepAttributes: true,
+            },
+            orderedList: {
+                keepMarks: true,
+                keepAttributes: true,
+            },
+            heading: false, // Désactiver les titres pour simplifier l'interface
+        }),
+        Placeholder.configure({
+            placeholder: "Écrivez votre note ici...",
+        }),
+    ],
+    onUpdate: ({ editor }) => {
+        // Mettre à jour la variable newNote avec le contenu HTML de l'éditeur
+        newNote.value = editor.getHTML();
+    },
+    editorProps: {
+        attributes: {
+            class: 'prose prose-sm focus:outline-none w-full',
+        },
+        handleKeyDown: (view, event) => {
+            // Gérer Tab pour les indentations
+            if (event.key === "Tab") {
+                // Utiliser les commandes de base au lieu de outdent/indent
+                if (event.shiftKey) {
+                    // Reculer une liste
+                    editor.value
+                        ?.chain()
+                        .focus()
+                        .liftListItem("listItem")
+                        .run();
+                } else {
+                    // Avancer une liste
+                    editor.value
+                        ?.chain()
+                        .focus()
+                        .sinkListItem("listItem")
+                        .run();
+                }
+                return true;
+            }
+            return false;
+        },
+    },
+});
 
 // Fonction pour gérer la sélection de fichiers et uploader directement
 function handleFileSelect(event) {
@@ -117,6 +175,8 @@ function addNote() {
                 router.reload({ only: ["intervention"] });
                 // Réinitialiser le champ de note
                 newNote.value = "";
+                // Réinitialiser l'éditeur TipTap
+                editor.value?.commands.setContent("");
             },
             onError: (errors) => {
                 console.error(errors);
@@ -243,6 +303,13 @@ function updateStatus(intervention) {
 function compiledMarkdown(text) {
     return text ? marked(text) : "";
 }
+// S'assurer que l'éditeur est correctement initialisé après le montage du composant
+onMounted(() => {
+    // Donner le focus à l'éditeur après un court délai pour s'assurer que le DOM est prêt
+    setTimeout(() => {
+        editor.value?.commands.focus();
+    }, 100);
+});
 </script>
 
 <template>
@@ -699,32 +766,69 @@ function compiledMarkdown(text) {
                 </div>
                 <div class="flex flex-col items-start gap-8 w-full">
                     <!-- Formulaire pour ajouter des notes -->
-                    <div class="relative w-full">
-                        <textarea
-                            v-model="newNote"
-                            class="w-full flex p-8 flex-col items-start gap-6 rounded-lg border border-white/20 bg-[#F2F2F2] font-inter text-base font-normal focus:outline-none focus:border-[#FF8C42] focus:ring-1 focus:ring-[#FF8C42] resize-none"
-                            rows="4"
-                            placeholder="Écrivez votre note ici..."
-                        ></textarea>
-                        <div class="absolute bottom-2 right-4">
+                    <div class="w-full">
+                        <!-- Barre d'outils TipTap -->
+                        <div class="toolbar w-full bg-[#F2F2F2] border border-white/20 border-b-0 rounded-t-lg p-2 flex gap-2">
                             <button
-                                @click="addNote"
-                                :disabled="!newNote.trim()"
-                                class="hover:scale-110 transition-transform duration-200"
+                                @click="editor?.chain().focus().toggleBold().run()"
+                                :class="{ 'bg-[#FF8C42]/20': editor?.isActive('bold') }"
+                                class="p-1 rounded hover:bg-[#FF8C42]/10 transition-colors"
+                                title="Gras"
                             >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="33"
-                                    height="33"
-                                    viewBox="0 0 33 33"
-                                    fill="none"
-                                >
-                                    <path
-                                        d="M6.85653 26.644C6.41209 26.8218 5.98987 26.7827 5.58987 26.5267C5.18987 26.2707 4.98987 25.8987 4.98987 25.4107V19.4107L15.6565 16.744L4.98987 14.0773V8.07733C4.98987 7.58844 5.18987 7.21644 5.58987 6.96133C5.98987 6.70622 6.41209 6.66711 6.85653 6.844L27.3899 15.5107C27.9454 15.7551 28.2232 16.1662 28.2232 16.744C28.2232 17.3218 27.9454 17.7329 27.3899 17.9773L6.85653 26.644Z"
-                                        fill="#FF8C42"
-                                    />
-                                </svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"></path><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"></path></svg>
                             </button>
+                            <button
+                                @click="editor?.chain().focus().toggleItalic().run()"
+                                :class="{ 'bg-[#FF8C42]/20': editor?.isActive('italic') }"
+                                class="p-1 rounded hover:bg-[#FF8C42]/10 transition-colors"
+                                title="Italique"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="4" x2="10" y2="4"></line><line x1="14" y1="20" x2="5" y2="20"></line><line x1="15" y1="4" x2="9" y2="20"></line></svg>
+                            </button>
+                            <button
+                                @click="editor?.chain().focus().toggleBulletList().run()"
+                                :class="{ 'bg-[#FF8C42]/20': editor?.isActive('bulletList') }"
+                                class="p-1 rounded hover:bg-[#FF8C42]/10 transition-colors"
+                                title="Liste à puces"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                            </button>
+                            <button
+                                @click="editor?.chain().focus().toggleOrderedList().run()"
+                                :class="{ 'bg-[#FF8C42]/20': editor?.isActive('orderedList') }"
+                                class="p-1 rounded hover:bg-[#FF8C42]/10 transition-colors"
+                                title="Liste numérotée"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="6" x2="21" y2="6"></line><line x1="10" y1="12" x2="21" y2="12"></line><line x1="10" y1="18" x2="21" y2="18"></line><path d="M4 6h1v4"></path><path d="M4 10h2"></path><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"></path></svg>
+                            </button>
+                        </div>
+                        
+                        <!-- Conteneur de l'éditeur TipTap -->
+                        <div class="relative w-full">
+                            <EditorContent 
+                                :editor="editor" 
+                                class="w-full p-8 rounded-b-lg border border-white/20 bg-[#F2F2F2] font-inter text-base font-normal min-h-[120px] overflow-auto"
+                            />
+                            <div class="absolute bottom-2 right-4">
+                                <button
+                                    @click="addNote"
+                                    :disabled="!newNote.trim()"
+                                    class="hover:scale-110 transition-transform duration-200"
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="33"
+                                        height="33"
+                                        viewBox="0 0 33 33"
+                                        fill="none"
+                                    >
+                                        <path
+                                            d="M6.85653 26.644C6.41209 26.8218 5.98987 26.7827 5.58987 26.5267C5.18987 26.2707 4.98987 25.8987 4.98987 25.4107V19.4107L15.6565 16.744L4.98987 14.0773V8.07733C4.98987 7.58844 5.18987 7.21644 5.58987 6.96133C5.98987 6.70622 6.41209 6.66711 6.85653 6.844L27.3899 15.5107C27.9454 15.7551 28.2232 16.1662 28.2232 16.744C28.2232 17.3218 27.9454 17.7329 27.3899 17.9773L6.85653 26.644Z"
+                                            fill="#FF8C42"
+                                        />
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -754,9 +858,7 @@ function compiledMarkdown(text) {
                                     />
                                 </button>
                             </div>
-                            <p class="whitespace-pre-line text-gray-700">
-                                {{ note.content }}
-                            </p>
+                            <div class="text-gray-700" v-html="note.content"></div>
                             <div class="flex items-center gap-2">
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -843,7 +945,7 @@ function compiledMarkdown(text) {
     </AdminLayout>
 </template>
 
-<style scoped>
+<style>
 /* Styles pour cacher la barre de défilement tout en gardant la fonctionnalité */
 .hide-scrollbar {
     -ms-overflow-style: none; /* Pour Internet Explorer et Edge */
