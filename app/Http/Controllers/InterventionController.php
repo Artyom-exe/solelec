@@ -257,8 +257,12 @@ class InterventionController extends Controller
 
                 $uploadedImages[] = [
                     'id' => $interventionImage->id,
+                    'url_image' => $path,
                     'path' => $path,
-                    'url' => Storage::url($path)
+                    'url' => Storage::url($path),
+                    'intervention_id' => $intervention->id,
+                    'created_at' => now(),
+                    'updated_at' => now()
                 ];
             }
         }
@@ -270,7 +274,8 @@ class InterventionController extends Controller
         // Journalisation de l'activité
         ActivityLogger::log('intervention', $intervention, count($uploadedImages) . ' image(s) ajoutée(s) à l\'intervention pour ' . $clientName);
 
-        return response()->json([
+        // Stocker les données des images dans la session flash pour qu'elles soient disponibles dans la réponse
+        return back()->with('success', 'Photos ajoutées avec succès')->with('data', [
             'success' => true,
             'images' => $uploadedImages
         ]);
