@@ -706,10 +706,11 @@ function compiledMarkdown(text) {
                             rows="4"
                             placeholder="Écrivez votre note ici..."
                         ></textarea>
-                        <div class="absolute bottom-2 right-3">
+                        <div class="absolute bottom-2 right-4">
                             <button
                                 @click="addNote"
                                 :disabled="!newNote.trim()"
+                                class="hover:scale-110 transition-transform duration-200"
                             >
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
