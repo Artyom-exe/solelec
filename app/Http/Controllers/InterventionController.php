@@ -119,7 +119,7 @@ class InterventionController extends Controller
      */
     public function show(Intervention $intervention)
     {
-        $intervention->load(['client', 'devis', 'devis.services', 'images']);
+        $intervention->load(['client', 'devis', 'devis.services', 'images', 'notes.user']);
 
         return Inertia::render('Admin/Interventions/Show', [
             'intervention' => $intervention

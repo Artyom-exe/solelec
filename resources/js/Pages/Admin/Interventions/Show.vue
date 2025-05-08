@@ -6,9 +6,9 @@ import { marked } from "marked";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 
 // Import Splide
-import { Splide, SplideSlide } from '@splidejs/vue-splide';
+import { Splide, SplideSlide } from "@splidejs/vue-splide";
 // Import Splide styles
-import '@splidejs/vue-splide/css';
+import "@splidejs/vue-splide/css";
 
 // Injection des fonctions de notification
 const showNotification = inject("showNotification");
@@ -27,10 +27,13 @@ const selectedFiles = ref([]);
 const showImageModal = ref(false);
 const selectedImage = ref(null);
 
+// Variable pour la nouvelle note
+const newNote = ref('');
+
 // Fonction pour gérer la sélection de fichiers et uploader directement
 function handleFileSelect(event) {
     selectedFiles.value = Array.from(event.target.files);
-    
+
     // Upload automatique dès la sélection
     if (selectedFiles.value.length > 0) {
         uploadPhotos();
@@ -43,38 +46,42 @@ function uploadPhotos() {
         showNotification("Veuillez sélectionner au moins une photo", "error");
         return;
     }
-    
+
     const formData = new FormData();
-    selectedFiles.value.forEach(file => {
-        formData.append('images[]', file);
+    selectedFiles.value.forEach((file) => {
+        formData.append("images[]", file);
     });
-    
+
     // Désactiver le bouton pendant l'upload
     const isUploading = ref(true);
-    
+
     // Revenir à l'utilisation de router.post mais en mode preserveState pour éviter le rechargement
-    router.post(route('interventions.upload-images', { intervention: intervention.id }), formData, {
-        onSuccess: (response) => {
-            // Les données sont dans response.props.flash.data
-            const data = response.props.flash.data || {};
-            
-            showNotification("Photos ajoutées avec succès", "success");
-            
-            // Recharger uniquement les données de l'intervention
-            router.reload({ only: ['intervention'] });
-            
-            // Réinitialiser les fichiers sélectionnés
-            selectedFiles.value = [];
-            isUploading.value = false;
-        },
-        onError: (errors) => {
-            console.error(errors);
-            showNotification("Erreur lors de l'ajout des photos", "error");
-            isUploading.value = false;
-        },
-        preserveScroll: true,  // Conserver la position de défilement
-        preserveState: true    // Éviter un rechargement complet
-    });
+    router.post(
+        route("interventions.upload-images", { intervention: intervention.id }),
+        formData,
+        {
+            onSuccess: (response) => {
+                // Les données sont dans response.props.flash.data
+                const data = response.props.flash.data || {};
+
+                showNotification("Photos ajoutées avec succès", "success");
+
+                // Recharger uniquement les données de l'intervention
+                router.reload({ only: ["intervention"] });
+
+                // Réinitialiser les fichiers sélectionnés
+                selectedFiles.value = [];
+                isUploading.value = false;
+            },
+            onError: (errors) => {
+                console.error(errors);
+                showNotification("Erreur lors de l'ajout des photos", "error");
+                isUploading.value = false;
+            },
+            preserveScroll: true, // Conserver la position de défilement
+            preserveState: true, // Éviter un rechargement complet
+        }
+    );
 }
 
 // Fonction pour ouvrir le modal d'image
@@ -82,7 +89,7 @@ function openImageModal(image) {
     selectedImage.value = image;
     showImageModal.value = true;
     // Bloquer le défilement du corps de la page
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = "hidden";
 }
 
 // Fonction pour fermer le modal d'image
@@ -90,23 +97,68 @@ function closeImageModal() {
     showImageModal.value = false;
     selectedImage.value = null;
     // Rétablir le défilement du corps de la page
-    document.body.style.overflow = 'auto';
+    document.body.style.overflow = "auto";
 }
 
-// Fonction pour supprimer une image
-function deleteImage(imageId) {
-    if (!confirm('Voulez-vous vraiment supprimer cette image ?')) {
+// Fonction pour ajouter une note
+function addNote() {
+    if (!newNote.value.trim()) return;
+    
+    router.post(route('interventions.notes.store', { intervention: intervention.id }), {
+        content: newNote.value
+    }, {
+        preserveScroll: true,
+        onSuccess: () => {
+            showNotification("Note ajoutée avec succès", "success");
+            // Recharger uniquement les données de l'intervention
+            router.reload({ only: ['intervention'] });
+            // Réinitialiser le champ de note
+            newNote.value = '';
+        },
+        onError: (errors) => {
+            console.error(errors);
+            showNotification("Erreur lors de l'ajout de la note", "error");
+        }
+    });
+}
+
+// Fonction pour supprimer une note
+function deleteNote(noteId) {
+    if (!confirm("Voulez-vous vraiment supprimer cette note ?")) {
         return;
     }
     
-    router.delete(route('interventions.delete-image', { image: imageId }), {
+    router.delete(route('notes.destroy', { note: noteId }), {
+        preserveScroll: true,
+        onSuccess: () => {
+            showNotification("Note supprimée avec succès", "success");
+            // Recharger uniquement les données de l'intervention
+            router.reload({ only: ['intervention'] });
+        },
+        onError: (errors) => {
+            console.error(errors);
+            showNotification("Erreur lors de la suppression de la note", "error");
+        }
+    });
+}
+
+
+// Fonction pour supprimer une image
+function deleteImage(imageId) {
+    if (!confirm("Voulez-vous vraiment supprimer cette image ?")) {
+        return;
+    }
+
+    router.delete(route("interventions.delete-image", { image: imageId }), {
         preserveScroll: true,
         onSuccess: () => {
             showNotification("Image supprimée avec succès", "success");
-            
+
             // Mettre à jour localement la liste des images
             if (intervention.images) {
-                const index = intervention.images.findIndex(img => img.id === imageId);
+                const index = intervention.images.findIndex(
+                    (img) => img.id === imageId
+                );
                 if (index !== -1) {
                     intervention.images.splice(index, 1);
                 }
@@ -114,19 +166,24 @@ function deleteImage(imageId) {
         },
         onError: (errors) => {
             console.error(errors);
-            showNotification("Erreur lors de la suppression de l'image", "error");
-        }
+            showNotification(
+                "Erreur lors de la suppression de l'image",
+                "error"
+            );
+        },
     });
 }
 
-// Fonction pour formater la date au format JJ/MM/AA
+// Fonction pour formater la date au format JJ/MM/AA HH:MM
 function formatDate(dateString) {
     if (!dateString) return "";
     const date = new Date(dateString);
     const day = String(date.getDate()).padStart(2, "0");
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = String(date.getFullYear()).slice(-2);
-    return `${day}/${month}/${year}`;
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    return `${day}/${month}/${year} ${hours}:${minutes}`;
 }
 
 // Couleurs des statuts
@@ -477,7 +534,7 @@ function compiledMarkdown(text) {
 
             <!-- Photos -->
             <section
-                class="flex py-28 px-16 flex-col gap-20 content-center items-start bg-[#2D2D2D]"
+                class="flex py-28 px-16 flex-col gap-20 content-center items-start bg-[#2D2D2D] w-screen"
             >
                 <div class="flex justify-between self-stretch">
                     <div
@@ -508,17 +565,17 @@ function compiledMarkdown(text) {
                             @change="handleFileSelect"
                             class="hidden"
                         />
-                        <PrimaryButton
-                            @click="fileInput.click()"
-                            class="h-max"
-                        >
+                        <PrimaryButton @click="fileInput.click()" class="h-max">
                             Ajouter
                         </PrimaryButton>
                     </div>
                 </div>
 
                 <!-- Galerie de photos avec Splide ou message si pas de photos -->
-                <div v-if="intervention.images && intervention.images.length > 0" class="w-screen -mx-16 relative">
+                <div
+                    v-if="intervention.images && intervention.images.length > 0"
+                    class="w-screen -mx-16 relative"
+                >
                     <Splide
                         :options="{
                             perPage: 1,
@@ -533,16 +590,18 @@ function compiledMarkdown(text) {
                             trimSpace: false,
                             focus: 0,
                             omitEnd: true,
-                            padding: { left: '4rem', right: '4rem' }
+                            padding: { left: '4rem', right: '4rem' },
                         }"
                     >
-                        <SplideSlide 
-                            v-for="image in intervention.images" 
+                        <SplideSlide
+                            v-for="image in intervention.images"
                             :key="image.id"
                             class="relative group hover-card"
                         >
                             <!-- Bouton de suppression qui apparaît au survol -->
-                            <div class="absolute top-[0.5rem] right-[0.5rem] opacity-0 delete-button transition-opacity z-10">
+                            <div
+                                class="absolute top-[0.5rem] right-[0.5rem] opacity-0 delete-button transition-opacity z-10"
+                            >
                                 <button
                                     @click.prevent="deleteImage(image.id)"
                                     title="Supprimer"
@@ -555,7 +614,7 @@ function compiledMarkdown(text) {
                                     />
                                 </button>
                             </div>
-                            
+
                             <img
                                 :src="`/storage/${image.url_image}`"
                                 :alt="`Intervention ${intervention.id}`"
@@ -586,28 +645,70 @@ function compiledMarkdown(text) {
                 </div>
 
                 <!-- Message si pas de photos -->
-                <div v-else class="flex flex-col items-center justify-center w-full">
-                    <p class="font-inter text-white text-center text-lg font-light">
+                <div
+                    v-else
+                    class="flex flex-col items-center justify-center w-full"
+                >
+                    <p
+                        class="font-inter text-white text-center text-lg font-light"
+                    >
                         Aucune photo disponible
                     </p>
-                    <p class="font-inter text-xs text-[#FF8C42] mt-3 text-center font-medium tracking-wide">
+                    <p
+                        class="font-inter text-xs text-[#FF8C42] mt-3 text-center font-medium tracking-wide"
+                    >
                         Cliquez sur Ajouter pour documenter l'intervention
                     </p>
                 </div>
             </section>
 
             <!-- Notes -->
-            <section>
+            <section class="mb-10">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-xl font-bold">Notes</h2>
                 </div>
 
+                <!-- Formulaire pour ajouter des notes -->
+                <div class="bg-white p-6 rounded-md shadow-sm mb-6">
+                    <h3 class="text-lg font-medium mb-3">Ajouter une note</h3>
+                    <textarea
+                        v-model="newNote"
+                        class="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FF8C42]"
+                        rows="4"
+                        placeholder="Écrivez votre note ici..."
+                    ></textarea>
+                    <div class="flex justify-end mt-3">
+                        <button
+                            @click="addNote"
+                            class="bg-[#FF8C42] text-white px-4 py-2 rounded-md hover:bg-orange-600 transition-colors"
+                            :disabled="!newNote.trim()"
+                        >
+                            Ajouter
+                        </button>
+                    </div>
+                </div>
+
                 <!-- Affichage des notes existantes -->
-                <div
-                    v-if="intervention.notes"
-                    class="bg-gray-100 p-6 rounded-md mb-4"
-                >
-                    <p class="whitespace-pre-line">{{ intervention.notes }}</p>
+                <div v-if="intervention.notes && intervention.notes.length > 0" class="space-y-4">
+                    <h3 class="text-lg font-medium mb-3">Historique des notes</h3>
+                    <div v-for="note in intervention.notes" :key="note.id" class="bg-white p-4 rounded-md shadow-sm border-l-4 border-[#FF8C42]">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <span class="text-sm text-gray-500">{{ formatDate(note.created_at) }}</span>
+                                <span v-if="note.user" class="text-sm text-gray-500 ml-2">par {{ note.user.name }}</span>
+                            </div>
+                            <button 
+                                @click="deleteNote(note.id)" 
+                                class="text-red-500 hover:text-red-700 transition-colors"
+                                title="Supprimer cette note"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
+                        </div>
+                        <p class="whitespace-pre-line text-gray-700">{{ note.content }}</p>
+                    </div>
                 </div>
 
                 <!-- Message si pas de notes -->
@@ -616,47 +717,49 @@ function compiledMarkdown(text) {
                         Aucune note disponible pour cette intervention
                     </p>
                     <p class="text-sm text-[#FF8C42] mt-2">
-                        Ajoutez des notes pour documenter l'intervention
+                        Utilisez le formulaire ci-dessus pour ajouter des notes
                     </p>
-                </div>
-
-                <!-- Formulaire pour ajouter des notes -->
-                <div class="mt-6">
-                    <textarea
-                        class="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FF8C42]"
-                        rows="4"
-                        placeholder="Ajouter une note..."
-                    ></textarea>
-                    <div class="flex justify-end mt-2">
-                        <button
-                            class="bg-[#FF8C42] text-white px-4 py-2 rounded-md hover:bg-orange-600 transition-colors"
-                        >
-                            Enregistrer
-                        </button>
-                    </div>
                 </div>
             </section>
         </main>
 
         <!-- Modal pour afficher l'image en grand format -->
-        <div v-if="showImageModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-75 overflow-hidden">
-            <div class="relative max-w-4xl w-full max-h-[90vh] bg-white rounded-lg shadow-xl overflow-hidden">
+        <div
+            v-if="showImageModal"
+            class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-75 overflow-hidden"
+        >
+            <div
+                class="relative max-w-4xl w-full max-h-[90vh] bg-white rounded-lg shadow-xl overflow-hidden"
+            >
                 <!-- Bouton de fermeture -->
-                <button 
-                    @click="closeImageModal" 
+                <button
+                    @click="closeImageModal"
                     class="absolute top-2 right-2 z-10 p-2 bg-white rounded-full shadow-md hover:bg-gray-100 transition-colors"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-6 w-6 text-gray-600"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12"
+                        />
                     </svg>
                 </button>
-                
+
                 <!-- Image agrandie -->
-                <div class="w-full h-full flex items-center justify-center bg-gray-100">
-                    <img 
-                        v-if="selectedImage" 
-                        :src="`/storage/${selectedImage.url_image}`" 
-                        :alt="`Intervention ${intervention.id}`" 
+                <div
+                    class="w-full h-full flex items-center justify-center bg-gray-100"
+                >
+                    <img
+                        v-if="selectedImage"
+                        :src="`/storage/${selectedImage.url_image}`"
+                        :alt="`Intervention ${intervention.id}`"
                         class="max-w-full max-h-[80vh] object-contain"
                     />
                 </div>
@@ -693,11 +796,11 @@ function compiledMarkdown(text) {
 }
 
 :deep(.splide__arrow svg) {
-    fill: #FF8C42;
+    fill: #ff8c42;
 }
 
 :deep(.splide__pagination__page.is-active) {
-    background: #FF8C42;
+    background: #ff8c42;
 }
 
 /* Styles pour le popup de services qui apparaît uniquement au survol de l'élément de service */

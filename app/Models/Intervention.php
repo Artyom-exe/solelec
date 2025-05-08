@@ -31,4 +31,12 @@ class Intervention extends Model
     {
         return $this->hasMany(InterventionImage::class);
     }
+
+    /**
+     * Get the notes for the intervention.
+     */
+    public function notes()
+    {
+        return $this->hasMany(Note::class)->orderBy('created_at', 'desc');
+    }
 }
