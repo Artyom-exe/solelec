@@ -1,21 +1,64 @@
 <script setup>
 import AdminLayout from "@/Layouts/AdminLayout.vue";
 import { Link, router } from "@inertiajs/vue3";
-import { computed, inject } from "vue";
+import { computed, inject, ref } from "vue";
 import { marked } from "marked";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 
+// Import Splide
+import { Splide, SplideSlide } from '@splidejs/vue-splide';
+// Import Splide styles
+import '@splidejs/vue-splide/css';
+
 // Injection des fonctions de notification
 const showNotification = inject("showNotification");
+const { intervention } = defineProps(["intervention"]);
 
-const props = defineProps({
-    intervention: Object,
-    errors: Object,
-    flash: Object,
-    clients: Array,
-    quotes: Array,
-    services: Array,
+// Détails du devis (à remplacer par les vraies données)
+const devisDetails = computed(() => {
+    return intervention.devis || {};
 });
+
+// Référence pour l'input file
+const fileInput = ref(null);
+const selectedFiles = ref([]);
+
+// Fonction pour gérer la sélection de fichiers et uploader directement
+function handleFileSelect(event) {
+    selectedFiles.value = Array.from(event.target.files);
+    
+    // Upload automatique dès la sélection
+    if (selectedFiles.value.length > 0) {
+        uploadPhotos();
+    }
+}
+
+// Fonction pour uploader les photos
+function uploadPhotos() {
+    if (selectedFiles.value.length === 0) {
+        showNotification("Veuillez sélectionner au moins une photo", "error");
+        return;
+    }
+    
+    const formData = new FormData();
+    selectedFiles.value.forEach(file => {
+        formData.append('images[]', file);
+    });
+    // L'ID de l'intervention est déjà dans l'URL, pas besoin de l'ajouter dans formData
+    
+    router.post(route('interventions.upload-images', { intervention: intervention.id }), formData, {
+        onSuccess: () => {
+            showNotification("Photos ajoutées avec succès", "success");
+            selectedFiles.value = [];
+            // Recharger la page pour afficher les nouvelles images
+            router.reload({ only: ['intervention'] });
+        },
+        onError: (errors) => {
+            showNotification("Erreur lors de l'ajout des photos", "error");
+            console.error(errors);
+        }
+    });
+}
 
 // Fonction pour formater la date au format JJ/MM/AA
 function formatDate(dateString) {
@@ -166,7 +209,7 @@ function compiledMarkdown(text) {
                                 fill="none"
                             >
                                 <path
-                                    d="M12 12C10.9 12 9.95833 11.6083 9.175 10.825C8.39167 10.0417 8 9.1 8 8C8 6.9 8.39167 5.95833 9.175 5.175C9.95833 4.39167 10.9 4 12 4C13.1 4 14.0417 4.39167 14.825 5.175C15.6083 5.95833 16 6.9 16 8C16 9.1 15.6083 10.0417 14.825 10.825C14.0417 11.6083 13.1 12 12 12ZM4 20V17.2C4 16.6333 4.146 16.1127 4.438 15.638C4.73 15.1633 5.11733 14.8007 5.6 14.55C6.63333 14.0333 7.68333 13.646 8.75 13.388C9.81667 13.13 10.9 13.0007 12 13C13.1 12.9993 14.1833 13.1287 15.25 13.388C16.3167 13.6473 17.3667 14.0347 18.4 14.55C18.8833 14.8 19.271 15.1627 19.563 15.638C19.855 16.1133 20.0007 16.634 20 17.2V20H4ZM6 18H18V17.2C18 17.0167 17.9543 16.85 17.863 16.7C17.7717 16.55 17.6507 16.4333 17.5 16.35C16.6 15.9 15.6917 15.5627 14.775 15.338C13.8583 15.1133 12.9333 15.0007 12 15C11.0667 14.9993 10.1417 15.112 9.225 15.338C8.30833 15.564 7.4 15.9013 6.5 16.35C6.35 16.4333 6.229 16.55 6.137 16.7C6.045 16.85 5.99933 17.0167 6 17.2V18ZM12 10C12.55 10 13.021 9.80433 13.413 9.413C13.805 9.02167 14.0007 8.55067 14 8C13.9993 7.44933 13.8037 6.97867 13.413 6.588C13.0223 6.19733 12.5513 6.00133 12 6C11.4487 5.99867 10.978 6.19467 10.588 6.588C10.198 6.98133 10.002 7.452 10 8C9.998 8.548 10.194 9.019 10.588 9.413C10.982 9.807 11.4527 10.0027 12 10Z"
+                                    d="M12 12C10.9 12 9.95833 11.6083 9.175 10.825C8.39167 10.0417 8 9.1 8 8C8 6.9 8.39167 5.95833 9.175 5.175C9.95833 4.39167 10.9 4 12 4C13.1 4 14.0417 4.39167 14.825 5.175C15.6083 5.95833 16 6.9 16 8C16 9.1 15.6083 10.0417 14.825 10.825C14.0417 11.6083 13.1 12 12 12ZM4 20V17.2C4 16.6333 4.146 16.1127 4.438 15.638C4.73 15.1633 5.11733 14.8007 5.6 14.55C6.63333 14.0333 7.68333 13.646 8.75 13.388C9.81667 13.13 10.9 13.0007 12 13C13.1 12.9993 14.1833 13.1287 15.25 13.388C16.3167 13.6473 17.3667 14.0347 18.4 14.55C18.8833 14.8 19.271 15.1627 19.563 15.638C19.855 16.1133 20.0007 16.634 20 17.2V20H4ZM6 18H18V17.2C18 17.0167 17.9543 16.85 17.863 16.7C17.7717 16.55 17.6507 16.4333 17.5 16.35C16.6 15.9 15.6917 15.5627 14.775 15.338C13.8583 15.1133 12.9333 15.0007 12 15C11.0667 14.9993 10.1417 15.112 9.225 15.338C8.30833 15.564 7.4 15.9013 6.5 16.35C6.35 16.4333 6.229 16.55 6.137 16.7C6.045 16.85 5.99933 17.0167 6 17.2V18ZM12 10C12.55 10 13.021 9.80433 13.413 9.413C13.805 9.02167 14.0007 8.55067 14 8C13.9993 7.44933 13.8037 6.97867 13.413 6.588C13.0223 6.19733 12.5513 6.00133 12 6C11.4487 5.99867 10.978 6.19467 10.588 6.588C10.198 6.98133 10.002 7.452 10 8C9.998 8.548 10.194 9.019 10.588 9.413C10.982 9.807 11.4527 10.0027 12 10ZM18.267 19.8518C18.417 20.0018 18.607 20.0718 18.797 20.0718C18.987 20.0718 19.177 20.0018 19.327 19.8518C19.617 19.5618 19.617 19.0818 19.327 18.7918L18.547 18.0118V16.3218C18.547 15.9118 18.207 15.5718 17.797 15.5718C17.387 15.5718 17.047 15.9118 17.047 16.3218V18.3218C17.047 18.5218 17.127 18.7118 17.267 18.8518L18.267 19.8518Z"
                                     fill="white"
                                 />
                             </svg>
@@ -398,8 +441,16 @@ function compiledMarkdown(text) {
                         </div>
                     </div>
                     <div class="flex items-end">
+                        <input
+                            ref="fileInput"
+                            type="file"
+                            multiple
+                            accept="image/*"
+                            @change="handleFileSelect"
+                            class="hidden"
+                        />
                         <PrimaryButton
-                            @click="showAddForm = !showAddForm"
+                            @click="fileInput.click()"
                             class="h-max"
                         >
                             Ajouter
@@ -407,43 +458,58 @@ function compiledMarkdown(text) {
                     </div>
                 </div>
 
-                <!-- Galerie de photos -->
-                <div
-                    v-if="intervention.images && intervention.images.length > 0"
-                    class="grid grid-cols-4 gap-4"
-                >
-                    <div
-                        v-for="image in intervention.images"
-                        :key="image.id"
-                        class="relative group"
+                <!-- Galerie de photos avec Splide ou message si pas de photos -->
+                <div v-if="intervention.images && intervention.images.length > 0" class="w-full">
+                    <Splide
+                        :options="{
+                            perPage: 1,
+                            perMove: 1,
+                            gap: '1rem',
+                            pagination: true,
+                            arrows: true,
+                            drag: 'free',
+                            snap: false,
+                            fixedWidth: '300px',
+                            height: '200px',
+                            trimSpace: false,
+                            focus: 0,
+                            omitEnd: true,
+                            padding: { right: '15%' }
+                        }"
                     >
-                        <img
-                            :src="`/storage/${image.path}`"
-                            :alt="`Intervention ${intervention.id}`"
-                            class="w-full h-40 object-cover rounded-md"
-                        />
-                        <div
-                            class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                        <SplideSlide 
+                            v-for="image in intervention.images" 
+                            :key="image.id"
+                            class="relative group"
                         >
-                            <a
-                                :href="`/storage/${image.path}`"
-                                target="_blank"
-                                class="text-white hover:text-[#FF8C42]"
+                            <img
+                                :src="`/storage/${image.url_image}`"
+                                :alt="`Intervention ${intervention.id}`"
+                                class="w-full h-full object-cover rounded-md"
+                            />
+                            <div
+                                class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
                             >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="24"
-                                    height="24"
-                                    viewBox="0 0 24 24"
-                                    fill="currentColor"
+                                <a
+                                    :href="`/storage/${image.url_image}`"
+                                    target="_blank"
+                                    class="text-white hover:text-[#FF8C42]"
                                 >
-                                    <path
-                                        d="M15 3l2.3 2.3-2.89 2.87 1.42 1.42L18.7 6.7 21 9V3h-6zM3 9l2.3-2.3 2.87 2.89 1.42-1.42L6.7 5.3 9 3H3v6zm6 12l-2.3-2.3 2.89-2.87-1.42-1.42L5.3 17.3 3 15v6h6zm12-6l-2.3 2.3-2.87-2.89-1.42 1.42 2.89 2.87L15 21h6v-6z"
-                                    />
-                                </svg>
-                            </a>
-                        </div>
-                    </div>
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 24 24"
+                                        fill="currentColor"
+                                    >
+                                        <path
+                                            d="M15 3l2.3 2.3-2.89 2.87 1.42 1.42L18.7 6.7 21 9V3h-6zM3 9l2.3-2.3 2.87 2.89 1.42-1.42L6.7 5.3 9 3H3v6zm6 12l-2.3-2.3 2.89-2.87-1.42-1.42L5.3 17.3 3 15v6h6zm12-6l-2.3 2.3-2.87-2.89-1.42 1.42 2.89 2.87L15 21h6v-6z"
+                                        />
+                                    </svg>
+                                </a>
+                            </div>
+                        </SplideSlide>
+                    </Splide>
                 </div>
 
                 <!-- Message si pas de photos -->
@@ -510,6 +576,24 @@ function compiledMarkdown(text) {
 
 .hide-scrollbar::-webkit-scrollbar {
     display: none; /* Chrome, Safari and Opera */
+}
+
+/* Styles pour le carrousel Splide */
+:deep(.splide) {
+    width: 100%;
+    overflow: visible;
+}
+
+:deep(.splide__arrow) {
+    background: rgba(255, 255, 255, 0.8);
+}
+
+:deep(.splide__arrow svg) {
+    fill: #FF8C42;
+}
+
+:deep(.splide__pagination__page.is-active) {
+    background: #FF8C42;
 }
 
 /* Styles pour le popup de services qui apparaît uniquement au survol de l'élément de service */
