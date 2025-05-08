@@ -706,7 +706,7 @@ function compiledMarkdown(text) {
                             rows="4"
                             placeholder="Écrivez votre note ici..."
                         ></textarea>
-                        <div class="absolute bottom-0 right-0">
+                        <div class="absolute bottom-2 right-3">
                             <button
                                 @click="addNote"
                                 :disabled="!newNote.trim()"
@@ -732,43 +732,51 @@ function compiledMarkdown(text) {
                         v-if="
                             intervention.notes && intervention.notes.length > 0
                         "
-                        class="w-full"
+                        class="w-full flex flex-col gap-8"
                     >
                         <div
                             v-for="note in intervention.notes"
                             :key="note.id"
-                            class="bg-white p-4 rounded-md shadow-sm border-l-4 border-[#FF8C42]"
+                            class="flex p-8 flex-col items-start gap-6 rounded-lg border border-white/20 bg-[#F2F2F2] font-inter text-base font-normal text-[#0D0703] relative group"
                         >
-                            <div class="flex justify-between items-start mb-2">
-                                <div>
-                                    <span class="text-sm text-gray-500">{{
-                                        formatDateWithTime(note.created_at)
-                                    }}</span>
-                                </div>
+                            <div
+                                class="absolute top-[-0.5rem] right-[-0.5rem] opacity-0 delete-button transition-opacity flex gap-2"
+                            >
                                 <button
                                     @click="deleteNote(note.id)"
-                                    class="text-red-500 hover:text-red-700 transition-colors"
-                                    title="Supprimer cette note"
+                                    title="Supprimer"
                                 >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        class="h-5 w-5"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                    >
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                        />
-                                    </svg>
+                                    <img
+                                        src="/assets/icons/clients/delete-icon.svg"
+                                        alt="Delete"
+                                        class="w-5 h-5 hover:scale-110 transition-transform"
+                                    />
                                 </button>
                             </div>
                             <p class="whitespace-pre-line text-gray-700">
                                 {{ note.content }}
                             </p>
+                            <div class="flex items-center gap-2">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="16"
+                                    height="17"
+                                    viewBox="0 0 16 17"
+                                    fill="none"
+                                >
+                                    <path
+                                        d="M7.99998 1.83301C4.32398 1.83301 1.33331 4.82367 1.33331 8.49967C1.33331 12.1757 4.32398 15.1663 7.99998 15.1663C11.676 15.1663 14.6666 12.1757 14.6666 8.49967C14.6666 4.82367 11.676 1.83301 7.99998 1.83301ZM7.99998 13.833C5.05931 13.833 2.66665 11.4403 2.66665 8.49967C2.66665 5.55901 5.05931 3.16634 7.99998 3.16634C10.9406 3.16634 13.3333 5.55901 13.3333 8.49967C13.3333 11.4403 10.9406 13.833 7.99998 13.833Z"
+                                        fill="#6B7280"
+                                    />
+                                    <path
+                                        d="M8.66665 5.16634H7.33331V8.77567L9.52865 10.971L10.4713 10.0283L8.66665 8.22367V5.16634Z"
+                                        fill="#6B7280"
+                                    />
+                                </svg>
+                                <span class="text-sm text-gray-500">{{
+                                    formatDateWithTime(note.created_at)
+                                }}</span>
+                            </div>
                         </div>
                     </div>
 
@@ -844,6 +852,11 @@ function compiledMarkdown(text) {
 
 .hide-scrollbar::-webkit-scrollbar {
     display: none; /* Pour Chrome, Safari et Opera */
+}
+
+/* Style pour le bouton de suppression qui apparaît au survol de la note */
+.group:hover .delete-button {
+    opacity: 1;
 }
 
 /* Style pour le bouton de suppression qui apparaît au survol de l'image */
