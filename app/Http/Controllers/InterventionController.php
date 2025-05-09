@@ -265,12 +265,7 @@ class InterventionController extends Controller
         // Journalisation de l'activité
         ActivityLogger::log('intervention', $intervention, 'Date de l\'intervention pour ' . $clientName . ' mise à jour: ' . $oldDate . ' → ' . $validated['date']);
 
-        return response()->json([
-            'success' => $result,
-            'message' => 'Date de l\'intervention mise à jour avec succès',
-            'old_date' => $oldDate,
-            'new_date' => $validated['date'],
-        ]);
+        return redirect()->back()->with('success', 'Date de l\'intervention mise à jour avec succès');
     }
 
     /**

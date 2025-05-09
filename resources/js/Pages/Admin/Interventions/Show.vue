@@ -475,6 +475,12 @@ function updateInterventionDate(date) {
 
     console.log('Date formatée envoyée à l\'API:', formattedDate);
 
+    // Sauvegarder l'ancienne date pour pouvoir revenir en arrière si nécessaire
+    const oldDate = intervention.date;
+    
+    // Mettre à jour la date localement sans attendre la réponse du serveur
+    intervention.date = formattedDate;
+
     // Utiliser la route spécifique pour mettre à jour uniquement la date
     router.put(
         route("interventions.updateDate", { intervention: intervention.id }),
@@ -483,16 +489,20 @@ function updateInterventionDate(date) {
         },
         {
             preserveScroll: true,
-            onSuccess: (response) => {
-                console.log('Réponse du serveur:', response);
-                showNotification("Date mise à jour", "success");
-
-                // Mettre à jour la date localement sans recharger la page
-                intervention.date = formattedDate;
+            onSuccess: (page) => {
+                // Vérifier si la réponse contient un message de succès
+                if (page.props.flash && page.props.flash.success) {
+                    showNotification(page.props.flash.success, "success");
+                } else {
+                    showNotification("Date mise à jour", "success");
+                }
             },
             onError: (errors) => {
                 console.error('Erreurs:', errors);
                 showNotification("Erreur lors de la mise à jour de la date", "error");
+                
+                // Restaurer l'ancienne date en cas d'erreur
+                intervention.date = oldDate;
             }
         }
     );
