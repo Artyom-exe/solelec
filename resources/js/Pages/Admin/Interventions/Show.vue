@@ -4,6 +4,8 @@ import { Link, router } from "@inertiajs/vue3";
 import { computed, inject, ref, onMounted, watch } from "vue";
 import { marked } from "marked";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
+import Datepicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css';
 
 // Import Splide
 import { Splide, SplideSlide } from "@splidejs/vue-splide";
@@ -31,6 +33,22 @@ const selectedFiles = ref([]);
 // Variables pour le modal d'image
 const showImageModal = ref(false);
 const selectedImage = ref(null);
+
+// Variables pour le datepicker
+const showDatepicker = ref(false);
+// S'assurer que la date est correctement initialisée
+const datePickerValue = ref(null);
+
+// Initialiser la date du datepicker après le montage du composant
+onMounted(() => {
+    if (intervention.date) {
+        try {
+            datePickerValue.value = new Date(intervention.date);
+        } catch (error) {
+            console.error('Erreur lors de l\'initialisation de la date:', error);
+        }
+    }
+});
 
 // Variable pour la nouvelle note
 const newNote = ref("");
@@ -301,9 +319,92 @@ function updateStatus(intervention) {
     );
 }
 
+// Fonction pour basculer l'affichage du datepicker
+function openDatePicker() {
+    showDatepicker.value = !showDatepicker.value;
+}
+
+// Fonction pour formater la date pour l'API
+function formatDateForApi(date) {
+    if (!date) return null;
+    
+    // Si c'est déjà une chaîne de caractères au format YYYY-MM-DD, la retourner telle quelle
+    if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) return date;
+    
+    try {
+        // Sinon, formater la date au format YYYY-MM-DD
+        const d = new Date(date);
+        
+        // Vérifier si la date est valide
+        if (isNaN(d.getTime())) {
+            console.error('Date invalide:', date);
+            return null;
+        }
+        
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    } catch (error) {
+        console.error('Erreur lors du formatage de la date:', error);
+        return null;
+    }
+}
+
+// Fonction pour mettre à jour la date d'intervention
+function updateInterventionDate(date) {
+    // Fermer le datepicker
+    showDatepicker.value = false;
+    
+    // Vérifier si la date est valide
+    if (!date) {
+        showNotification("Date invalide", "error");
+        return;
+    }
+    
+    // Formater la date pour l'API
+    const formattedDate = formatDateForApi(date);
+    
+    // Mettre à jour la date via une requête API - envoyer seulement les données nécessaires
+    router.put(
+        route("interventions.update", { intervention: intervention.id }),
+        {
+            date: formattedDate,
+            // Conserver les autres valeurs essentielles sans modifier les notes
+            status: intervention.status,
+            clients_id: intervention.client.id,
+            devis_id: intervention.devis_id
+        },
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                showNotification(
+                    "Date d'intervention mise à jour",
+                    "success"
+                );
+                // Mettre à jour la date localement
+                datePickerValue.value = date;
+                // Recharger uniquement les données de l'intervention
+                router.reload({ only: ["intervention"] });
+            },
+            onError: (errors) => {
+                console.error(errors);
+                showNotification(
+                    "Erreur lors de la mise à jour de la date",
+                    "error"
+                );
+            },
+        }
+    );
+}
+
 function compiledMarkdown(text) {
     return text ? marked(text) : "";
 }
+
+
+
+
 // S'assurer que l'éditeur est correctement initialisé après le montage du composant
 onMounted(() => {
     // Donner le focus à l'éditeur après un court délai pour s'assurer que le DOM est prêt
@@ -394,6 +495,51 @@ onMounted(() => {
                         >
                             {{ intervention.status }}
                         </button>
+                        
+                        <!-- Badge pour sélectionner la date d'intervention -->
+                        <div class="relative service-group">
+                            <button
+                                class="flex py-1 px-[10px] items-start rounded border border-white/5 bg-white/5 text-white font-inter font-semibold text-sm transition-colors duration-300 cursor-pointer date-picker-button"
+                                @click.stop="openDatePicker"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="white"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    class="mr-1"
+                                >
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                                {{ intervention.date ? formatDate(intervention.date) : 'Planifier' }}
+                            </button>
+                            
+                            <!-- Datepicker de vue-datepicker -->
+                            <Datepicker
+                                v-if="showDatepicker"
+                                v-model="datePickerValue"
+                                :enable-time-picker="false"
+                                locale="fr"
+                                auto-apply
+                                :teleport="true"
+                                :teleport-center="false"
+                                position="bottom"
+                                text-input
+                                @closed="showDatepicker = false"
+                                @update:model-value="updateInterventionDate"
+                                menu-class-name="date-picker-menu"
+                                class="absolute top-full left-0 z-50 mt-1"
+                                :format="'dd/MM/yyyy'"
+                            />
+                        </div>
                     </div>
                 </div>
 

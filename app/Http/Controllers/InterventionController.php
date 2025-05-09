@@ -163,14 +163,21 @@ class InterventionController extends Controller
         $statusChanged = $intervention->status !== $validated['status'];
         $oldStatus = $intervention->status;
 
-        // Mise à jour de l'intervention
-        $intervention->update([
+        // Préparer les données à mettre à jour
+        $updateData = [
             'status' => $validated['status'],
             'date' => $validated['date'],
-            'notes' => $validated['notes'],
             'clients_id' => $validated['clients_id'],
             'devis_id' => $validated['devis_id'],
-        ]);
+        ];
+        
+        // Ajouter les notes seulement si elles sont présentes dans la requête
+        if (array_key_exists('notes', $validated)) {
+            $updateData['notes'] = $validated['notes'];
+        }
+        
+        // Mise à jour de l'intervention
+        $intervention->update($updateData);
 
         // Suppression des images si demandé
         if (isset($validated['delete_images'])) {
