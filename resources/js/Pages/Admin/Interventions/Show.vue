@@ -552,7 +552,19 @@ function updateInterventionDate(date) {
 }
 
 function compiledMarkdown(text) {
-    return text ? marked(text) : "";
+    if (!text) return "";
+    
+    // Configuration de marked pour un meilleur rendu
+    marked.setOptions({
+        gfm: true, // GitHub Flavored Markdown
+        breaks: true, // Convertir les retours à la ligne en <br>
+        sanitize: false, // Désactivé car marked gère cela automatiquement dans les versions récentes
+        smartLists: true, // Listes plus intelligentes
+        smartypants: true, // Guillemets typographiques et tirets
+        xhtml: false // Ne pas fermer les balises vides comme XHTML
+    });
+    
+    return marked(text);
 }
 
 </script>
@@ -924,14 +936,14 @@ function compiledMarkdown(text) {
                 <div
                     class="flex w-[672px] h-[304px] p-8 flex-col items-start gap-6 rounded-lg border border-white/20 bg-[#F2F2F2] overflow-y-auto hide-scrollbar"
                 >
-                    <p
-                        class="text-[#0D0703] font-inter text-xl font-normal"
+                    <div
+                        class="text-[#0D0703] font-inter text-xl font-normal markdown-content"
                         v-html="
                             compiledMarkdown(
                                 intervention.devis.description || ''
                             )
                         "
-                    ></p>
+                    ></div>
                 </div>
             </section>
 
@@ -1467,77 +1479,91 @@ main {
     pointer-events: none;
 }
 
-:deep(.tiptap) {
-    width: 100% !important;
-    min-height: 180px;
-    display: block !important;
-    max-width: 100% !important;
+/* Styles pour les cartes d'intervention au survol */
+.hover-card:hover .delete-button {
+    opacity: 1;
 }
 
-/* Styles pour la barre d'outils */
-:deep(.toolbar) {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 0.5rem;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
+/* Styles pour le bouton de suppression */
+.delete-button {
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
-:deep(.toolbar button) {
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-    color: white;
-    padding: 0.3rem 0.6rem;
-    border-radius: 0.25rem;
-    cursor: pointer;
-    transition: background-color 0.2s;
+/* Styles pour les badges de service */
+.service-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+    background-color: rgba(255, 140, 66, 0.1);
+    color: #FF8C42;
+    border: 1px solid #FF8C42;
 }
 
-:deep(.toolbar button:hover) {
-    background: rgba(255, 140, 66, 0.6);
+/* Styles pour le contenu Markdown */
+.markdown-content {
+    width: 100%;
 }
 
-:deep(.toolbar button.is-active) {
-    background: #ff8c42;
-    color: white;
-}
-
-/* Styles pour le contenu */
-:deep(.ProseMirror ul) {
+.markdown-content ul {
+    list-style-type: disc;
     padding-left: 1.5rem;
-    list-style: disc;
+    margin-bottom: 1rem;
 }
 
-:deep(.ProseMirror ol) {
+.markdown-content ol {
+    list-style-type: decimal;
     padding-left: 1.5rem;
-    list-style: decimal;
+    margin-bottom: 1rem;
 }
 
-:deep(.ProseMirror a) {
-    color: #ff8c42;
+.markdown-content li {
+    margin-bottom: 0.5rem;
+}
+
+.markdown-content p {
+    margin-bottom: 1rem;
+}
+
+.markdown-content a {
+    color: #FF8C42;
     text-decoration: underline;
 }
 
-:deep(.ProseMirror blockquote) {
+.markdown-content strong {
+    font-weight: bold;
+}
+
+.markdown-content em {
+    font-style: italic;
+}
+
+.markdown-content code {
+    font-family: monospace;
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 0.1rem 0.3rem;
+    border-radius: 3px;
+}
+
+.markdown-content pre {
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 1rem;
+    border-radius: 5px;
+    overflow-x: auto;
+    margin-bottom: 1rem;
+}
+
+.markdown-content blockquote {
+    border-left: 3px solid #FF8C42;
     padding-left: 1rem;
-    border-left: 2px solid #ff8c42;
-    color: rgba(255, 255, 255, 0.8);
-}
-
-:deep(.ProseMirror p) {
-    margin-bottom: 0.1rem;
-    line-height: 1;
-}
-
-:deep(.ProseMirror h1),
-:deep(.ProseMirror h2),
-:deep(.ProseMirror h3),
-:deep(.ProseMirror h4),
-:deep(.ProseMirror h5),
-:deep(.ProseMirror h6) {
-    font-weight: 600;
-    margin-top: 1rem;
-    margin-bottom: 0.5rem;
+    margin-left: 0;
+    margin-bottom: 1rem;
+    color: rgba(13, 7, 3, 0.7);
 }
 
 /* Styles pour s'assurer que le contenu des notes ne dépasse pas son parent */
