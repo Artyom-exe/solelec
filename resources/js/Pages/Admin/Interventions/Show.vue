@@ -38,17 +38,26 @@ const selectedImage = ref(null);
 const showDatepicker = ref(false);
 // S'assurer que la date est correctement initialisée
 const datePickerValue = ref(null);
+const tempDateValue = ref(null);
 
 // Initialiser la date du datepicker après le montage du composant
 onMounted(() => {
     if (intervention.date) {
         try {
             datePickerValue.value = new Date(intervention.date);
+            tempDateValue.value = datePickerValue.value;
         } catch (error) {
             console.error('Erreur lors de l\'initialisation de la date:', error);
         }
     }
 });
+
+// Fonction pour gérer le changement de date sans validation immédiate
+function handleDateChange(date) {
+    tempDateValue.value = date;
+    // Ne pas fermer le datepicker ni mettre à jour l'intervention
+    // La mise à jour se fera uniquement lors du clic sur le bouton Valider
+}
 
 // Variable pour la nouvelle note
 const newNote = ref("");
@@ -353,17 +362,44 @@ function formatDateForApi(date) {
 
 // Fonction pour mettre à jour la date d'intervention
 function updateInterventionDate(date) {
+    // Utiliser la date temporaire si aucune date n'est fournie
+    const dateToProcess = date || tempDateValue.value;
+    
     // Fermer le datepicker
     showDatepicker.value = false;
     
     // Vérifier si la date est valide
-    if (!date) {
+    if (!dateToProcess) {
         showNotification("Date invalide", "error");
         return;
     }
     
+    // Vérifier si la date est un string (saisie manuelle) et la convertir
+    let dateToUse = dateToProcess;
+    if (typeof dateToProcess === 'string') {
+        // Essayer de parser la date au format JJ/MM/AAAA
+        const parts = dateToProcess.split('/');
+        if (parts.length === 3) {
+            // Format JJ/MM/AAAA -> AAAA-MM-JJ
+            const day = parts[0].padStart(2, '0');
+            const month = parts[1].padStart(2, '0');
+            const year = parts[2].length === 2 ? `20${parts[2]}` : parts[2];
+            
+            dateToUse = new Date(`${year}-${month}-${day}`);
+            
+            // Vérifier si la date est valide
+            if (isNaN(dateToUse.getTime())) {
+                showNotification("Format de date invalide. Utilisez JJ/MM/AAAA", "error");
+                return;
+            }
+        } else {
+            showNotification("Format de date invalide. Utilisez JJ/MM/AAAA", "error");
+            return;
+        }
+    }
+    
     // Formater la date pour l'API
-    const formattedDate = formatDateForApi(date);
+    const formattedDate = formatDateForApi(dateToUse);
     
     // Mettre à jour la date via une requête API - envoyer seulement les données nécessaires
     router.put(
@@ -383,7 +419,9 @@ function updateInterventionDate(date) {
                     "success"
                 );
                 // Mettre à jour la date localement
-                datePickerValue.value = date;
+                datePickerValue.value = dateToUse;
+                // Réinitialiser la date temporaire
+                tempDateValue.value = dateToUse;
                 // Recharger uniquement les données de l'intervention
                 router.reload({ only: ["intervention"] });
             },
@@ -413,6 +451,60 @@ onMounted(() => {
     }, 100);
 });
 </script>
+
+<style>
+/* Style pour l'input du datepicker */
+.date-picker-input {
+    background-color: #2D2D2D !important;
+    color: white !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 4px !important;
+    padding: 4px 8px !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+}
+
+/* Style pour le menu du datepicker */
+.date-picker-menu {
+    z-index: 100 !important;
+}
+
+/* Style pour les boutons d'action du datepicker */
+.dp__action_buttons {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 10px;
+}
+
+.dp__action_button {
+    background-color: transparent;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 5px 10px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.dp__action_select {
+    background-color: #FF8C42;
+    color: white;
+    border-color: #FF8C42;
+}
+
+.dp__action_select:hover {
+    background-color: #e67e3a;
+}
+
+.dp__action_cancel {
+    color: #666;
+}
+
+.dp__action_cancel:hover {
+    background-color: #f0f0f0;
+}
+</style>
 
 <template>
     <AdminLayout>
@@ -528,17 +620,41 @@ onMounted(() => {
                                 v-model="datePickerValue"
                                 :enable-time-picker="false"
                                 locale="fr"
-                                auto-apply
+                                :auto-apply="false"
                                 :teleport="true"
                                 :teleport-center="false"
                                 position="bottom"
                                 text-input
+                                input-class-name="date-picker-input"
+                                :text-input-options="{ format: 'dd/MM/yyyy', openMenu: true, enterSubmit: false }"
+                                :allow-input="true"
                                 @closed="showDatepicker = false"
-                                @update:model-value="updateInterventionDate"
+                                @update:model-value="handleDateChange"
                                 menu-class-name="date-picker-menu"
                                 class="absolute top-full left-0 z-50 mt-1"
                                 :format="'dd/MM/yyyy'"
-                            />
+                                :input-debounce="1000"
+                                :preview-format="'dd/MM/yyyy'"
+                            >
+                                <template #action-buttons>
+                                    <div class="dp__action_buttons">
+                                        <button 
+                                            type="button" 
+                                            class="dp__action_button dp__action_select" 
+                                            @click="updateInterventionDate(tempDateValue)"
+                                        >
+                                            Valider
+                                        </button>
+                                        <button 
+                                            type="button" 
+                                            class="dp__action_button dp__action_cancel" 
+                                            @click="showDatepicker = false"
+                                        >
+                                            Annuler
+                                        </button>
+                                    </div>
+                                </template>
+                            </Datepicker>
                         </div>
                     </div>
                 </div>
