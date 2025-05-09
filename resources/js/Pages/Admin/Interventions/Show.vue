@@ -4,8 +4,6 @@ import { Link, router } from "@inertiajs/vue3";
 import { computed, inject, ref, onMounted, watch } from "vue";
 import { marked } from "marked";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
-import Datepicker from '@vuepic/vue-datepicker';
-import '@vuepic/vue-datepicker/dist/main.css';
 
 // Import Splide
 import { Splide, SplideSlide } from "@splidejs/vue-splide";
@@ -33,31 +31,6 @@ const selectedFiles = ref([]);
 // Variables pour le modal d'image
 const showImageModal = ref(false);
 const selectedImage = ref(null);
-
-// Variables pour le datepicker
-const showDatepicker = ref(false);
-// S'assurer que la date est correctement initialisée
-const datePickerValue = ref(null);
-const tempDateValue = ref(null);
-
-// Initialiser la date du datepicker après le montage du composant
-onMounted(() => {
-    if (intervention.date) {
-        try {
-            datePickerValue.value = new Date(intervention.date);
-            tempDateValue.value = datePickerValue.value;
-        } catch (error) {
-            console.error('Erreur lors de l\'initialisation de la date:', error);
-        }
-    }
-});
-
-// Fonction pour gérer le changement de date sans validation immédiate
-function handleDateChange(date) {
-    tempDateValue.value = date;
-    // Ne pas fermer le datepicker ni mettre à jour l'intervention
-    // La mise à jour se fera uniquement lors du clic sur le bouton Valider
-}
 
 // Variable pour la nouvelle note
 const newNote = ref("");
@@ -328,11 +301,6 @@ function updateStatus(intervention) {
     );
 }
 
-// Fonction pour basculer l'affichage du datepicker
-function openDatePicker() {
-    showDatepicker.value = !showDatepicker.value;
-}
-
 // Fonction pour formater la date pour l'API
 function formatDateForApi(date) {
     if (!date) return null;
@@ -513,60 +481,6 @@ function compiledMarkdown(text) {
 }
 
 </script>
-
-<style>
-/* Style pour l'input du datepicker */
-.date-picker-input {
-    background-color: #2D2D2D !important;
-    color: white !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    border-radius: 4px !important;
-    padding: 4px 8px !important;
-    font-family: 'Inter', sans-serif !important;
-    font-size: 14px !important;
-    font-weight: 600 !important;
-}
-
-/* Style pour le menu du datepicker */
-.date-picker-menu {
-    z-index: 100 !important;
-}
-
-/* Style pour les boutons d'action du datepicker */
-.dp__action_buttons {
-    display: flex;
-    justify-content: space-between;
-    padding: 5px 10px;
-}
-
-.dp__action_button {
-    background-color: transparent;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    padding: 5px 10px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.dp__action_select {
-    background-color: #FF8C42;
-    color: white;
-    border-color: #FF8C42;
-}
-
-.dp__action_select:hover {
-    background-color: #e67e3a;
-}
-
-.dp__action_cancel {
-    color: #666;
-}
-
-.dp__action_cancel:hover {
-    background-color: #f0f0f0;
-}
-</style>
 
 <template>
     <AdminLayout>
