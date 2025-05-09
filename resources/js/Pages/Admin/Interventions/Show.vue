@@ -336,20 +336,20 @@ function openDatePicker() {
 // Fonction pour formater la date pour l'API
 function formatDateForApi(date) {
     if (!date) return null;
-    
+
     // Si c'est déjà une chaîne de caractères au format YYYY-MM-DD, la retourner telle quelle
     if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) return date;
-    
+
     try {
         // Sinon, formater la date au format YYYY-MM-DD
         const d = new Date(date);
-        
+
         // Vérifier si la date est valide
         if (isNaN(d.getTime())) {
             console.error('Date invalide:', date);
             return null;
         }
-        
+
         const year = d.getFullYear();
         const month = String(d.getMonth() + 1).padStart(2, '0');
         const day = String(d.getDate()).padStart(2, '0');
@@ -360,78 +360,140 @@ function formatDateForApi(date) {
     }
 }
 
+// Variables pour le calendrier personnalisé
+const showCustomCalendar = ref(false);
+const currentDate = ref(new Date());
+const selectedDate = ref(intervention.date ? new Date(intervention.date) : null);
+const tempSelectedDate = ref(null);
+
+// Calcul des propriétés du calendrier
+const currentYear = computed(() => currentDate.value.getFullYear());
+const currentMonth = computed(() => currentDate.value.getMonth());
+const daysInMonth = computed(() => {
+    const lastDay = new Date(currentYear.value, currentMonth.value + 1, 0);
+    return lastDay.getDate();
+});
+
+// Calcul du premier jour du mois (0 = Dimanche, 1 = Lundi, etc.)
+const firstDayOfMonth = computed(() => {
+    const firstDay = new Date(currentYear.value, currentMonth.value, 1).getDay();
+    // Convertir de 0-6 (Dim-Sam) à 1-7 (Lun-Dim)
+    return firstDay === 0 ? 6 : firstDay - 1;
+});
+
+// Noms des mois en français
+const monthNames = [
+    'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+    'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
+];
+
+const currentMonthName = computed(() => monthNames[currentMonth.value]);
+
+// Fonction pour ouvrir le calendrier personnalisé
+function openCustomCalendar() {
+    // Initialiser la date actuelle avec la date de l'intervention
+    if (intervention.date) {
+        currentDate.value = new Date(intervention.date);
+        selectedDate.value = new Date(intervention.date);
+    } else {
+        currentDate.value = new Date();
+        selectedDate.value = null;
+    }
+
+    tempSelectedDate.value = selectedDate.value;
+    showCustomCalendar.value = true;
+
+    // Ajouter un écouteur de clic pour fermer le calendrier quand on clique en dehors
+    setTimeout(() => {
+        document.addEventListener('click', closeDatePickerOnClickOutside);
+    }, 0);
+}
+
+// Fonction pour fermer le datepicker quand on clique en dehors
+function closeDatePickerOnClickOutside(e) {
+    const datepicker = document.querySelector('.date-picker-button')?.parentNode;
+    if (datepicker && !datepicker.contains(e.target)) {
+        showCustomCalendar.value = false;
+        document.removeEventListener('click', closeDatePickerOnClickOutside);
+    }
+}
+
+// Fonction pour passer au mois précédent
+function previousMonth() {
+    currentDate.value = new Date(currentYear.value, currentMonth.value - 1, 1);
+}
+
+// Fonction pour passer au mois suivant
+function nextMonth() {
+    currentDate.value = new Date(currentYear.value, currentMonth.value + 1, 1);
+}
+
+// Fonction pour sélectionner une date
+function selectDate(day) {
+    tempSelectedDate.value = new Date(currentYear.value, currentMonth.value, day);
+}
+
+// Fonction pour vérifier si une date est sélectionnée
+function isSelectedDate(day) {
+    if (!tempSelectedDate.value) return false;
+
+    const date = new Date(currentYear.value, currentMonth.value, day);
+    return date.getDate() === tempSelectedDate.value.getDate() &&
+           date.getMonth() === tempSelectedDate.value.getMonth() &&
+           date.getFullYear() === tempSelectedDate.value.getFullYear();
+}
+
+// Fonction pour annuler la sélection de date
+function cancelDateSelection() {
+    showCustomCalendar.value = false;
+    document.removeEventListener('click', closeDatePickerOnClickOutside);
+}
+
+// Fonction pour confirmer la sélection de date
+function confirmDateSelection() {
+    if (tempSelectedDate.value) {
+        selectedDate.value = tempSelectedDate.value;
+        updateInterventionDate(selectedDate.value);
+    }
+    showCustomCalendar.value = false;
+    document.removeEventListener('click', closeDatePickerOnClickOutside);
+}
+
 // Fonction pour mettre à jour la date d'intervention
 function updateInterventionDate(date) {
-    // Utiliser la date temporaire si aucune date n'est fournie
-    const dateToProcess = date || tempDateValue.value;
-    
-    // Fermer le datepicker
-    showDatepicker.value = false;
-    
     // Vérifier si la date est valide
-    if (!dateToProcess) {
+    if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
         showNotification("Date invalide", "error");
         return;
     }
-    
-    // Vérifier si la date est un string (saisie manuelle) et la convertir
-    let dateToUse = dateToProcess;
-    if (typeof dateToProcess === 'string') {
-        // Essayer de parser la date au format JJ/MM/AAAA
-        const parts = dateToProcess.split('/');
-        if (parts.length === 3) {
-            // Format JJ/MM/AAAA -> AAAA-MM-JJ
-            const day = parts[0].padStart(2, '0');
-            const month = parts[1].padStart(2, '0');
-            const year = parts[2].length === 2 ? `20${parts[2]}` : parts[2];
-            
-            dateToUse = new Date(`${year}-${month}-${day}`);
-            
-            // Vérifier si la date est valide
-            if (isNaN(dateToUse.getTime())) {
-                showNotification("Format de date invalide. Utilisez JJ/MM/AAAA", "error");
-                return;
-            }
-        } else {
-            showNotification("Format de date invalide. Utilisez JJ/MM/AAAA", "error");
-            return;
-        }
-    }
-    
-    // Formater la date pour l'API
-    const formattedDate = formatDateForApi(dateToUse);
-    
-    // Mettre à jour la date via une requête API - envoyer seulement les données nécessaires
+
+    // Formater la date au format YYYY-MM-DD
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const formattedDate = `${year}-${month}-${day}`;
+
+    console.log('Date formatée envoyée à l\'API:', formattedDate);
+
+    // Utiliser la route spécifique pour mettre à jour uniquement la date
     router.put(
-        route("interventions.update", { intervention: intervention.id }),
+        route("interventions.updateDate", { intervention: intervention.id }),
         {
-            date: formattedDate,
-            // Conserver les autres valeurs essentielles sans modifier les notes
-            status: intervention.status,
-            clients_id: intervention.client.id,
-            devis_id: intervention.devis_id
+            date: formattedDate
         },
         {
             preserveScroll: true,
-            onSuccess: () => {
-                showNotification(
-                    "Date d'intervention mise à jour",
-                    "success"
-                );
-                // Mettre à jour la date localement
-                datePickerValue.value = dateToUse;
-                // Réinitialiser la date temporaire
-                tempDateValue.value = dateToUse;
-                // Recharger uniquement les données de l'intervention
-                router.reload({ only: ["intervention"] });
+            onSuccess: (response) => {
+                console.log('Réponse du serveur:', response);
+                showNotification("Date mise à jour", "success");
+
+                // Mettre à jour la date localement sans recharger la page
+                intervention.date = formattedDate;
             },
             onError: (errors) => {
-                console.error(errors);
-                showNotification(
-                    "Erreur lors de la mise à jour de la date",
-                    "error"
-                );
-            },
+                console.error('Erreurs:', errors);
+                showNotification("Erreur lors de la mise à jour de la date", "error");
+            }
         }
     );
 }
@@ -587,12 +649,12 @@ onMounted(() => {
                         >
                             {{ intervention.status }}
                         </button>
-                        
+
                         <!-- Badge pour sélectionner la date d'intervention -->
                         <div class="relative service-group">
                             <button
                                 class="flex py-1 px-[10px] items-start rounded border border-white/5 bg-white/5 text-white font-inter font-semibold text-sm transition-colors duration-300 cursor-pointer date-picker-button"
-                                @click.stop="openDatePicker"
+                                @click.stop="openCustomCalendar"
                             >
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -613,48 +675,66 @@ onMounted(() => {
                                 </svg>
                                 {{ intervention.date ? formatDate(intervention.date) : 'Planifier' }}
                             </button>
-                            
-                            <!-- Datepicker de vue-datepicker -->
-                            <Datepicker
-                                v-if="showDatepicker"
-                                v-model="datePickerValue"
-                                :enable-time-picker="false"
-                                locale="fr"
-                                :auto-apply="false"
-                                :teleport="true"
-                                :teleport-center="false"
-                                position="bottom"
-                                text-input
-                                input-class-name="date-picker-input"
-                                :text-input-options="{ format: 'dd/MM/yyyy', openMenu: true, enterSubmit: false }"
-                                :allow-input="true"
-                                @closed="showDatepicker = false"
-                                @update:model-value="handleDateChange"
-                                menu-class-name="date-picker-menu"
-                                class="absolute top-full left-0 z-50 mt-1"
-                                :format="'dd/MM/yyyy'"
-                                :input-debounce="1000"
-                                :preview-format="'dd/MM/yyyy'"
-                            >
-                                <template #action-buttons>
-                                    <div class="dp__action_buttons">
-                                        <button 
-                                            type="button" 
-                                            class="dp__action_button dp__action_select" 
-                                            @click="updateInterventionDate(tempDateValue)"
-                                        >
-                                            Valider
-                                        </button>
-                                        <button 
-                                            type="button" 
-                                            class="dp__action_button dp__action_cancel" 
-                                            @click="showDatepicker = false"
-                                        >
-                                            Annuler
-                                        </button>
+
+                            <!-- Calendrier simple -->
+                            <div v-if="showCustomCalendar" class="absolute top-full left-0 z-50 mt-1 bg-[#2D2D2D] border border-white/10 rounded-md p-4 shadow-lg">
+                                <!-- En-tête du calendrier avec mois et année -->
+                                <div class="flex justify-between items-center mb-2">
+                                    <button @click="previousMonth" class="text-white hover:text-[#FF8C42]">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="15 18 9 12 15 6"></polyline>
+                                        </svg>
+                                    </button>
+                                    <div class="text-white font-medium">{{ currentMonthName }} {{ currentYear }}</div>
+                                    <button @click="nextMonth" class="text-white hover:text-[#FF8C42]">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="9 18 15 12 9 6"></polyline>
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                <!-- Jours de la semaine -->
+                                <div class="grid grid-cols-7 gap-1 mb-1">
+                                    <div v-for="day in ['Lu', 'Ma', 'Me', 'Je', 'Ve', 'Sa', 'Di']" :key="day" class="text-center text-white/70 text-xs">
+                                        {{ day }}
                                     </div>
-                                </template>
-                            </Datepicker>
+                                </div>
+
+                                <!-- Jours du mois -->
+                                <div class="grid grid-cols-7 gap-1">
+                                    <!-- Espaces vides pour l'alignement -->
+                                    <div v-for="n in firstDayOfMonth" :key="'empty-'+n" class="h-7"></div>
+
+                                    <!-- Jours du mois -->
+                                    <button
+                                        v-for="day in daysInMonth"
+                                        :key="day"
+                                        @click="selectDate(day)"
+                                        :class="[
+                                            'h-7 w-7 rounded-full flex items-center justify-center text-sm transition-colors',
+                                            isSelectedDate(day) ? 'bg-[#FF8C42] text-white' : 'text-white hover:bg-white/10'
+                                        ]"
+                                    >
+                                        {{ day }}
+                                    </button>
+                                </div>
+
+                                <!-- Boutons d'action -->
+                                <div class="flex justify-between mt-4">
+                                    <button
+                                        @click="cancelDateSelection"
+                                        class="px-3 py-1 text-sm text-white/70 hover:text-white bg-transparent border border-white/10 rounded transition-colors"
+                                    >
+                                        Annuler
+                                    </button>
+                                    <button
+                                        @click="confirmDateSelection"
+                                        class="px-3 py-1 text-sm text-white bg-[#FF8C42] hover:bg-[#e67e3a] rounded transition-colors"
+                                    >
+                                        Confirmer
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1181,9 +1261,9 @@ onMounted(() => {
                                 </svg>
                             </button>
                         </div>
-                        
+
                         <!-- Conteneur de l'éditeur TipTap -->
-                        <div 
+                        <div
                             style="width: 100%; max-width: 100%; display: block; height: 100%; cursor: text;"
                             @click="editor?.commands.focus()"
                         >
@@ -1274,7 +1354,7 @@ onMounted(() => {
                     <!-- Message si pas de notes -->
                     <div
                         v-else
-                        class="bg-gray-100 p-8 rounded-md text-center font-inter w-full"
+                        class="bg-gray-100 p-8 rounded-md text-center font-inter w-full mt-8"
                     >
                         <p class="text-gray-500">
                             Aucune note disponible pour cette intervention
