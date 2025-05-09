@@ -63,6 +63,7 @@ Route::middleware([
     Route::get('/interventions/{intervention}/edit', [InterventionController::class, 'edit'])->name('interventions.edit');
     Route::put('/interventions/{intervention}', [InterventionController::class, 'update'])->name('interventions.update');
     Route::put('/interventions/{intervention}/status', [InterventionController::class, 'updateStatus'])->name('interventions.updateStatus');
+    Route::put('/interventions/{intervention}/date', [InterventionController::class, 'updateDate'])->name('interventions.updateDate');
     Route::post('/interventions/{intervention}/upload-images', [InterventionController::class, 'uploadImages'])->name('interventions.upload-images');
     Route::delete('/interventions/images/{image}', [InterventionController::class, 'deleteImage'])->name('interventions.delete-image');
     Route::delete('/interventions/{intervention}', [InterventionController::class, 'destroy'])->name('interventions.destroy');

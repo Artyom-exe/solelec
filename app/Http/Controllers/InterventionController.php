@@ -170,12 +170,12 @@ class InterventionController extends Controller
             'clients_id' => $validated['clients_id'],
             'devis_id' => $validated['devis_id'],
         ];
-        
+
         // Ajouter les notes seulement si elles sont présentes dans la requête
         if (array_key_exists('notes', $validated)) {
             $updateData['notes'] = $validated['notes'];
         }
-        
+
         // Mise à jour de l'intervention
         $intervention->update($updateData);
 
@@ -240,6 +240,38 @@ class InterventionController extends Controller
 
         return redirect()->back()->with('success', 'Statut de l\'intervention mis à jour avec succès');
     }
+    
+    /**
+     * Met à jour uniquement la date d'une intervention
+     */
+    public function updateDate(Request $request, Intervention $intervention)
+    {
+        $validated = $request->validate([
+            'date' => 'required|date',
+        ]);
+
+        // Enregistrer l'ancienne date pour le message de log
+        $oldDate = $intervention->date;
+
+        // Mise à jour de la date de l'intervention
+        $result = $intervention->update([
+            'date' => $validated['date'],
+        ]);
+
+        // Récupérer le client pour le message
+        $client = $intervention->client;
+        $clientName = $client ? $client->name . ' ' . $client->lastname : 'client #' . $intervention->clients_id;
+
+        // Journalisation de l'activité
+        ActivityLogger::log('intervention', $intervention, 'Date de l\'intervention pour ' . $clientName . ' mise à jour: ' . $oldDate . ' → ' . $validated['date']);
+
+        return response()->json([
+            'success' => $result,
+            'message' => 'Date de l\'intervention mise à jour avec succès',
+            'old_date' => $oldDate,
+            'new_date' => $validated['date'],
+        ]);
+    }
 
     /**
      * Télécharge des images pour une intervention
@@ -297,16 +329,16 @@ class InterventionController extends Controller
         $intervention = $image->intervention;
         $client = $intervention->client;
         $clientName = $client ? $client->name . ' ' . $client->lastname : 'client #' . $intervention->clients_id;
-        
+
         // Supprimer le fichier du stockage
         Storage::disk('public')->delete($image->url_image);
-        
+
         // Supprimer l'enregistrement de la base de données
         $image->delete();
-        
+
         // Journalisation de l'activité
         ActivityLogger::log('intervention', $intervention, 'Image supprimée de l\'intervention pour ' . $clientName);
-        
+
         return back()->with('success', 'Image supprimée avec succès');
     }
 
