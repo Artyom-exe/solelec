@@ -120,9 +120,11 @@ class InterventionController extends Controller
     public function show(Intervention $intervention)
     {
         $intervention->load(['client', 'devis', 'devis.services', 'images', 'notes.user']);
+        $services = Service::select('id', 'title', 'short_description')->get();
 
         return Inertia::render('Admin/Interventions/Show', [
-            'intervention' => $intervention
+            'intervention' => $intervention,
+            'services' => $services
         ]);
     }
 
@@ -242,30 +244,43 @@ class InterventionController extends Controller
     }
     
     /**
-     * Met à jour uniquement la date d'une intervention
+     * Met à jour la date d'une intervention
      */
     public function updateDate(Request $request, Intervention $intervention)
     {
-        $validated = $request->validate([
-            'date' => 'required|date',
+        $request->validate([
+            'date' => 'required|date'
         ]);
 
-        // Enregistrer l'ancienne date pour le message de log
-        $oldDate = $intervention->date;
-
-        // Mise à jour de la date de l'intervention
-        $result = $intervention->update([
-            'date' => $validated['date'],
+        $intervention->update([
+            'date' => $request->date
         ]);
 
-        // Récupérer le client pour le message
-        $client = $intervention->client;
-        $clientName = $client ? $client->name . ' ' . $client->lastname : 'client #' . $intervention->clients_id;
-
-        // Journalisation de l'activité
-        ActivityLogger::log('intervention', $intervention, 'Date de l\'intervention pour ' . $clientName . ' mise à jour: ' . $oldDate . ' → ' . $validated['date']);
-
-        return redirect()->back()->with('success', 'Date de l\'intervention mise à jour avec succès');
+        return redirect()->back()->with('success', 'Date mise à jour avec succès');
+    }
+    
+    /**
+     * Met à jour les services associés à une intervention
+     */
+    public function updateServices(Request $request, Intervention $intervention)
+    {
+        $request->validate([
+            'services' => 'required|array',
+            'services.*' => 'exists:services,id'
+        ]);
+        
+        // Vérifier si l'intervention a un devis associé
+        if (!$intervention->devis_id) {
+            return redirect()->back()->with('error', 'Cette intervention n\'a pas de devis associé');
+        }
+        
+        // Mettre à jour les services du devis associé à l'intervention
+        $intervention->devis->services()->sync($request->services);
+        
+        // Journaliser l'activité
+        ActivityLogger::log('intervention', $intervention, 'Services mis à jour pour l\'intervention #' . $intervention->id);
+        
+        return redirect()->back()->with('success', 'Services mis à jour avec succès');
     }
 
     /**
