@@ -527,31 +527,66 @@ onMounted(() => {
 
                 <div class="flex flex-col gap-4">
                     <div class="flex flex-col items-start">
-                        <!-- Ajout de la barre d'outils pour TipTap -->
+                        <!-- Barre d'outils TipTap -->
                         <div
-                            class="toolbar w-full bg-white/10 border border-white/20 border-b-0 rounded-t-[6px] p-2"
+                            class="toolbar bg-white/10 border border-white/20 border-b-0 rounded-t-lg p-2 flex gap-2 relative"
+                            style="width: 100%; max-width: 100%; display: flex; justify-content: flex-start;"
                         >
                             <button
                                 @click="
                                     editor?.chain().focus().toggleBold().run()
                                 "
                                 :class="{
-                                    'is-active': editor?.isActive('bold'),
+                                    'bg-[#FF8C42]/20': editor?.isActive('bold'),
                                 }"
+                                class="p-1 rounded hover:bg-[#FF8C42]/10 transition-colors"
                                 title="Gras"
                             >
-                                B
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="white"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <path
+                                        d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"
+                                    ></path>
+                                    <path
+                                        d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"
+                                    ></path>
+                                </svg>
                             </button>
                             <button
                                 @click="
                                     editor?.chain().focus().toggleItalic().run()
                                 "
                                 :class="{
-                                    'is-active': editor?.isActive('italic'),
+                                    'bg-[#FF8C42]/20':
+                                        editor?.isActive('italic'),
                                 }"
+                                class="p-1 rounded hover:bg-[#FF8C42]/10 transition-colors"
                                 title="Italique"
                             >
-                                I
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="white"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <line x1="19" y1="4" x2="10" y2="4"></line>
+                                    <line x1="14" y1="20" x2="5" y2="20"></line>
+                                    <line x1="15" y1="4" x2="9" y2="20"></line>
+                                </svg>
                             </button>
                             <button
                                 @click="
@@ -562,11 +597,40 @@ onMounted(() => {
                                         .run()
                                 "
                                 :class="{
-                                    'is-active': editor?.isActive('bulletList'),
+                                    'bg-[#FF8C42]/20':
+                                        editor?.isActive('bulletList'),
                                 }"
+                                class="p-1 rounded hover:bg-[#FF8C42]/10 transition-colors"
                                 title="Liste à puces"
                             >
-                                • Liste
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="white"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <line x1="8" y1="6" x2="21" y2="6"></line>
+                                    <line x1="8" y1="12" x2="21" y2="12"></line>
+                                    <line x1="8" y1="18" x2="21" y2="18"></line>
+                                    <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                                    <line
+                                        x1="3"
+                                        y1="12"
+                                        x2="3.01"
+                                        y2="12"
+                                    ></line>
+                                    <line
+                                        x1="3"
+                                        y1="18"
+                                        x2="3.01"
+                                        y2="18"
+                                    ></line>
+                                </svg>
                             </button>
                             <button
                                 @click="
@@ -577,12 +641,42 @@ onMounted(() => {
                                         .run()
                                 "
                                 :class="{
-                                    'is-active':
+                                    'bg-[#FF8C42]/20':
                                         editor?.isActive('orderedList'),
                                 }"
+                                class="p-1 rounded hover:bg-[#FF8C42]/10 transition-colors"
                                 title="Liste numérotée"
                             >
-                                1. Liste
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="white"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <line x1="10" y1="6" x2="21" y2="6"></line>
+                                    <line
+                                        x1="10"
+                                        y1="12"
+                                        x2="21"
+                                        y2="12"
+                                    ></line>
+                                    <line
+                                        x1="10"
+                                        y1="18"
+                                        x2="21"
+                                        y2="18"
+                                    ></line>
+                                    <path d="M4 6h1v4"></path>
+                                    <path d="M4 10h2"></path>
+                                    <path
+                                        d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"
+                                    ></path>
+                                </svg>
                             </button>
                         </div>
                         <EditorContent
@@ -612,6 +706,13 @@ onMounted(() => {
                             :theme-color="'#FF8C42'"
                             placeholder="Période souhaitée"
                             :teleport="true"
+                            calendar-class-name="bg-[#2D2D2D] border border-white/10 rounded-md shadow-lg"
+                            dark
+                            :menu-class-name="'dp-menu'"
+                            :preview-class-name="'text-white'"
+                            :year-picker-class-name="'text-white bg-[#2D2D2D]'"
+                            :month-picker-class-name="'text-white bg-[#2D2D2D]'"
+                            :action-row-class-name="'bg-[#2D2D2D] border-t border-white/10'"
                         />
                         <span
                             v-if="formStatus.errors.desiredDate"
@@ -836,83 +937,125 @@ onMounted(() => {
     color: white;
     outline: none !important;
     overflow-y: auto;
-}
-
-:deep(.ProseMirror p.is-editor-empty:first-child::before) {
-    color: rgba(255, 255, 255, 0.5);
-    content: attr(data-placeholder);
-    float: left;
-    height: 0;
-    pointer-events: none;
-}
-
-:deep(.tiptap) {
+    outline: none;
     width: 100%;
-    min-height: 180px;
-}
-
-/* Styles pour la barre d'outils */
-:deep(.toolbar) {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 0.5rem;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-}
-
-:deep(.toolbar button) {
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-    color: white;
-    padding: 0.3rem 0.6rem;
-    border-radius: 0.25rem;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-:deep(.toolbar button:hover) {
-    background: rgba(255, 140, 66, 0.6);
-}
-
-:deep(.toolbar button.is-active) {
-    background: #ff8c42;
-    color: white;
-}
-
-/* Styles pour le contenu */
-:deep(.ProseMirror ul) {
-    padding-left: 1.5rem;
-    list-style: disc;
-}
-
-:deep(.ProseMirror ol) {
-    padding-left: 1.5rem;
-    list-style: decimal;
-}
-
-:deep(.ProseMirror a) {
-    color: #ff8c42;
-    text-decoration: underline;
-}
-
-:deep(.ProseMirror blockquote) {
-    padding-left: 1rem;
-    border-left: 2px solid #ff8c42;
-    color: rgba(255, 255, 255, 0.8);
 }
 
 :deep(.ProseMirror p) {
-    margin-bottom: 0.1rem;
+    margin-bottom: 0.5rem;
 }
 
-:deep(.ProseMirror h1),
-:deep(.ProseMirror h2),
-:deep(.ProseMirror h3),
-:deep(.ProseMirror h4),
-:deep(.ProseMirror h5),
-:deep(.ProseMirror h6) {
-    font-weight: 600;
-    margin-top: 1rem;
+:deep(.ProseMirror ul),
+:deep(.ProseMirror ol) {
+    padding-left: 1.5rem;
     margin-bottom: 0.5rem;
+}
+
+:deep(.ProseMirror ul li) {
+    list-style-type: disc;
+}
+
+:deep(.ProseMirror ol li) {
+    list-style-type: decimal;
+}
+
+:deep(.ProseMirror li p) {
+    margin: 0;
+}
+
+:deep(.ProseMirror a) {
+    color: #FF8C42;
+    text-decoration: underline;
+}
+
+/* Styles pour le placeholder */
+:deep(.ProseMirror p.is-editor-empty:first-child::before) {
+    content: attr(data-placeholder);
+    float: left;
+    color: rgba(255, 255, 255, 0.5);
+    pointer-events: none;
+    height: 0;
+}
+
+/* Styles personnalisés pour le calendrier */
+:deep(.dp__theme_dark) {
+    --dp-background-color: #2D2D2D;
+    --dp-text-color: #fff;
+    --dp-hover-color: rgba(255, 255, 255, 0.1);
+    --dp-hover-text-color: #fff;
+    --dp-hover-icon-color: #fff;
+    --dp-primary-color: #FF8C42;
+    --dp-primary-text-color: #fff;
+    --dp-secondary-color: rgba(255, 140, 66, 0.2);
+    --dp-border-color: rgba(255, 255, 255, 0.1);
+    --dp-menu-border-color: rgba(255, 255, 255, 0.1);
+    --dp-border-color-hover: #FF8C42;
+    --dp-disabled-color: rgba(255, 255, 255, 0.3);
+    --dp-scroll-bar-background: rgba(255, 255, 255, 0.1);
+    --dp-scroll-bar-color: rgba(255, 255, 255, 0.2);
+    --dp-success-color: #82AD84;
+    --dp-success-color-disabled: rgba(130, 173, 132, 0.3);
+    --dp-icon-color: #fff;
+    --dp-danger-color: #e53935;
+}
+
+:deep(.dp__action_buttons) {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem;
+}
+
+:deep(.dp__action_button) {
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    padding: 0.25rem 0.5rem;
+    color: #fff;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+:deep(.dp__action_select) {
+    background-color: #FF8C42 !important;
+    border-color: #FF8C42 !important;
+}
+
+:deep(.dp__action_button:hover) {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+:deep(.dp__month_year_row) {
+    margin-bottom: 0.5rem;
+}
+
+:deep(.dp__month_year_select) {
+    color: #fff;
+}
+
+:deep(.dp__cell_inner) {
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+:deep(.dp__active_date) {
+    background-color: #FF8C42 !important;
+    color: #fff !important;
+}
+
+:deep(.dp__date_hover) {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+:deep(.dp__today) {
+    border: 1px solid #FF8C42 !important;
+}
+
+:deep(.dp__arrow_bottom) {
+    border-color: #FF8C42 transparent transparent transparent !important;
+}
+
+:deep(.dp__arrow_top) {
+    border-color: transparent transparent #FF8C42 transparent !important;
 }
 </style>
