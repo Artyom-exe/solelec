@@ -195,7 +195,7 @@ const selectedStatus = ref(null);
 
 // Variables pour le tri
 const sortBy = ref("date"); // "date" ou "status"
-const sortDirection = ref("desc"); // "asc" ou "desc" - desc pour afficher les plus récentes d'abord
+const sortDirection = ref("desc"); // "desc" pour afficher les plus récentes en haut, "asc" pour l'ordre chronologique
 
 // Liste des statuts disponibles
 const statusOptions = ["planifiée", "en cours", "terminée"];
