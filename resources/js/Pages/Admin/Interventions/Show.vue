@@ -978,8 +978,9 @@ onMounted(() => {
                                 </button>
                             </div>
                             <div
-                                class="text-gray-700"
+                                class="text-gray-700 w-full overflow-hidden break-words"
                                 v-html="note.content"
+                                style="word-wrap: break-word; overflow-wrap: break-word; white-space: normal;"
                             ></div>
                             <div class="flex items-center gap-2">
                                 <svg
@@ -1204,5 +1205,25 @@ onMounted(() => {
     font-weight: 600;
     margin-top: 1rem;
     margin-bottom: 0.5rem;
+}
+
+/* Styles pour s'assurer que le contenu des notes ne dépasse pas son parent */
+.text-gray-700 * {
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+}
+
+.text-gray-700 pre,
+.text-gray-700 code {
+    white-space: pre-wrap;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.text-gray-700 img {
+    max-width: 100%;
+    height: auto;
 }
 </style>
