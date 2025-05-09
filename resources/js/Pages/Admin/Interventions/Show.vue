@@ -477,7 +477,7 @@ function updateInterventionDate(date) {
 
     // Sauvegarder l'ancienne date pour pouvoir revenir en arrière si nécessaire
     const oldDate = intervention.date;
-    
+
     // Mettre à jour la date localement sans attendre la réponse du serveur
     intervention.date = formattedDate;
 
@@ -500,7 +500,7 @@ function updateInterventionDate(date) {
             onError: (errors) => {
                 console.error('Erreurs:', errors);
                 showNotification("Erreur lors de la mise à jour de la date", "error");
-                
+
                 // Restaurer l'ancienne date en cas d'erreur
                 intervention.date = oldDate;
             }
@@ -512,16 +512,6 @@ function compiledMarkdown(text) {
     return text ? marked(text) : "";
 }
 
-
-
-
-// S'assurer que l'éditeur est correctement initialisé après le montage du composant
-onMounted(() => {
-    // Donner le focus à l'éditeur après un court délai pour s'assurer que le DOM est prêt
-    setTimeout(() => {
-        editor.value?.commands.focus();
-    }, 100);
-});
 </script>
 
 <style>
