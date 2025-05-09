@@ -919,14 +919,16 @@ onMounted(() => {
                                 </svg>
                             </button>
                         </div>
-
+                        
                         <!-- Conteneur de l'éditeur TipTap -->
-
-                        <div style="width: 100%; max-width: 100%; display: block;">
+                        <div 
+                            style="width: 100%; max-width: 100%; display: block; height: 100%; cursor: text;"
+                            @click="editor?.commands.focus()"
+                        >
                             <EditorContent
                                 :editor="editor"
                                 class="px-8 pb-8 pt-3 rounded-b-lg border border-white/20 bg-[#F2F2F2] font-inter text-base font-normal min-h-[120px] overflow-auto"
-                                style="width: 100%; max-width: 100%; display: block; box-sizing: border-box;"
+                                style="width: 100%; max-width: 100%; display: block; box-sizing: border-box; height: 100%;"
                             />
                         </div>
                         <div class="absolute bottom-2 right-4">
