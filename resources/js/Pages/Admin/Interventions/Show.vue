@@ -747,7 +747,7 @@ onMounted(() => {
             </section>
 
             <!-- Notes -->
-            <section class="w-full py-28 px-16 flex flex-col gap-20" style="width: 100vw; max-width: 100vw;">
+            <section class="w-full py-28 px-16 flex flex-col gap-20">
                 <div
                     class="w-full flex-col items-start gap-4 text-[#0D0703]"
                 >
@@ -1097,6 +1097,17 @@ onMounted(() => {
 :deep(.splide) {
     width: 100%;
     overflow: visible;
+}
+
+/* Empêcher le défilement horizontal tout en permettant le dépassement des éléments */
+body, html {
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
+main {
+    overflow-x: clip;
+    position: relative;
 }
 
 :deep(.splide__arrow) {
