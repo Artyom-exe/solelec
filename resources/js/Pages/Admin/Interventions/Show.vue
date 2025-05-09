@@ -61,6 +61,7 @@ const editor = useEditor({
     editorProps: {
         attributes: {
             class: "prose prose-sm focus:outline-none w-full",
+            style: "width: 100%; max-width: 100%; display: block;",
         },
         handleKeyDown: (view, event) => {
             // Gérer Tab pour les indentations
@@ -586,7 +587,7 @@ onMounted(() => {
         </header>
 
         <!-- Contenu principal -->
-        <main class="container">
+        <main class="w-full max-w-full">
             <!-- Détails de l'intervention -->
             <section
                 class="flex content-center items-start gap-20 py-28 px-16 flex-wrap"
@@ -746,29 +747,30 @@ onMounted(() => {
             </section>
 
             <!-- Notes -->
-            <section class="flex py-28 px-16 flex-col gap-20">
+            <section class="w-full py-28 px-16 flex flex-col gap-20" style="width: 100vw; max-width: 100vw;">
                 <div
-                    class="flex max-w-[768px] flex-col items-start gap-4 text-[#0D0703]"
+                    class="w-full flex-col items-start gap-4 text-[#0D0703]"
                 >
-                    <h2 class="text-center font-inter text-base font-semibold">
+                    <h2 class="text-left font-inter text-base font-semibold">
                         Notes
                     </h2>
                     <div class="relative flex flex-col gap-6">
                         <h3
-                            class="font-poppins text-5xl text-center font-medium leading-[57.6px] tracking-[-0.48px] mb-6"
+                            class="font-poppins text-5xl text-left font-medium leading-[57.6px] tracking-[-0.48px] mb-6"
                         >
                             Mes notes
                         </h3>
                         <div
-                            class="absolute bottom-0 left-[25%] border-2 border-[#FF8C42] w-[180%] max-w-[370px] min-w-[200px]"
+                            class="absolute bottom-0 left-[5%] border-2 border-[#FF8C42] w-full max-w-[370px] min-w-[200px]"
                         ></div>
                     </div>
                 </div>
-                <div class="flex flex-col items-start gap-8 w-full">
+                <div style="width: 100%; max-width: 100%; display: block;">
                     <!-- Barre d'outils TipTap -->
-                    <div class="relative flex flex-col items-start w-full">
+                    <div style="width: 100%; max-width: 100%; display: block; position: relative;">
                         <div
-                            class="toolbar w-full bg-[#F2F2F2] border border-white/20 border-b-0 rounded-t-lg p-2 flex gap-2 relative"
+                            class="toolbar bg-[#F2F2F2] border border-white/20 border-b-0 rounded-t-lg p-2 flex gap-2 relative"
+                            style="width: 100%; max-width: 100%; display: block;"
                         >
                             <button
                                 @click="
@@ -920,11 +922,13 @@ onMounted(() => {
 
                         <!-- Conteneur de l'éditeur TipTap -->
 
-                        <EditorContent
-                            :editor="editor"
-                            class="w-full px-8 pb-8 pt-3 rounded-b-lg border border-white/20 bg-[#F2F2F2] font-inter text-base font-normal min-h-[120px] overflow-auto"
-                            style="width: 100%;"
-                        />
+                        <div style="width: 100%; max-width: 100%; display: block;">
+                            <EditorContent
+                                :editor="editor"
+                                class="px-8 pb-8 pt-3 rounded-b-lg border border-white/20 bg-[#F2F2F2] font-inter text-base font-normal min-h-[120px] overflow-auto"
+                                style="width: 100%; max-width: 100%; display: block; box-sizing: border-box;"
+                            />
+                        </div>
                         <div class="absolute bottom-2 right-4">
                             <button
                                 @click="addNote"
@@ -952,7 +956,7 @@ onMounted(() => {
                         v-if="
                             intervention.notes && intervention.notes.length > 0
                         "
-                        class="w-full flex flex-col gap-8"
+                        class="w-full flex flex-col gap-8 mt-8"
                     >
                         <div
                             v-for="note in intervention.notes"
@@ -1116,7 +1120,9 @@ onMounted(() => {
     color: #0D0703;
     outline: none !important;
     overflow-y: auto;
-    width: 100%;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
 }
 
 :deep(.ProseMirror p.is-editor-empty:first-child::before) {
@@ -1128,8 +1134,10 @@ onMounted(() => {
 }
 
 :deep(.tiptap) {
-    width: 100%;
+    width: 100% !important;
     min-height: 180px;
+    display: block !important;
+    max-width: 100% !important;
 }
 
 /* Styles pour la barre d'outils */
@@ -1184,7 +1192,7 @@ onMounted(() => {
 
 :deep(.ProseMirror p) {
     margin-bottom: 0.1rem;
-    line-height: 1.2;
+    line-height: 1;
 }
 
 :deep(.ProseMirror h1),
