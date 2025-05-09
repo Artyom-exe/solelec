@@ -961,7 +961,8 @@ onMounted(() => {
                         <div
                             v-for="note in intervention.notes"
                             :key="note.id"
-                            class="flex p-8 flex-col items-start gap-6 rounded-lg border border-white/20 bg-[#F2F2F2] font-inter text-base font-normal text-[#0D0703] relative group"
+                            class="flex p-8 flex-col items-start gap-6 rounded-lg border border-white/20 bg-[#F2F2F2] font-inter text-base font-normal text-[#0D0703] relative group w-full"
+                            style="width: 100%; max-width: 100%;"
                         >
                             <div
                                 class="absolute top-[-0.5rem] right-[-0.5rem] opacity-0 delete-button transition-opacity flex gap-2"
@@ -978,9 +979,9 @@ onMounted(() => {
                                 </button>
                             </div>
                             <div
-                                class="text-gray-700 w-full overflow-hidden break-words"
-                                v-html="note.content"
-                                style="word-wrap: break-word; overflow-wrap: break-word; white-space: normal;"
+                                class="text-gray-700 w-full overflow-hidden break-words prose prose-sm"
+                                v-html="compiledMarkdown(note.content)"
+                                style="word-wrap: break-word; overflow-wrap: break-word; white-space: normal; width: 100%; max-width: 100%;"
                             ></div>
                             <div class="flex items-center gap-2">
                                 <svg
@@ -1210,9 +1211,28 @@ onMounted(() => {
 /* Styles pour s'assurer que le contenu des notes ne dépasse pas son parent */
 .text-gray-700 * {
     max-width: 100%;
+    width: 100%;
     overflow-wrap: break-word;
     word-wrap: break-word;
     word-break: break-word;
+}
+
+.text-gray-700 p {
+    width: 100% !important;
+    display: block !important;
+    box-sizing: border-box !important;
+}
+
+/* Surcharger les styles de prose pour les notes */
+.prose p {
+    width: 100% !important;
+    display: block !important;
+    box-sizing: border-box !important;
+}
+
+.prose * {
+    width: 100% !important;
+    max-width: 100% !important;
 }
 
 .text-gray-700 pre,
