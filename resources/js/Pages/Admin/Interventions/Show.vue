@@ -38,27 +38,42 @@ onUnmounted(() => {
 // Fonction pour fermer le sélecteur de services quand on clique en dehors
 function closeServiceSelectorOnClickOutside(e) {
     if (showServiceSelector.value) {
-        // Vérifier si le clic est en dehors du sélecteur de services
-        const serviceSelector = document.querySelector('.service-group');
-        if (serviceSelector && !serviceSelector.contains(e.target)) {
-            showServiceSelector.value = false;
+        // Vérifier si le clic est sur le bouton de service ou sur un badge de service
+        const serviceBtn = document.getElementById('service-selector-btn');
+        const serviceContainer = document.getElementById('service-selector-container');
+        
+        // Ne pas fermer si le clic est sur le bouton ou dans le conteneur de services
+        if ((serviceBtn && serviceBtn.contains(e.target)) || 
+            (serviceContainer && serviceContainer.contains(e.target))) {
+            return;
         }
+        
+        // Fermer le sélecteur dans tous les autres cas
+        showServiceSelector.value = false;
     }
 }
 
 // Fonction pour basculer la sélection d'un service
 function toggleService(serviceId) {
     const index = selectedServices.value.indexOf(serviceId);
+    
     if (index === -1) {
         // Si le service n'est pas déjà sélectionné, l'ajouter
         selectedServices.value.push(serviceId);
+        // Mettre à jour les services de l'intervention
+        updateInterventionServices();
     } else {
-        // Sinon, le retirer
-        selectedServices.value.splice(index, 1);
+        // Vérifier s'il reste au moins un service sélectionné
+        if (selectedServices.value.length > 1) {
+            // Retirer le service
+            selectedServices.value.splice(index, 1);
+            // Mettre à jour les services de l'intervention
+            updateInterventionServices();
+        } else {
+            // Afficher une notification si l'utilisateur tente de désélectionner le dernier service
+            showNotification("Au moins un service doit être sélectionné", "error");
+        }
     }
-    
-    // Mettre à jour les services de l'intervention
-    updateInterventionServices();
 }
 
 // Fonction pour mettre à jour les services de l'intervention
@@ -557,51 +572,34 @@ function compiledMarkdown(text) {
                     <div
                         class="flex items-start content-start gap-2 self-stretch flex-wrap"
                     >
-                        <!-- Affichage des services avec badges sélectionnables -->
-                        <div class="relative service-group">
-                            <div 
-                                class="flex py-1 px-[10px] items-start rounded-[4px] border border-white/5 bg-white/5 text-[#FF8C42] font-inter font-semibold text-sm cursor-pointer"
-                                @click="showServiceSelector = !showServiceSelector"
-                            >
-                                <span v-if="selectedServices.length > 0">
-                                    {{ services.find(s => s.id === selectedServices[0])?.title || 'Service' }}
-                                    <span v-if="selectedServices.length > 1" class="ml-1">
-                                        +{{ selectedServices.length - 1 }}
-                                    </span>
+                        <!-- Bouton principal pour les services -->
+                        <button 
+                            id="service-selector-btn"
+                            class="flex py-1 px-[10px] items-start rounded-[4px] border border-white/5 bg-white/5 text-[#FF8C42] font-inter font-semibold text-sm cursor-pointer"
+                            @click="showServiceSelector = !showServiceSelector"
+                        >
+                            <span v-if="selectedServices.length > 0">
+                                {{ services.find(s => s.id === selectedServices[0])?.title || 'Service' }}
+                                <span v-if="selectedServices.length > 1" class="ml-1">
+                                    +{{ selectedServices.length - 1 }}
                                 </span>
-                                <span v-else>Aucun service</span>
-                            </div>
-                            
-                            <!-- Sélecteur de services qui apparaît au clic -->
-                            <div
-                                v-if="showServiceSelector"
-                                class="absolute z-10 top-full left-0 mt-1 bg-[#1A1A1A] border border-white/10 rounded-md p-4 shadow-lg transition-all duration-200 min-w-[300px]"
-                                @click.stop
+                            </span>
+                            <span v-else>Aucun service</span>
+                        </button>
+                        
+                        <!-- Liste des services qui apparaît sous les badges principaux -->
+                        <div v-if="showServiceSelector" id="service-selector-container" class="w-full mt-2 flex flex-wrap gap-2" @click.stop>
+                            <button
+                                v-for="service in services"
+                                :key="service.id"
+                                @click="toggleService(service.id)"
+                                :class="{
+                                    'bg-[#FF8C42] text-white': selectedServices.includes(service.id),
+                                }"
+                                class="px-3 py-1 text-sm rounded-md border border-white/20 text-white hover:bg-[#FF8C42] hover:text-white transition-colors duration-300"
                             >
-                                <h3 class="text-white font-medium mb-2">Sélectionner les services</h3>
-                                <div class="flex flex-wrap gap-2 mb-2">
-                                    <button
-                                        v-for="service in services"
-                                        :key="service.id"
-                                        @click="toggleService(service.id)"
-                                        :class="{
-                                            'bg-[#FF8C42] text-white': selectedServices.includes(service.id),
-                                            'bg-[#333] text-white': !selectedServices.includes(service.id),
-                                        }"
-                                        class="px-3 py-1 text-sm rounded-md border border-white/20 hover:bg-[#FF8C42] hover:text-white transition-colors duration-300"
-                                    >
-                                        {{ service.title }}
-                                    </button>
-                                </div>
-                                <div class="flex justify-end mt-3">
-                                    <button 
-                                        @click="showServiceSelector = false" 
-                                        class="text-white hover:text-[#FF8C42] text-sm transition-colors"
-                                    >
-                                        Fermer
-                                    </button>
-                                </div>
-                            </div>
+                                {{ service.title }}
+                            </button>
                         </div>
 
                         <!-- Bouton pour changer le statut -->
