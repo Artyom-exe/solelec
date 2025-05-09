@@ -280,11 +280,13 @@ const sortedInterventions = computed(() => {
         // Toujours mettre les interventions terminées à la fin, peu importe le tri
         if (a.status === "terminée" && b.status !== "terminée") return 1;
         if (a.status !== "terminée" && b.status === "terminée") return -1;
-
-        // Tri par date ou statut
+        
+        // Si les deux interventions ont le même statut (les deux terminées ou les deux non terminées),
+        // alors on applique le tri par date ou statut
         if (sortBy.value === "date") {
-            const dateA = new Date(a.date || a.created_at);
-            const dateB = new Date(b.date || b.created_at);
+            // Utiliser la date de création pour le tri, pour que les nouvelles interventions apparaissent en haut
+            const dateA = new Date(a.created_at);
+            const dateB = new Date(b.created_at);
             return sortDirection.value === "asc"
                 ? dateA - dateB
                 : dateB - dateA;
