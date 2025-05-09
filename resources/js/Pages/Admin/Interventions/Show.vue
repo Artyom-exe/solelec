@@ -923,6 +923,7 @@ onMounted(() => {
                         <EditorContent
                             :editor="editor"
                             class="w-full px-8 pb-8 pt-3 rounded-b-lg border border-white/20 bg-[#F2F2F2] font-inter text-base font-normal min-h-[120px] overflow-auto"
+                            style="width: 100%;"
                         />
                         <div class="absolute bottom-2 right-4">
                             <button
@@ -1112,9 +1113,10 @@ onMounted(() => {
 :deep(.ProseMirror) {
     min-height: 150px;
     padding: 0.75rem;
-    color: white;
+    color: #0D0703;
     outline: none !important;
     overflow-y: auto;
+    width: 100%;
 }
 
 :deep(.ProseMirror p.is-editor-empty:first-child::before) {
@@ -1182,6 +1184,7 @@ onMounted(() => {
 
 :deep(.ProseMirror p) {
     margin-bottom: 0.1rem;
+    line-height: 1.2;
 }
 
 :deep(.ProseMirror h1),
