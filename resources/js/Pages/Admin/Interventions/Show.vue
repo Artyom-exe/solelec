@@ -1,7 +1,7 @@
 <script setup>
 import AdminLayout from "@/Layouts/AdminLayout.vue";
 import { Link, router } from "@inertiajs/vue3";
-import { computed, inject, ref, onMounted, watch } from "vue";
+import { computed, inject, ref, onMounted, onUnmounted, watch } from "vue";
 import { marked } from "marked";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 
@@ -17,7 +17,67 @@ import Placeholder from "@tiptap/extension-placeholder";
 
 // Injection des fonctions de notification
 const showNotification = inject("showNotification");
-const { intervention } = defineProps(["intervention"]);
+const { intervention, services } = defineProps(["intervention", "services"]);
+
+// Variable pour stocker les IDs des services sélectionnés
+const selectedServices = ref(intervention.devis?.services?.map(service => service.id) || []);
+
+// Variable pour contrôler l'affichage du sélecteur de services
+const showServiceSelector = ref(false);
+
+// Ajouter un écouteur d'événement pour fermer le sélecteur de services lors d'un clic en dehors
+onMounted(() => {
+    document.addEventListener('click', closeServiceSelectorOnClickOutside);
+});
+
+// Supprimer l'écouteur d'événement lors du démontage du composant
+onUnmounted(() => {
+    document.removeEventListener('click', closeServiceSelectorOnClickOutside);
+});
+
+// Fonction pour fermer le sélecteur de services quand on clique en dehors
+function closeServiceSelectorOnClickOutside(e) {
+    if (showServiceSelector.value) {
+        // Vérifier si le clic est en dehors du sélecteur de services
+        const serviceSelector = document.querySelector('.service-group');
+        if (serviceSelector && !serviceSelector.contains(e.target)) {
+            showServiceSelector.value = false;
+        }
+    }
+}
+
+// Fonction pour basculer la sélection d'un service
+function toggleService(serviceId) {
+    const index = selectedServices.value.indexOf(serviceId);
+    if (index === -1) {
+        // Si le service n'est pas déjà sélectionné, l'ajouter
+        selectedServices.value.push(serviceId);
+    } else {
+        // Sinon, le retirer
+        selectedServices.value.splice(index, 1);
+    }
+    
+    // Mettre à jour les services de l'intervention
+    updateInterventionServices();
+}
+
+// Fonction pour mettre à jour les services de l'intervention
+function updateInterventionServices() {
+    router.put(
+        route("interventions.services.update", { intervention: intervention.id }),
+        { services: selectedServices.value },
+        {
+            preserveScroll: true,
+            preserveState: true,
+            // Les notifications sont gérées par le contrôleur via les messages flash
+            // et seront affichées automatiquement par le système de notification existant
+            onError: (errors) => {
+                console.error(errors);
+                showNotification("Erreur lors de la mise à jour des services", "error");
+            },
+        }
+    );
+}
 
 // Détails du devis (à remplacer par les vraies données)
 const devisDetails = computed(() => {
@@ -497,44 +557,49 @@ function compiledMarkdown(text) {
                     <div
                         class="flex items-start content-start gap-2 self-stretch flex-wrap"
                     >
-                        <!-- Affichage des services avec popup -->
+                        <!-- Affichage des services avec badges sélectionnables -->
                         <div class="relative service-group">
-                            <div
+                            <div 
                                 class="flex py-1 px-[10px] items-start rounded-[4px] border border-white/5 bg-white/5 text-[#FF8C42] font-inter font-semibold text-sm cursor-pointer"
+                                @click="showServiceSelector = !showServiceSelector"
                             >
-                                {{
-                                    intervention.devis?.services &&
-                                    intervention.devis.services.length > 0
-                                        ? intervention.devis.services[0].title
-                                        : "Aucun service"
-                                }}
-                                <span
-                                    v-if="
-                                        intervention.devis?.services &&
-                                        intervention.devis.services.length > 1
-                                    "
-                                    class="ml-1"
-                                >
-                                    +{{
-                                        intervention.devis.services.length - 1
-                                    }}
+                                <span v-if="selectedServices.length > 0">
+                                    {{ services.find(s => s.id === selectedServices[0])?.title || 'Service' }}
+                                    <span v-if="selectedServices.length > 1" class="ml-1">
+                                        +{{ selectedServices.length - 1 }}
+                                    </span>
                                 </span>
+                                <span v-else>Aucun service</span>
                             </div>
-                            <!-- Popup qui apparaît au survol -->
+                            
+                            <!-- Sélecteur de services qui apparaît au clic -->
                             <div
-                                v-if="
-                                    intervention.devis?.services &&
-                                    intervention.devis.services.length > 1
-                                "
-                                class="absolute z-10 top-full right-0 mt-1 bg-[#1A1A1A] border border-white/10 rounded-md p-2 shadow-lg opacity-0 invisible service-popup transition-all duration-200 min-w-[150px]"
+                                v-if="showServiceSelector"
+                                class="absolute z-10 top-full left-0 mt-1 bg-[#1A1A1A] border border-white/10 rounded-md p-4 shadow-lg transition-all duration-200 min-w-[300px]"
+                                @click.stop
                             >
-                                <div
-                                    v-for="service in intervention.devis
-                                        .services"
-                                    :key="service.id"
-                                    class="py-1 px-2 text-[#FF8C42] font-inter font-semibold text-sm whitespace-nowrap"
-                                >
-                                    {{ service.title }}
+                                <h3 class="text-white font-medium mb-2">Sélectionner les services</h3>
+                                <div class="flex flex-wrap gap-2 mb-2">
+                                    <button
+                                        v-for="service in services"
+                                        :key="service.id"
+                                        @click="toggleService(service.id)"
+                                        :class="{
+                                            'bg-[#FF8C42] text-white': selectedServices.includes(service.id),
+                                            'bg-[#333] text-white': !selectedServices.includes(service.id),
+                                        }"
+                                        class="px-3 py-1 text-sm rounded-md border border-white/20 hover:bg-[#FF8C42] hover:text-white transition-colors duration-300"
+                                    >
+                                        {{ service.title }}
+                                    </button>
+                                </div>
+                                <div class="flex justify-end mt-3">
+                                    <button 
+                                        @click="showServiceSelector = false" 
+                                        class="text-white hover:text-[#FF8C42] text-sm transition-colors"
+                                    >
+                                        Fermer
+                                    </button>
                                 </div>
                             </div>
                         </div>
