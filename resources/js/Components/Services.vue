@@ -101,7 +101,7 @@ fetchServices();
 
 <template>
     <section
-        class="flex gap-6"
+        class="flex gap-6 flex-col md:flex-row"
         :class="{ 'flex-wrap': props.selectable }"
         aria-label="Liste des services"
     >
@@ -111,10 +111,10 @@ fetchServices();
             class="group relative flex rounded-lg border border-[rgba(13,7,3,0.15)] bg-[#FAF8F3] transition-all duration-500 overflow-hidden shadow-md mb-4"
             :class="[
                 props.selectable
-                    ? 'w-[31%] cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500 hover:shadow-lg flex-col'
+                    ? 'md:w-[31%] w-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500 hover:shadow-lg flex-col'
                     : activeIndex === index || isSelected(service.id)
-                    ? 'w-2/3 gap-6'
-                    : 'w-1/3 gap-6',
+                    ? 'md:w-2/3 w-full gap-6'
+                    : 'md:w-1/3 w-full gap-6',
                 activeIndex === index || isSelected(service.id)
                     ? 'text-white border-none'
                     : 'text-[#0D0703]',
