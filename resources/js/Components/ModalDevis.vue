@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, reactive, inject, onMounted, watch } from "vue";
-import { VueFinalModal } from "vue-final-modal";
+import { ref, reactive, inject, onMounted, watch, nextTick } from "vue";
+import { VueFinalModal, useVfm } from "vue-final-modal";
 import "vue-final-modal/style.css";
 import Services from "@/Components/Services.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
@@ -39,6 +39,34 @@ type NotificationFunction = (message: string, type?: string) => void;
 
 // Récupération des fonctions de notification depuis le contexte
 const showNotification = inject<NotificationFunction>("showNotification");
+
+// Initialisation de l'API vue-final-modal
+const vfm = useVfm();
+
+// Variable pour contrôler l'animation
+const modalVisible = ref(false);
+
+// Fonction pour animer l'apparition du modal
+onMounted(() => {
+    // Attendre que le DOM soit mis à jour
+    nextTick(() => {
+        // Déclencher l'animation après un court délai
+        setTimeout(() => {
+            modalVisible.value = true;
+        }, 50);
+    });
+});
+
+// Fonction pour fermer le modal avec animation
+const closeWithAnimation = () => {
+    // D'abord, déclencher l'animation de fermeture
+    modalVisible.value = false;
+    
+    // Puis fermer le modal après que l'animation soit terminée
+    setTimeout(() => {
+        vfm.closeAll();
+    }, 500); // Durée de l'animation (500ms)
+};
 
 const step = ref(1);
 const isSubmitting = ref(false);
@@ -448,13 +476,26 @@ onMounted(() => {
 <template>
     <VueFinalModal
         overlay-transition="vfm-fade"
-        content-transition="vfm-scale-fade"
+        content-transition=""
         overlay-class="bg-[rgba(0,0,0,0.4)]"
-        class="flex justify-center items-center px-2"
-        content-class="w-full max-w-5xl rounded-lg shadow-lg relative h-[min(720px,90vh)] flex flex-col"
+        class="flex justify-center items-end md:items-center md:px-2 px-0"
+        :content-class="[
+            'w-full md:max-w-5xl md:rounded-lg shadow-lg relative md:h-[min(720px,90vh)] md:max-h-[90vh] h-screen max-h-screen flex flex-col transition-all duration-500 ease-out',
+            modalVisible ? 'translate-y-0 opacity-100' : 'translate-y-full md:scale-95 md:translate-y-0 opacity-0'
+        ]"
         :reserve-scroll-bar-gap="false"
         :lock-scroll="false"
     >
+        <!-- Bouton de fermeture (croix) - visible uniquement sur mobile -->
+        <button 
+            @click="closeWithAnimation()"
+            class="absolute top-3 right-3 z-20 md:hidden block bg-white/10 hover:bg-white/20 rounded-full p-2 transition-all duration-300"
+            aria-label="Fermer"
+        >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
         <!-- Message de succès (fallback) -->
         <div
             v-if="successMessage"
@@ -472,7 +513,7 @@ onMounted(() => {
         </div>
 
         <div
-            class="flex-1 overflow-y-auto rounded-t-lg flex justify-center"
+            class="flex-1 overflow-y-auto md:rounded-t-lg flex justify-center overflow-x-hidden"
             :class="{
                 'bg-[#FBFAF6]': step === 1 || step === 3,
                 'bg-[#2D2D2D]': step === 2,
@@ -480,7 +521,7 @@ onMounted(() => {
         >
             <div
                 v-if="step === 1"
-                class="flex flex-col gap-11 w-full max-w-3xl pt-16 px-5 pb-5"
+                class="flex flex-col gap-11 w-full max-w-3xl md:pt-16 pt-12 px-5 pb-5"
             >
                 <h3
                     class="text-3xl text-[#0D0703] font-poppins font-medium text-center"
@@ -518,7 +559,7 @@ onMounted(() => {
             </div>
             <div
                 v-else-if="step === 2"
-                class="flex flex-col gap-11 w-full justify-center text-center max-w-3xl"
+                class="flex flex-col gap-11 w-full justify-center text-center max-w-3xl md:pt-16 pt-12 px-5 pb-5"
             >
                 <h3
                     class="text-[#ffff] text-3xl font-poppins font-medium text-center"
@@ -727,7 +768,7 @@ onMounted(() => {
 
             <div
                 v-else-if="step === 3"
-                class="flex flex-col gap-11 w-full max-w-3xl justify-center"
+                class="flex flex-col gap-11 w-full max-w-3xl justify-center md:pt-16 pt-12 px-5 pb-5"
             >
                 <h3
                     class="text-3xl text-[#0D0703] font-poppins font-medium text-center"
@@ -827,7 +868,7 @@ onMounted(() => {
         </div>
 
         <div
-            class="p-6 rounded-b-lg sticky bottom-0"
+            class="p-6 md:rounded-b-lg sticky bottom-0 w-full"
             :class="{
                 'bg-[#FBFAF6]': step === 1 || step === 3,
                 'bg-[#2D2D2D]': step === 2,
@@ -929,6 +970,26 @@ onMounted(() => {
 .vfm-scale-fade-leave-to {
     opacity: 0;
     transform: scale(0.9);
+}
+
+/* Animation pour le modal */
+.slide-bottom-enter-active,
+.slide-bottom-leave-active {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.slide-bottom-enter-from,
+.slide-bottom-leave-to {
+    transform: translateY(100%);
+    opacity: 0;
+}
+
+@media (min-width: 768px) {
+    .slide-bottom-enter-from,
+    .slide-bottom-leave-to {
+        transform: scale(0.95);
+        opacity: 0;
+    }
 }
 
 /* Styles pour l'éditeur TipTap */
