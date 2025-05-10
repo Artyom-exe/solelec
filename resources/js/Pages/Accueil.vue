@@ -285,7 +285,7 @@ const rightImages = ref([
 onMounted(() => {
     // Vérifier si on est sur desktop (largeur d'écran >= 1024px)
     const isDesktop = window.innerWidth >= 1024;
-    
+
     // Configuration AOS - activer uniquement sur desktop
     AOS.init({
         duration: 1000,
@@ -347,7 +347,7 @@ onMounted(() => {
 
         <header
             id="header"
-            class="flex flex-col items-center gap-2 bg-[#2D2D2D] h-[calc(100vh-72px)] md:px-16 px-5 overflow-hidden md:mt-[72px] mt-[64px] relative"
+            class="flex flex-col items-center gap-2 bg-[#2D2D2D] md:h-[calc(100vh-72px)] h-[calc(100vh-64px)] md:px-16 px-5 overflow-hidden md:mt-[72px] mt-[64px] relative"
         >
             <div
                 class="flex flex-col lg:flex-row items-center flex-1 self-stretch h-full w-full"
