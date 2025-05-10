@@ -61,9 +61,9 @@ const emit = defineEmits(["scrollToSection"]);
 
 <template>
     <nav
-        class="fixed top-0 left-0 right-0 bg-[#2D2D2D] px-16 justify-center flex-col items-center py-4 z-50"
+        class="flex fixed top-0 left-0 right-0 bg-[#2D2D2D] md:px-16 px-5 justify-center flex-col items-center md:h-[72px] h-[64px] z-50"
     >
-        <div class="flex justify-between items-center gap-8 self-stretch">
+        <div class="flex justify-between items-center md:gap-8 self-stretch">
             <!-- Logo -->
             <logo />
 
@@ -154,15 +154,17 @@ const emit = defineEmits(["scrollToSection"]);
                 </div>
             </div>
 
-            <PrimaryButton @click="openDevisModal" navStyle>
-                Devis
-            </PrimaryButton>
-            <!-- Hamburger (Mobile) amélioré -->
-            <button
-                @click="toggleMobileMenu"
-                class="md:hidden flex flex-col justify-center items-center w-10 h-10 relative focus:outline-none z-50"
-                aria-label="Menu"
-            >
+            <!-- Groupe boutons droite (mobile) -->
+            <div class="flex items-center gap-4 md:gap-8">
+                <PrimaryButton @click="openDevisModal" navStyle>
+                    Devis
+                </PrimaryButton>
+                <!-- Hamburger (Mobile) amélioré -->
+                <button
+                    @click="toggleMobileMenu"
+                    class="md:hidden flex flex-col justify-center items-center w-10 h-10 relative focus:outline-none z-50"
+                    aria-label="Menu"
+                >
                 <div
                     class="w-6 h-0.5 bg-white rounded-full transition-all duration-300 ease-in-out"
                     :class="{
@@ -184,6 +186,7 @@ const emit = defineEmits(["scrollToSection"]);
                     }"
                 ></div>
             </button>
+            </div>
         </div>
 
         <!-- Menu Mobile avec sous-menus -->
@@ -216,7 +219,7 @@ const emit = defineEmits(["scrollToSection"]);
                 </Link>
 
                 <!-- À propos et sous-éléments -->
-                <div 
+                <div
                     class="py-2 border-b border-gray-100 pb-3 transition-all duration-300 transform"
                     style="animation: fadeInDown 0.5s ease forwards; animation-delay: 300ms;"
                 >
