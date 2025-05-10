@@ -155,37 +155,19 @@ const emit = defineEmits(["scrollToSection"]);
             </div>
 
             <!-- Groupe boutons droite (mobile) -->
-            <div class="flex items-center gap-4 md:gap-8">
+            <div class="flex items-center justify-center gap-4 md:gap-8 h-full">
                 <PrimaryButton @click="openDevisModal" navStyle>
                     Devis
                 </PrimaryButton>
-                <!-- Hamburger (Mobile) amélioré -->
+                <!-- Hamburger (Mobile) avec animation cross -->
                 <button
                     @click="toggleMobileMenu"
-                    class="md:hidden flex flex-col justify-center items-center w-10 h-10 relative focus:outline-none z-50"
+                    class="md:hidden hamburger-icon cross-animation z-[100] flex items-center justify-center my-auto"
+                    :class="{ 'open': mobileMenuOpen }"
                     aria-label="Menu"
                 >
-                <div
-                    class="w-6 h-0.5 bg-white rounded-full transition-all duration-300 ease-in-out"
-                    :class="{
-                        'rotate-45 translate-y-1.5': mobileMenuOpen,
-                        'mb-1.5': !mobileMenuOpen
-                    }"
-                ></div>
-                <div
-                    class="w-6 h-0.5 bg-white rounded-full transition-all duration-300 ease-in-out"
-                    :class="{
-                        'opacity-0': mobileMenuOpen,
-                        'mb-1.5': !mobileMenuOpen
-                    }"
-                ></div>
-                <div
-                    class="w-6 h-0.5 bg-white rounded-full transition-all duration-300 ease-in-out"
-                    :class="{
-                        '-rotate-45 -translate-y-1.5': mobileMenuOpen
-                    }"
-                ></div>
-            </button>
+                    <span></span>
+                </button>
             </div>
         </div>
 
@@ -200,7 +182,7 @@ const emit = defineEmits(["scrollToSection"]);
         >
             <div
                 v-if="mobileMenuOpen"
-                class="md:hidden fixed top-[56px] left-0 right-0 bottom-0 bg-white shadow-lg py-4 px-6 overflow-y-auto z-40"
+                class="md:hidden fixed top-[64px] left-0 right-0 bottom-0 bg-white shadow-lg py-4 px-6 overflow-y-auto z-50"
             >
                 <div class="flex flex-col space-y-6 mt-4">
                 <!-- Animation des éléments du menu -->
@@ -273,5 +255,91 @@ const emit = defineEmits(["scrollToSection"]);
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+/* Animation du hamburger */
+.hamburger-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+    position: relative;
+    width: 30px;
+    margin: auto 0;
+}
+
+.hamburger-icon span {
+    border-radius: 3px;
+    background-color: white;
+    display: block;
+    height: 3px;
+    margin: 0 auto;
+    position: relative;
+    width: 30px;
+}
+
+.hamburger-icon span:before {
+    border-radius: 3px;
+    background-color: white;
+    content: '';
+    display: block;
+    height: 3px;
+    margin-top: -9px;
+    position: absolute;
+    width: 30px;
+}
+
+.hamburger-icon span:after {
+    border-radius: 3px;
+    background-color: white;
+    content: '';
+    display: block;
+    height: 3px;
+    margin-top: 9px;
+    position: absolute;
+    width: 30px;
+}
+
+/* Animation */
+.cross-animation span {
+    transition-delay: 0.2s;
+    transition-duration: 0s;
+}
+
+.cross-animation span:before {
+    transition-delay: 0.2s, 0s;
+    transition-duration: 0.2s;
+    transition-property: margin, transform;
+}
+
+.cross-animation span:after {
+    transition-delay: 0.2s, 0s;
+    transition-duration: 0.2s;
+    transition-property: margin, transform;
+}
+
+.cross-animation:hover span:before {
+    margin-top: -12px;
+}
+
+.cross-animation:hover span:after {
+    margin-top: 12px;
+}
+
+.cross-animation.open span {
+    transition-delay: 0.2s;
+    background-color: rgba(255,255,255,0);
+}
+
+.cross-animation.open span:before {
+    transform: rotate(45deg);
+    transition-delay: 0s, 0.2s;
+    margin-top: 0;
+}
+
+.cross-animation.open span:after {
+    transform: rotate(-45deg);
+    transition-delay: 0s, 0.2s;
+    margin-top: 0;
 }
 </style>
