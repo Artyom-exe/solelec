@@ -65,7 +65,7 @@ const closeWithAnimation = () => {
     // Puis fermer le modal après que l'animation soit terminée
     setTimeout(() => {
         vfm.closeAll();
-    }, 500); // Durée de l'animation (500ms)
+    }, 200); // Durée réduite pour une fermeture plus rapide
 };
 
 const step = ref(1);
@@ -488,21 +488,29 @@ onMounted(() => {
 
 <template>
     <VueFinalModal
-        overlay-transition="vfm-fade"
+        :overlay-transition="{
+            'enter-active-class': 'transition-opacity duration-200 ease-out',
+            'enter-from-class': 'opacity-0',
+            'enter-to-class': 'opacity-100',
+            'leave-active-class': 'transition-opacity duration-150 ease-in',
+            'leave-from-class': 'opacity-100',
+            'leave-to-class': 'opacity-0'
+        }"
         content-transition=""
         overlay-class="bg-[rgba(0,0,0,0.4)]"
         class="flex justify-center items-end md:items-center md:px-2 px-0"
         :content-class="[
-            'w-full md:max-w-5xl md:rounded-lg shadow-lg relative md:h-[min(720px,90vh)] md:max-h-[90vh] h-screen max-h-screen flex flex-col transition-all duration-500 ease-out',
-            modalVisible ? 'translate-y-0 opacity-100' : 'translate-y-full md:scale-95 md:translate-y-0 opacity-0'
+            'w-full md:max-w-5xl shadow-lg relative md:h-[min(720px,90vh)] md:max-h-[90vh] h-screen max-h-screen flex flex-col transition-all duration-300',
+            modalVisible ? 'translate-y-0 opacity-100 md:scale-100 md:translate-y-0' : 'translate-y-full md:scale-95 md:translate-y-0 opacity-0',
+            'md:ease-[cubic-bezier(0.19,1,0.22,1)] ease-out md:rounded-xl overflow-hidden'
         ]"
         :reserve-scroll-bar-gap="false"
         :lock-scroll="false"
     >
-        <!-- Bouton de fermeture (croix) - visible uniquement sur mobile -->
+        <!-- Bouton de fermeture (croix) - pour mobile et desktop -->
         <button 
             @click="closeWithAnimation()"
-            class="absolute top-3 right-3 z-20 md:hidden block bg-white/10 hover:bg-white/20 rounded-full p-2 transition-all duration-300"
+            class="absolute top-3 right-3 z-20 bg-white/10 hover:bg-white/20 rounded-full p-2 transition-all duration-300 md:top-4 md:right-4"
             aria-label="Fermer"
         >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -526,7 +534,7 @@ onMounted(() => {
         </div>
 
         <div
-            class="flex-1 overflow-y-auto md:rounded-t-lg flex justify-center overflow-x-hidden"
+            class="flex-1 overflow-y-auto flex justify-center overflow-x-hidden"
             :class="{
                 'bg-[#FBFAF6]': step === 1 || step === 3,
                 'bg-[#2D2D2D]': step === 2,
