@@ -61,7 +61,7 @@ onMounted(() => {
 const closeWithAnimation = () => {
     // D'abord, déclencher l'animation de fermeture
     modalVisible.value = false;
-    
+
     // Puis fermer le modal après que l'animation soit terminée
     setTimeout(() => {
         vfm.closeAll();
@@ -480,7 +480,7 @@ const preloadServices = async () => {
 onMounted(() => {
     // Réinitialiser le formulaire quand le composant est monté
     resetForm();
-    
+
     // Précharger les services dès que possible
     preloadServices();
 });
@@ -508,7 +508,7 @@ onMounted(() => {
         :lock-scroll="false"
     >
         <!-- Bouton de fermeture (croix) - pour mobile et desktop -->
-        <button 
+        <button
             @click="closeWithAnimation()"
             class="absolute top-3 right-3 z-20 bg-white/10 hover:bg-white/20 rounded-full p-2 transition-all duration-300 md:top-4 md:right-4"
             aria-label="Fermer"
