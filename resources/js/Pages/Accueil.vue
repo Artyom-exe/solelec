@@ -347,19 +347,19 @@ onMounted(() => {
 
         <header
             id="header"
-            class="flex flex-col items-center gap-2 bg-[#2D2D2D] md:h-[calc(100vh-72px)] h-[calc(100vh-64px)] md:px-16 px-5 overflow-hidden md:mt-[72px] mt-[64px] relative"
+            class="flex flex-col items-center gap-2 bg-[#2D2D2D] md:h-[calc(100vh-72px)] md:px-16 px-5 overflow-hidden md:mt-[72px] mt-[64px] relative"
         >
             <div
-                class="flex flex-col lg:flex-row items-center flex-1 self-stretch h-full w-full"
+                class="flex items-center flex-1 self-stretch h-full w-full flex-wrap"
             >
                 <div
-                    class="flex flex-col md:pr-20 justify-center items-start gap-8 flex-1"
+                    class="flex flex-col lg:pr-20 justify-center items-start lg:gap-8 gap-6 flex-1 py-16 lg:py-0"
                     data-aos="fade-right"
                     data-aos-duration="1200"
                 >
-                    <div class="flex flex-col items-start gap-6 text-white">
+                    <div class="flex flex-col items-start lg:gap-6 gap-5 text-white">
                         <h1
-                            class="text-white font-poppins text-[56px] font-medium leading-[120%] tracking-[-0.56px]"
+                            class="text-white font-poppins md:text-[56px] text-[40px] font-medium leading-[120%] tracking-[-0.56px]"
                             data-aos="fade-up"
                             data-aos-delay="150"
                             data-aos-anchor="#header"
@@ -369,7 +369,7 @@ onMounted(() => {
                         </h1>
 
                         <p
-                            class="font-inter text-lg font-normal leading-[150%]"
+                            class="font-inter md:text-lg text-base font-normal leading-[150%]"
                             data-aos="fade-up"
                             data-aos-delay="300"
                             data-aos-anchor="#header"
@@ -381,7 +381,7 @@ onMounted(() => {
                     </div>
 
                     <div
-                        class="flex gap-4"
+                        class="flex flex-col md:flex-row w-full md:w-auto gap-3 md:gap-4"
                         data-aos="fade-up"
                         data-aos-delay="450"
                         data-aos-anchor="#header"
@@ -397,8 +397,9 @@ onMounted(() => {
                         </SecondaryButton>
                     </div>
                 </div>
+                <!-- Section images pour desktop uniquement -->
                 <div
-                    class="flex-1 h-full relative"
+                    class="hidden lg:flex flex-1 h-full relative"
                     data-aos="fade-left"
                     data-aos-duration="1200"
                 >
@@ -434,6 +435,45 @@ onMounted(() => {
                             data-aos="fade-up"
                             :data-aos-delay="img.aosDelay"
                             data-aos-anchor="#header"
+                        >
+                            <img
+                                :src="img.src"
+                                :alt="img.alt"
+                                class="w-full h-full object-cover"
+                                loading="lazy"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section images pour mobile uniquement - même rendu visuel que desktop -->
+                <div class="lg:hidden w-full mt-8 relative" style="height: 70vh;">
+                    <!-- Colonne gauche -->
+                    <div
+                        class="absolute left-0 w-[calc(50%-4px)] h-full flex flex-col gap-2"
+                    >
+                        <div
+                            v-for="(img, index) in leftImages"
+                            :key="'mobile-left-' + index"
+                            class="h-[33.33%] overflow-hidden rounded-lg"
+                        >
+                            <img
+                                :src="img.src"
+                                :alt="img.alt"
+                                class="w-full h-full object-cover"
+                                loading="lazy"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- Colonne droite -->
+                    <div
+                        class="absolute right-0 w-[calc(50%-4px)] h-full flex flex-col gap-2"
+                    >
+                        <div
+                            v-for="(img, index) in rightImages"
+                            :key="'mobile-right-' + index"
+                            class="h-[33.33%] overflow-hidden rounded-lg"
                         >
                             <img
                                 :src="img.src"
