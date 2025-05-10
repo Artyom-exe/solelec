@@ -491,7 +491,7 @@ onMounted(() => {
         <!-- Services -->
         <section
             id="services"
-            class="flex md:py-28 py-16 md:px-16 px-5 flex-col gap-20 bg-[#FBFAF6]"
+            class="flex md:py-28 py-16 md:px-16 px-5 flex-col md:gap-20 gap-12 bg-[#FBFAF6]"
         >
             <div class="flex flex-col md:gap-4 gap-3 text-[#0D0703]" data-aos="fade-up">
                 <h2 class="text-center font-inter text-base font-semibold">
