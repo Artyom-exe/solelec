@@ -585,20 +585,36 @@ function compiledMarkdown(text) {
                         class="flex items-start content-start gap-2 self-stretch flex-wrap"
                     >
                         <!-- Bouton principal pour les services -->
-                        <button 
-                            id="service-selector-btn"
-                            class="flex py-1 px-[10px] items-start rounded-[4px] border border-white/5 bg-white/5 text-[#FF8C42] font-inter font-semibold text-sm cursor-pointer"
-                            @click="showServiceSelector = !showServiceSelector"
-                        >
-                            <span v-if="selectedServices.length > 0">
-                                {{ services.find(s => s.id === selectedServices[0])?.title || 'Service' }}
-                                <span v-if="selectedServices.length > 1" class="ml-1">
-                                    +{{ selectedServices.length - 1 }}
+                        <div class="relative service-group">
+                            <button 
+                                id="service-selector-btn"
+                                class="flex py-1 px-[10px] items-start rounded-[4px] border border-white/5 bg-white/5 text-[#FF8C42] font-inter font-semibold text-sm cursor-pointer"
+                                @click.stop="showServiceSelector = !showServiceSelector"
+                            >
+                                {{ intervention.devis?.services && intervention.devis.services.length > 0
+                                    ? intervention.devis.services[0].title
+                                    : "Aucun service" }}
+                                <span
+                                    v-if="intervention.devis?.services && intervention.devis.services.length > 1"
+                                    class="ml-1"
+                                >
+                                    +{{ intervention.devis.services.length - 1 }}
                                 </span>
-                            </span>
-                            <span v-else>Aucun service</span>
-                        </button>
-                        
+                            </button>
+                            <!-- Popup qui apparaît au survol -->
+                            <div
+                                v-if="intervention.devis?.services && intervention.devis.services.length > 1"
+                                class="absolute z-10 top-full right-0 mt-1 bg-[#1A1A1A] border border-white/10 rounded-md p-2 shadow-lg opacity-0 invisible service-popup transition-all duration-200 min-w-[150px]"
+                            >
+                                <div
+                                    v-for="service in intervention.devis.services"
+                                    :key="service.id"
+                                    class="py-1 px-2 text-[#FF8C42] font-inter font-semibold text-sm whitespace-nowrap"
+                                >
+                                    {{ service.title }}
+                                </div>
+                            </div>
+                        </div>
                         <!-- Liste des services qui apparaît sous les badges principaux -->
                         <div v-if="showServiceSelector" id="service-selector-container" class="w-full mt-2 flex flex-wrap gap-2" @click.stop>
                             <button
@@ -1404,6 +1420,12 @@ function compiledMarkdown(text) {
 
 <style>
 /* Styles pour cacher la barre de défilement tout en gardant la fonctionnalité */
+/* Style pour le popup de services qui apparaît uniquement au survol de l'élément de service */
+.service-group:hover .service-popup {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
 .hide-scrollbar {
     -ms-overflow-style: none; /* Pour Internet Explorer et Edge */
     scrollbar-width: none; /* Pour Firefox */
