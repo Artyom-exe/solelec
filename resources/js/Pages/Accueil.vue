@@ -519,6 +519,7 @@ onMounted(() => {
                 data-aos="zoom-in"
                 data-aos-duration="800"
                 :serviceIds="[4, 2, 3]"
+                variant="accueil"
             />
         </section>
 
