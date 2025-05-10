@@ -27,6 +27,12 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
+    // Variante d'affichage ('accueil' ou 'modal')
+    variant: {
+        type: String,
+        default: "accueil",
+        validator: (value) => ['accueil', 'modal'].includes(value)
+    },
 });
 
 const emit = defineEmits(["service-selected"]);
@@ -101,8 +107,12 @@ fetchServices();
 
 <template>
     <section
-        class="flex gap-6 flex-col md:flex-row"
-        :class="{ 'flex-wrap': props.selectable }"
+        class="flex"
+        :class="{
+            'flex-wrap gap-4': props.selectable && props.variant === 'modal',
+            'flex-wrap gap-6': props.selectable && props.variant !== 'modal',
+            'flex-col md:flex-row gap-6': !props.selectable
+        }"
         aria-label="Liste des services"
     >
         <article
@@ -110,7 +120,9 @@ fetchServices();
             :key="service.id"
             class="group relative flex rounded-lg border border-[rgba(13,7,3,0.15)] bg-[#FAF8F3] transition-all duration-500 overflow-hidden shadow-md mb-4"
             :class="[
-                props.selectable
+                props.selectable && props.variant === 'modal'
+                    ? 'md:w-[31%] w-[calc(50%-0.5rem)] aspect-square cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500 hover:shadow-lg flex-col'
+                    : props.selectable
                     ? 'md:w-[31%] w-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500 hover:shadow-lg flex-col'
                     : activeIndex === index || isSelected(service.id)
                     ? 'md:w-2/3 w-full gap-6'
@@ -237,7 +249,7 @@ fetchServices();
                 >
                     <h2
                         class="font-poppins font-medium"
-                        :class="props.selectable ? 'text-lg' : 'text-2xl'"
+                        :class="props.selectable ? 'md:text-lg text-sm' : 'text-2xl'"
                     >
                         {{ service.title }}
                     </h2>
@@ -276,7 +288,7 @@ fetchServices();
                 <!-- Message de sélection en mode modal -->
                 <div
                     v-if="props.selectable"
-                    class="text-xs mt-2"
+                    class="text-[10px] xs:text-[9px] sm:text-xs mt-2"
                     :class="
                         isSelected(service.id)
                             ? 'text-orange-400'

@@ -480,7 +480,7 @@ onMounted(() => {
         >
             <div
                 v-if="step === 1"
-                class="flex flex-col gap-11 w-full max-w-3xl pt-16"
+                class="flex flex-col gap-11 w-full max-w-3xl pt-16 px-5 pb-5"
             >
                 <h3
                     class="text-3xl text-[#0D0703] font-poppins font-medium text-center"
@@ -502,6 +502,7 @@ onMounted(() => {
                     :selectable="true"
                     :selected-services="selectedServiceIds"
                     height="200px"
+                    variant="modal"
                     @service-selected="handleServiceSelection"
                     :class="{ 'border-red-500': formStatus.errors.services }"
                 />
