@@ -491,24 +491,26 @@ onMounted(() => {
         <!-- Services -->
         <section
             id="services"
-            class="flex py-28 px-16 flex-col gap-20 bg-[#FBFAF6]"
+            class="flex md:py-28 py-16 md:px-16 px-5 flex-col gap-20 bg-[#FBFAF6]"
         >
-            <div class="flex flex-col gap-4 text-[#0D0703]" data-aos="fade-up">
+            <div class="flex flex-col md:gap-4 gap-3 text-[#0D0703]" data-aos="fade-up">
                 <h2 class="text-center font-inter text-base font-semibold">
                     services
                 </h2>
-                <div class="relative flex flex-col gap-6">
-                    <h3
-                        class="font-poppins text-5xl text-center font-medium leading-[57.6px] tracking-[-0.48px]"
-                    >
-                        Nos Services Principaux
-                    </h3>
-                    <div
-                        class="absolute bottom-10 right-1/2 border-2 border-[#FF8C42] w-[40%] max-w-[353px] min-w-[200px]"
-                        data-aos="slide-right"
-                        data-aos-duration="1000"
-                    ></div>
-                    <h4 class="font-inter text-lg text-center">
+                <div class="flex flex-col md:gap-6 gap-5">
+                    <div class="relative flex flex-col">
+                        <h3
+                            class="font-poppins md:text-5xl text-4xl text-center font-medium md:leading-[57.6px] leading-[43.2px] md:tracking-[-0.48px] tracking-[-0.36px]"
+                        >
+                            Nos Services Principaux
+                        </h3>
+                        <div
+                        class="absolute right-1/2 translate-x-[6%] bottom-[-10px] border-2 border-[#FF8C42] w-[40%] max-w-[353px] min-w-[180px]"
+                            data-aos="slide-right"
+                            data-aos-duration="1000"
+                        ></div>
+                    </div>
+                    <h4 class="font-inter md:text-lg text-base text-center">
                         Des solutions adaptées à vos besoins énergétiques.
                     </h4>
                 </div>
