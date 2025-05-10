@@ -35,10 +35,11 @@ const handleClick = (event) => {
     <button
         :type="type"
         :class="[
-            'relative flex justify-center items-center px-6 border border-[#FF8C42] bg-[#FF8C42] rounded-md font-[500] text-base font-inter text-white',
+            'relative flex justify-center items-center md:px-6 px-4 border border-[#FF8C42] bg-[#FF8C42] rounded-md font-[500] md:text-base text-sm font-inter text-white whitespace-nowrap',
             'transition-all duration-300 ease-in-out',
             'hover:bg-transparent hover:text-[#FF8C42] hover:border-[#FF8C42]',
             'focus:outline-none focus:bg-transparent focus:text-[#FF8C42] focus:border-[#FF8C42]',
+            'w-full md:w-auto',
             navStyle ? 'py-2' : 'py-[10px]',
         ]"
         @click="handleClick"

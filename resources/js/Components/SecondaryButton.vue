@@ -35,7 +35,7 @@ const handleClick = (event) => {
     <button
         :type="type"
         :class="[
-            'flex justify-center items-center px-6 py-[10px] rounded-md font-[500] text-base font-inter',
+            'flex justify-center items-center md:px-6 px-4 py-[10px] rounded-md font-[500] md:text-base text-sm font-inter whitespace-nowrap w-full md:w-auto',
             'transition-all duration-300 ease-in-out',
             variant === 'default'
                 ? [
