@@ -2,6 +2,7 @@
 import { ref, computed } from "vue";
 import axios from "axios";
 import { router } from "@inertiajs/vue3";
+import LogoLoader from "@/Components/LogoLoader.vue";
 
 const props = defineProps({
     limit: {
@@ -38,7 +39,8 @@ const props = defineProps({
 const emit = defineEmits(["service-selected"]);
 
 const services = ref([]);
-const activeIndex = ref(props.selectable ? null : 0); // Si non selectable (landing page), activer le premier
+const activeIndex = ref(props.selectable ? null : 0);
+const loading = ref(true); // Si non selectable (landing page), activer le premier
 const localSelectedServices = ref([...props.selectedServices]);
 
 // Calculer les services à afficher
@@ -71,12 +73,35 @@ const toggleService = (service) => {
     emit("service-selected", localSelectedServices.value);
 };
 
+// Cache global pour les services (partagé entre toutes les instances du composant)
+const servicesCache = {
+    data: null,
+    timestamp: null
+};
+
 const fetchServices = async () => {
+    // Si nous avons des données en cache récentes (moins de 5 minutes), les utiliser
+    const now = Date.now();
+    const cacheExpiration = 5 * 60 * 1000; // 5 minutes en millisecondes
+    
+    if (servicesCache.data && servicesCache.timestamp && (now - servicesCache.timestamp < cacheExpiration)) {
+        services.value = servicesCache.data;
+        loading.value = false;
+        return;
+    }
+    
+    loading.value = true;
     try {
         const response = await axios.get("services");
         services.value = response.data;
+        
+        // Mettre à jour le cache
+        servicesCache.data = response.data;
+        servicesCache.timestamp = now;
     } catch (error) {
         console.error(error);
+    } finally {
+        loading.value = false;
     }
 };
 
@@ -106,7 +131,13 @@ fetchServices();
 </script>
 
 <template>
+    <!-- Indicateur de chargement avec le logo -->
+    <div v-if="loading" class="w-full flex justify-center items-center py-8">
+        <LogoLoader />
+    </div>
+    
     <section
+        v-else
         class="flex"
         :class="{
             'flex-wrap gap-4': props.selectable && props.variant === 'modal',
