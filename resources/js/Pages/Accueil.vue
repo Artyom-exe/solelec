@@ -347,7 +347,7 @@ onMounted(() => {
 
         <header
             id="header"
-            class="flex flex-col items-center gap-2 bg-[#2D2D2D] md:h-[calc(100vh-72px)] md:px-16 px-5 overflow-hidden md:mt-[72px] mt-[64px] relative"
+            class="flex flex-col items-center gap-2 bg-[#2D2D2D] lg:h-[calc(100vh-72px)] md:px-16 px-5 overflow-hidden md:mt-[72px] mt-[64px] relative"
         >
             <div
                 class="flex items-center flex-1 self-stretch h-full w-full flex-wrap"
