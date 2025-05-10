@@ -83,18 +83,18 @@ const fetchServices = async () => {
     // Si nous avons des données en cache récentes (moins de 5 minutes), les utiliser
     const now = Date.now();
     const cacheExpiration = 5 * 60 * 1000; // 5 minutes en millisecondes
-    
+
     if (servicesCache.data && servicesCache.timestamp && (now - servicesCache.timestamp < cacheExpiration)) {
         services.value = servicesCache.data;
         loading.value = false;
         return;
     }
-    
+
     loading.value = true;
     try {
         const response = await axios.get("services");
         services.value = response.data;
-        
+
         // Mettre à jour le cache
         servicesCache.data = response.data;
         servicesCache.timestamp = now;
@@ -135,12 +135,12 @@ fetchServices();
     <div v-if="loading" class="w-full flex justify-center items-center py-8">
         <LogoLoader />
     </div>
-    
+
     <section
         v-else
-        class="flex"
+        class="flex w-full"
         :class="{
-            'flex-wrap gap-4': props.selectable && props.variant === 'modal',
+            'flex-wrap justify-between gap-y-4': props.selectable && props.variant === 'modal',
             'flex-wrap gap-6': props.selectable && props.variant !== 'modal',
             'flex-col md:flex-row gap-6': !props.selectable
         }"
@@ -152,7 +152,7 @@ fetchServices();
             class="group relative flex rounded-lg border border-[rgba(13,7,3,0.15)] bg-[#FAF8F3] transition-all duration-500 overflow-hidden shadow-md mb-4"
             :class="[
                 props.selectable && props.variant === 'modal'
-                    ? 'md:w-[31%] w-[calc(50%-0.5rem)] aspect-square cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500 hover:shadow-lg flex-col'
+                    ? 'md:w-[calc(33.33%-0.75rem)] w-[calc(50%-0.5rem)] aspect-square cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500 hover:shadow-lg flex-col'
                     : props.selectable
                     ? 'md:w-[31%] w-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500 hover:shadow-lg flex-col'
                     : activeIndex === index || isSelected(service.id)
@@ -280,7 +280,7 @@ fetchServices();
                 >
                     <h2
                         class="font-poppins font-medium"
-                        :class="props.selectable ? 'md:text-lg text-sm' : 'text-2xl'"
+                        :class="props.selectable ? 'sm:text-lg text-sm' : 'text-2xl'"
                     >
                         {{ service.title }}
                     </h2>
