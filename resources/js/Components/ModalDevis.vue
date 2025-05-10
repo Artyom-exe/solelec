@@ -555,7 +555,7 @@ onMounted(() => {
                         formStatus.errors.services &&
                         selectedServiceIds.length === 0
                     "
-                    class="mt-2 text-sm text-red-500"
+                    class="text-sm text-red-500"
                 >
                     Veuillez sélectionner au moins un service
                 </div>
