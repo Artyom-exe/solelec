@@ -447,10 +447,11 @@ onMounted(() => {
                 </div>
 
                 <!-- Section images pour mobile uniquement - même rendu visuel que desktop -->
-                <div class="lg:hidden w-full mt-8 relative" style="height: 70vh;">
+                <div class="lg:hidden w-full mt-8 relative overflow-hidden px-4" style="height: 70vh;">
                     <!-- Colonne gauche -->
                     <div
-                        class="absolute left-0 w-[calc(50%-4px)] h-full flex flex-col gap-2"
+                        class="absolute left-0 w-[calc(50%-8px)] h-[130%] flex flex-col gap-4"
+                        style="top: -20%; bottom: 0"
                     >
                         <div
                             v-for="(img, index) in leftImages"
@@ -468,7 +469,8 @@ onMounted(() => {
 
                     <!-- Colonne droite -->
                     <div
-                        class="absolute right-0 w-[calc(50%-4px)] h-full flex flex-col gap-2"
+                        class="absolute right-0 w-[calc(50%-8px)] h-[130%] flex flex-col gap-4"
+                        style="top: -5%; bottom: 0"
                     >
                         <div
                             v-for="(img, index) in rightImages"
