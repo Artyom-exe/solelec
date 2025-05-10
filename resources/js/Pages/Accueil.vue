@@ -283,7 +283,10 @@ const rightImages = ref([
 ]);
 
 onMounted(() => {
-    // Configuration AOS
+    // Vérifier si on est sur desktop (largeur d'écran >= 1024px)
+    const isDesktop = window.innerWidth >= 1024;
+    
+    // Configuration AOS - activer uniquement sur desktop
     AOS.init({
         duration: 1000,
         once: true,
@@ -292,6 +295,8 @@ onMounted(() => {
         offset: 50,
         anchorPlacement: "top-center",
         startEvent: "DOMContentLoaded",
+        // Désactiver AOS sur mobile en définissant disable sur true si ce n'est pas desktop
+        disable: !isDesktop
     });
 
     // Empêcher le débordement horizontal
@@ -300,6 +305,21 @@ onMounted(() => {
     fetchPortfolio();
     fetchTags();
     fetchFaq();
+
+    // Ajouter un écouteur d'événement pour redémarrer AOS lors du redimensionnement
+    window.addEventListener('resize', () => {
+        const isDesktopNow = window.innerWidth >= 1024;
+        // Réinitialiser AOS avec la nouvelle valeur de disable
+        AOS.init({
+            duration: 1000,
+            once: true,
+            mirror: false,
+            easing: "ease-out-cubic",
+            offset: 50,
+            anchorPlacement: "top-center",
+            disable: !isDesktopNow
+        });
+    });
 
     setTimeout(() => {
         AOS.refresh();
@@ -327,13 +347,13 @@ onMounted(() => {
 
         <header
             id="header"
-            class="flex flex-col items-center gap-2 bg-[#2D2D2D] h-[calc(100vh-72px)] px-16 overflow-hidden mt-[72px] relative"
+            class="flex flex-col items-center gap-2 bg-[#2D2D2D] h-[calc(100vh-72px)] md:px-16 px-5 overflow-hidden md:mt-[72px] mt-[64px] relative"
         >
             <div
                 class="flex flex-col lg:flex-row items-center flex-1 self-stretch h-full w-full"
             >
                 <div
-                    class="flex flex-col pr-20 justify-center items-start gap-8 flex-1"
+                    class="flex flex-col md:pr-20 justify-center items-start gap-8 flex-1"
                     data-aos="fade-right"
                     data-aos-duration="1200"
                 >
