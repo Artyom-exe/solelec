@@ -159,15 +159,17 @@ const emit = defineEmits(["scrollToSection"]);
                 <PrimaryButton @click="openDevisModal" navStyle>
                     Devis
                 </PrimaryButton>
-                <!-- Hamburger (Mobile) avec animation cross -->
-                <button
-                    @click="toggleMobileMenu"
-                    class="md:hidden hamburger-icon cross-animation z-[100] flex items-center justify-center my-auto"
-                    :class="{ 'open': mobileMenuOpen }"
-                    aria-label="Menu"
-                >
-                    <span></span>
-                </button>
+                <!-- Hamburger (Mobile) avec animation cross - masqué sur desktop avec v-if -->
+                <div class="md:hidden">
+                    <button
+                        @click="toggleMobileMenu"
+                        class="hamburger-icon cross-animation z-[100] my-auto"
+                        :class="{ 'open': mobileMenuOpen }"
+                        aria-label="Menu"
+                    >
+                        <span></span>
+                    </button>
+                </div>
             </div>
         </div>
 
