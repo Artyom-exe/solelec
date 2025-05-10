@@ -2,12 +2,12 @@
 import { ref, reactive, inject, onMounted, watch, nextTick } from "vue";
 import { VueFinalModal, useVfm } from "vue-final-modal";
 import "vue-final-modal/style.css";
+import axios from "axios";
 import Services from "@/Components/Services.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import Datepicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
-import axios from "axios";
 import { marked } from "marked";
 // Remplacer l'importation de Quill par TipTap
 import { useEditor, EditorContent } from "@tiptap/vue-3";
@@ -467,9 +467,22 @@ watch(markdownContent, (newContent) => {
     syncMarkdownContent(newContent);
 });
 
+// Fonction pour précharger les services
+const preloadServices = async () => {
+    try {
+        // Précharger les services pour qu'ils soient disponibles immédiatement
+        await axios.get("services");
+    } catch (error) {
+        console.error("Erreur lors du préchargement des services:", error);
+    }
+};
+
 onMounted(() => {
     // Réinitialiser le formulaire quand le composant est monté
     resetForm();
+    
+    // Précharger les services dès que possible
+    preloadServices();
 });
 </script>
 
