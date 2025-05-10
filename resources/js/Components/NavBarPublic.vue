@@ -157,51 +157,58 @@ const emit = defineEmits(["scrollToSection"]);
             <PrimaryButton @click="openDevisModal" navStyle>
                 Devis
             </PrimaryButton>
-            <!-- Hamburger (Mobile) -->
+            <!-- Hamburger (Mobile) amélioré -->
             <button
                 @click="toggleMobileMenu"
-                class="md:hidden flex items-center text-white"
+                class="md:hidden flex flex-col justify-center items-center w-10 h-10 relative focus:outline-none z-50"
+                aria-label="Menu"
             >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                >
-                    <path
-                        v-if="!mobileMenuOpen"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M4 6h16M4 12h16M4 18h16"
-                    />
-                    <path
-                        v-else
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M6 18L18 6M6 6l12 12"
-                    />
-                </svg>
+                <div
+                    class="w-6 h-0.5 bg-white rounded-full transition-all duration-300 ease-in-out"
+                    :class="{
+                        'rotate-45 translate-y-1.5': mobileMenuOpen,
+                        'mb-1.5': !mobileMenuOpen
+                    }"
+                ></div>
+                <div
+                    class="w-6 h-0.5 bg-white rounded-full transition-all duration-300 ease-in-out"
+                    :class="{
+                        'opacity-0': mobileMenuOpen,
+                        'mb-1.5': !mobileMenuOpen
+                    }"
+                ></div>
+                <div
+                    class="w-6 h-0.5 bg-white rounded-full transition-all duration-300 ease-in-out"
+                    :class="{
+                        '-rotate-45 -translate-y-1.5': mobileMenuOpen
+                    }"
+                ></div>
             </button>
         </div>
 
         <!-- Menu Mobile avec sous-menus -->
-        <div
-            v-if="mobileMenuOpen"
-            class="md:hidden absolute top-full left-0 right-0 bg-white shadow-lg py-4 px-6"
+        <transition
+            enter-active-class="transition-all duration-300 ease-out"
+            enter-from-class="opacity-0 translate-x-full"
+            enter-to-class="opacity-100 translate-x-0"
+            leave-active-class="transition-all duration-300 ease-in"
+            leave-from-class="opacity-100 translate-x-0"
+            leave-to-class="opacity-0 translate-x-full"
         >
-            <div class="flex flex-col space-y-4">
+            <div
+                v-if="mobileMenuOpen"
+                class="md:hidden fixed top-[56px] left-0 right-0 bottom-0 bg-white shadow-lg py-4 px-6 overflow-y-auto z-40"
+            >
+                <div class="flex flex-col space-y-6 mt-4">
+                <!-- Animation des éléments du menu -->
                 <Link
-                    v-for="item in navItems"
+                    v-for="(item, index) in navItems"
                     :key="item.name"
                     :href="route(item.route)"
-                    class="font-inter text-gray-700 py-2 hover:text-[#FF8C42]"
+                    class="font-inter text-gray-700 py-2 hover:text-[#FF8C42] text-lg border-b border-gray-100 pb-3 transition-all duration-300 transform"
+                    :style="{ 'animation-delay': index * 100 + 'ms', 'animation': 'fadeInDown 0.5s ease forwards' }"
                     :class="{
-                        'text-[#FF8C42] font-medium': route().current(
-                            item.route
-                        ),
+                        'text-[#FF8C42] font-medium': route().current(item.route)
                     }"
                     @click="toggleMobileMenu"
                 >
@@ -209,8 +216,11 @@ const emit = defineEmits(["scrollToSection"]);
                 </Link>
 
                 <!-- À propos et sous-éléments -->
-                <div class="py-2">
-                    <div class="font-inter text-gray-700 font-medium">
+                <div 
+                    class="py-2 border-b border-gray-100 pb-3 transition-all duration-300 transform"
+                    style="animation: fadeInDown 0.5s ease forwards; animation-delay: 300ms;"
+                >
+                    <div class="font-inter text-gray-700 font-medium text-lg">
                         À propos
                     </div>
                     <div class="pl-4 mt-2 space-y-2">
@@ -226,7 +236,7 @@ const emit = defineEmits(["scrollToSection"]);
                                 );
                                 toggleMobileMenu();
                             "
-                            class="block py-1 text-gray-600 hover:text-[#FF8C42]"
+                            class="block py-2 text-gray-600 hover:text-[#FF8C42] transition-all duration-200 transform hover:translate-x-1"
                         >
                             {{ item.name }}
                         </a>
@@ -234,7 +244,8 @@ const emit = defineEmits(["scrollToSection"]);
                 </div>
 
                 <PrimaryButton
-                    class="w-full justify-center"
+                    class="w-full justify-center mt-4 py-3 text-lg transition-all duration-300 transform"
+                    style="animation: fadeInDown 0.5s ease forwards; animation-delay: 500ms;"
                     @click="
                         openDevisModal();
                         toggleMobileMenu();
@@ -242,7 +253,22 @@ const emit = defineEmits(["scrollToSection"]);
                 >
                     Demander un devis
                 </PrimaryButton>
+                </div>
             </div>
-        </div>
+        </transition>
     </nav>
 </template>
+
+<style scoped>
+/* Animations pour le menu mobile */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
