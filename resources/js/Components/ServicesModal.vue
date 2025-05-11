@@ -169,7 +169,7 @@ fetchServices();
                 <!-- Titre -->
                 <div class="flex flex-col transition-all duration-500 text-left w-full">
                     <h3
-                        class="sm:text-base font-poppins text-xs font-semibold capitalize transition-all duration-500"
+                        class="sm:text-base font-poppins text-xs font-semibold capitalize transition-all duration-500 group-hover:text-[14px]"
                     >
                         {{ service.title }}
                     </h3>
