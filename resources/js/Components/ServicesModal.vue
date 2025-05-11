@@ -16,7 +16,7 @@ const props = defineProps({
     },
 });
 
-const emit = defineEmits(["service-selected"]);
+const emit = defineEmits(["service-selected", "loading-complete"]);
 
 const services = ref([]);
 const loading = ref(true);
@@ -72,6 +72,7 @@ const fetchServices = async () => {
         console.error(error);
     } finally {
         loading.value = false;
+        emit("loading-complete");
     }
 };
 
@@ -79,8 +80,8 @@ fetchServices();
 </script>
 
 <template>
-    <!-- Indicateur de chargement avec le logo -->
-    <div v-if="loading" class="w-full flex justify-center items-center py-8">
+    <!-- Indicateur de chargement avec le logo parfaitement centré -->
+    <div v-if="loading" class="w-full h-full flex justify-center items-center" style="min-height: 200px;">
         <LogoLoader />
     </div>
 
