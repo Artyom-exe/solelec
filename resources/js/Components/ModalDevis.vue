@@ -545,12 +545,14 @@ onMounted(() => {
                 v-if="step === 1"
                 class="flex flex-col gap-11 w-full max-w-3xl md:pt-16 pt-12 px-5 pb-5"
             >
-                <h3
-                    v-if="servicesLoaded"
-                    class="text-3xl text-[#0D0703] font-poppins font-medium text-center"
-                >
-                    Je désire :
-                </h3>
+                <div v-if="servicesLoaded" class="self-start">
+                    <h3
+                        class="text-3xl text-[#0D0703] font-poppins font-medium text-left"
+                    >
+                        Je désire
+                    </h3>
+                    <div class="h-[2px] w-24 bg-[#FF8C42] mt-2"></div>
+                </div>
 
                 <div
                     v-if="
@@ -581,20 +583,23 @@ onMounted(() => {
             </div>
             <div
                 v-else-if="step === 2"
-                class="flex flex-col gap-11 w-full justify-center text-center max-w-3xl md:pt-16 pt-12 px-5 pb-5"
+                class="flex flex-col gap-11 w-full justify-center max-w-3xl md:pt-16 pt-12 px-5 pb-5"
             >
-                <h3
-                    class="text-[#ffff] text-3xl font-poppins font-medium text-center"
-                >
-                    Dites m'en plus :
-                </h3>
+                <div class="self-start">
+                    <h3
+                        class="text-[#ffff] text-3xl font-poppins font-medium text-left"
+                    >
+                        Dites m'en plus
+                    </h3>
+                    <div class="h-[2px] w-24 bg-[#FF8C42] mt-2"></div>
+                </div>
 
                 <div class="flex flex-col gap-4">
-                    <div class="flex flex-col items-start">
+                    <div class="flex flex-row items-start gap-3">
                         <!-- Barre d'outils TipTap -->
                         <div
-                            class="toolbar bg-white/10 border border-white/20 border-b-0 rounded-t-lg p-2 flex gap-2 relative"
-                            style="width: 100%; max-width: 100%; display: flex; justify-content: flex-start;"
+                            class="toolbar bg-white/10 border border-white/20 rounded-lg p-2 flex flex-col gap-2 relative h-fit"
+                            style="min-width: 40px;"
                         >
                             <button
                                 @click="
@@ -743,10 +748,12 @@ onMounted(() => {
                                 </svg>
                             </button>
                         </div>
-                        <EditorContent
-                            :editor="editor"
-                            class="w-full min-h-[180px max-h-[250px] overflow-y-auto bg-white/10 border border-white/20 text-white rounded-b-[6px] focus:ring-[#FF8C42] focus:border-[#FF8C42] p-2 font-inter text-base text-left"
-                        />
+                        <div class="flex-1 w-full">
+                            <EditorContent
+                                :editor="editor"
+                                class="w-full min-h-[180px] max-h-[250px] overflow-y-auto bg-white/10 border border-white/20 text-white rounded-[6px] focus:ring-[#FF8C42] focus:border-[#FF8C42] p-2 font-inter text-base text-left"
+                            />
+                        </div>
                         <span
                             v-if="formStatus.errors.description"
                             class="text-red-400 text-sm mt-1 text-left"
@@ -792,11 +799,14 @@ onMounted(() => {
                 v-else-if="step === 3"
                 class="flex flex-col gap-11 w-full max-w-3xl justify-center md:pt-16 pt-12 px-5 pb-5"
             >
-                <h3
-                    class="text-3xl text-[#0D0703] font-poppins font-medium text-center"
-                >
-                    Parlez-moi de vous :
-                </h3>
+                <div class="self-start">
+                    <h3
+                        class="text-3xl text-[#0D0703] font-poppins font-medium text-left"
+                    >
+                        Parlez-moi de vous
+                    </h3>
+                    <div class="h-[2px] w-24 bg-[#FF8C42] mt-2"></div>
+                </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
