@@ -3,6 +3,7 @@ import { ref, computed, onMounted, onUnmounted } from "vue";
 import axios from "axios";
 import { router } from "@inertiajs/vue3";
 import LogoLoader from "@/Components/LogoLoader.vue";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
 
 const props = defineProps({
     limit: {
@@ -25,9 +26,9 @@ const activeIndex = ref(0); // Pour la page accueil, activer le premier service 
 const loading = ref(true);
 const isMobile = ref(false);
 
-// Fonction pour détecter si on est en version mobile
+// Fonction pour détecter si on est en version mobile (jusqu'à xl)
 const checkIfMobile = () => {
-    isMobile.value = window.innerWidth < 768;
+    isMobile.value = window.innerWidth < 1280; // Seuil xl (1280px)
 };
 
 // Ajouter un écouteur d'événement pour redimensionnement
@@ -98,10 +99,38 @@ const handleMouseLeave = () => {
     }
 };
 
-const toggleMobileActive = (index) => {
+const centerCardInView = (element, index) => {
+    if (element && isMobile.value) {
+        // Augmenter le délai pour s'assurer que la transition d'expansion de la carte est complète
+        // Les transitions CSS prennent 500ms (0.5s) d'après les styles
+        setTimeout(() => {
+            // Position de l'élément par rapport au haut de la page
+            const elementTop = element.getBoundingClientRect().top + window.scrollY;
+            // Début de l'élément + décalage pour placer le centre de la carte au milieu de l'écran
+            const middleScreen = window.innerHeight / 2;
+
+            // Défiler vers la position absolue de l'élément
+            window.scrollTo({
+                top: elementTop - middleScreen + 150, // +150px pour ajuster
+                behavior: 'smooth'
+            });
+
+            console.log('Centring card', index, 'at position', elementTop);
+        }, 300); // Augmenter le délai pour s'assurer que les animations sont complètes
+    }
+};
+
+const toggleMobileActive = (index, event) => {
     // Sur mobile, on veut un comportement de type toggle à chaque tap
     if (isMobile.value) {
+        const previousIndex = activeIndex.value;
         activeIndex.value = activeIndex.value === index ? 0 : index;
+
+        // Si on active une carte (pas désactivation), centrer la carte
+        if (activeIndex.value !== 0 && previousIndex !== activeIndex.value) {
+            // L'élément parent est l'élément article (la carte)
+            centerCardInView(event.currentTarget, index);
+        }
     }
 };
 
@@ -125,7 +154,7 @@ fetchServices();
 
     <section
         v-else
-        class="flex w-full flex-col md:flex-row gap-6"
+        class="flex w-full flex-col xl:flex-row gap-6"
         :class="{ 'flex-col': isMobile }"
         aria-label="Liste des services"
     >
@@ -136,12 +165,12 @@ fetchServices();
             :class="[
                 // Version desktop: largeur
                 activeIndex === index
-                    ? 'md:w-2/3 text-white border-none active'
-                    : 'md:w-1/3 text-[#0D0703]',
+                    ? 'xl:w-2/3 text-white border-none active'
+                    : 'xl:w-1/3 text-[#0D0703]',
                 // En version mobile, la classe w-full s'applique toujours
                 'w-full',
                 // Mise en page flexible (colonne sur mobile, ligne sur desktop)
-                'flex-col md:flex-row'
+                'flex-col xl:flex-row'
             ]"
             :style="{
                 // Appliquer la hauteur dynamique uniquement en version mobile
@@ -151,15 +180,15 @@ fetchServices();
             }"
             @mouseenter="handleMouseEnter(index)"
             @mouseleave="handleMouseLeave"
-            @click="isMobile ? toggleMobileActive(index) : navigateToServiceDetail(service.id)"
-            @keydown.enter.prevent="navigateToServiceDetail(service.id)"
+            @click="isMobile ? toggleMobileActive(index, $event) : handleMouseEnter(index)"
+            @keydown.enter.prevent="activeIndex === index ? navigateToServiceDetail(service.id) : handleMouseEnter(index)"
         >
             <!-- Section Image (gauche sur desktop, dessus sur mobile) -->
             <div
                 class="overflow-hidden border-[#FF8C42] flex-shrink-0"
                 :class="{
-                    'md:w-1/3 md:h-full h-1/2 w-full md:border-r-8 border-b-8 md:border-b-0': activeIndex === index,
-                    'md:w-0 w-0 opacity-0 h-0': activeIndex !== index
+                    'xl:w-1/2 xl:h-full h-1/2 w-full xl:border-r-8 border-b-8 xl:border-b-0': activeIndex === index,
+                    'xl:w-0 w-0 opacity-0 h-0': activeIndex !== index
                 }"
             >
                 <img
@@ -174,7 +203,7 @@ fetchServices();
             <div
                 class="flex flex-col justify-center gap-4 p-6 h-full"
                 :class="{
-                    'md:w-2/3 w-full': activeIndex === index,
+                    'xl:w-2/3 w-full': activeIndex === index,
                     'w-full': activeIndex !== index
                 }"
             >
@@ -183,20 +212,20 @@ fetchServices();
                     v-if="service.icon && (!isMobile || activeIndex !== index)"
                     :src="service.icon"
                     :alt="`Icône ${service.title}`"
-                    class="w-10 h-10 object-contain"
+                    class="w-10 h-10 object-contain transition-all duration-300"
                     :class="{
-                        'grayscale-0': activeIndex === index,
+                        'grayscale-0 brightness-0 invert': activeIndex === index,
                         'grayscale': activeIndex !== index,
                     }"
                 />
 
                 <!-- Titre et description -->
                 <div class="flex flex-col gap-4">
-                    <h3 class="font-semibold capitalize" :class="{ 'text-xl md:text-2xl': !isMobile, 'text-[20px]': isMobile }">
+                    <h3 class="font-poppins font-medium capitalize" :class="{ 'text-xl md:text-2xl': !isMobile, 'text-[20px]': isMobile }">
                         {{ service.title }}
                     </h3>
                     <p
-                        class="text-sm leading-relaxed"
+                        class="text-sm leading-relaxed font-inter"
                         :class="{
                             'text-white/80': activeIndex === index,
                             'text-[#0D0703]/80': activeIndex !== index,
@@ -207,13 +236,13 @@ fetchServices();
                 </div>
 
                 <!-- Bouton "En savoir plus" (visible uniquement sur l'élément actif) -->
-                <button
+                <primary-button
                     v-if="activeIndex === index"
                     @click.stop="navigateToServiceDetail(service.id)"
-                    class="mt-4 self-start px-4 py-2 bg-[#FF8C42] hover:bg-[#FF8C42]/90 active:scale-95 transition-all duration-300 text-white font-semibold rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+                    class="xl:w-max"
                 >
                     En savoir plus
-                </button>
+                </primary-button>
             </div>
         </article>
     </section>
@@ -221,7 +250,7 @@ fetchServices();
 
 <style scoped>
 /* Style spécifique pour la transition en version mobile */
-@media (max-width: 767px) {
+@media (max-width: 1279px) {
   article {
     transition: height 0.5s ease-in-out, background-color 0.5s ease-in-out;
     margin-bottom: 12px;
