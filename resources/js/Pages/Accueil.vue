@@ -5,7 +5,7 @@ import SecondaryButton from "@/Components/SecondaryButton.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import { Head, router } from "@inertiajs/vue3";
 import PublicLayout from "@/Layouts/PublicLayout.vue";
-import Services from "@/Components/Services.vue";
+import ServicesAccueil from "@/Components/ServicesAccueil.vue";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import ReviewSlider from "@/Components/ReviewSlider.vue";
@@ -515,11 +515,10 @@ onMounted(() => {
                     </h4>
                 </div>
             </div>
-            <Services
+            <ServicesAccueil
                 data-aos="zoom-in"
                 data-aos-duration="800"
                 :serviceIds="[4, 2, 3]"
-                variant="accueil"
             />
         </section>
 

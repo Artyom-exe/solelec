@@ -3,7 +3,7 @@ import { ref, reactive, inject, onMounted, watch, nextTick } from "vue";
 import { VueFinalModal, useVfm } from "vue-final-modal";
 import "vue-final-modal/style.css";
 import axios from "axios";
-import Services from "@/Components/Services.vue";
+import ServicesModal from "@/Components/ServicesModal.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import Datepicker from "@vuepic/vue-datepicker";
@@ -560,11 +560,9 @@ onMounted(() => {
                     Veuillez sélectionner au moins un service
                 </div>
 
-                <Services
-                    :selectable="true"
+                <ServicesModal
                     :selected-services="selectedServiceIds"
                     height="200px"
-                    variant="modal"
                     @service-selected="handleServiceSelection"
                     :class="{ 'border-red-500': formStatus.errors.services }"
                 />
