@@ -115,7 +115,7 @@ fetchServices();
             <!-- Indicateur de sélection -->
             <div
                 v-if="isSelected(service.id)"
-                class="absolute top-2 right-2 bg-orange-500 text-white p-1 rounded-full z-10"
+                class="absolute top-2 right-2 bg-orange-500 text-white p-1 rounded-full z-20"
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -131,61 +131,47 @@ fetchServices();
                 </svg>
             </div>
 
-            <!-- Image du service -->
+            <!-- Image du service (apparaît au survol, ou visible si sélectionné) -->
             <div
-                class="absolute top-0 left-0 right-0 bottom-0 z-0 transition-all duration-500 overflow-hidden"
+                class="absolute top-0 left-0 w-full transition-all duration-500 overflow-hidden opacity-0 h-0 group-hover:opacity-100 group-hover:h-1/2"
                 :class="{
-                    'border-l-4 border-[#FF8C42]': isSelected(service.id)
+                    'opacity-20 h-full group-hover:opacity-100': isSelected(service.id)
                 }"
             >
-                <!-- Image de fond (visible uniquement si sélectionné) -->
                 <img
-                    v-if="service.image_url"
-                    :src="service.image_url"
-                    :alt="service.name"
-                    class="w-full h-full object-cover transition-all duration-500 ease-in-out overflow-hidden"
-                    :class="{
-                        'opacity-20': isSelected(service.id),
-                        'opacity-0': !isSelected(service.id),
-                    }"
+                    v-if="service.image"
+                    :src="service.image"
+                    :alt="service.title"
+                    class="w-full h-full object-cover transition-all duration-500 ease-in-out"
                 />
             </div>
 
-            <!-- Contenu (titre et icône) -->
+            <!-- Contenu (état normal aligné à gauche, déplacé vers le bas au survol) -->
             <div
-                class="relative z-10 flex flex-col justify-center gap-4 transition-all duration-500 p-6 h-full w-full"
+                class="flex flex-col justify-center items-start gap-4 transition-all duration-500 p-6 w-full h-full group-hover:justify-end group-hover:h-1/2 group-hover:mt-auto group-hover:bg-[#2D2D2D]/95 group-hover:text-white"
                 :class="{
-                    'bg-[#2D2D2D]/95': isSelected(service.id),
+                    'bg-[#2D2D2D]/95 text-white': isSelected(service.id)
                 }"
             >
-                <!-- Icône -->
+                <!-- Icône (masquée au survol, blanche si sélectionné) -->
                 <img
-                    v-if="service.icon_url"
-                    :src="service.icon_url"
-                    :alt="`Icône ${service.name}`"
-                    class="w-10 h-10 object-contain transition-all duration-500"
+                    v-if="service.icon"
+                    :src="service.icon"
+                    :alt="`Icône ${service.title}`"
+                    class="w-10 h-10 object-contain transition-all duration-300 group-hover:opacity-0"
                     :class="{
-                        'grayscale-0': isSelected(service.id),
-                        'grayscale': !isSelected(service.id),
+                        'grayscale-0 brightness-0 invert': isSelected(service.id),
+                        'grayscale': !isSelected(service.id)
                     }"
                 />
 
                 <!-- Titre -->
-                <div class="flex flex-col gap-2 transition-all duration-500">
+                <div class="flex flex-col transition-all duration-500 text-left w-full">
                     <h3
-                        class="text-lg font-semibold capitalize transition-all duration-500"
+                        class="sm:text-base font-poppins text-xs font-semibold capitalize transition-all duration-500"
                     >
-                        {{ service.name }}
+                        {{ service.title }}
                     </h3>
-                    <p
-                        class="text-sm leading-relaxed transition-all duration-500"
-                        :class="{
-                            'text-white/80': isSelected(service.id),
-                            'text-[#0D0703]/80': !isSelected(service.id),
-                        }"
-                    >
-                        {{ service.description.substring(0, 60) }}{{ service.description.length > 60 ? '...' : '' }}
-                    </p>
                 </div>
             </div>
         </article>
