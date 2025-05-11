@@ -74,6 +74,7 @@ const selectedServiceIds = ref<number[]>([]);
 const successMessage = ref("");
 const errorMessage = ref("");
 const markdownContent = ref("");
+const servicesLoaded = ref(false);
 
 const formData = reactive({
     services: [] as number[],
@@ -545,6 +546,7 @@ onMounted(() => {
                 class="flex flex-col gap-11 w-full max-w-3xl md:pt-16 pt-12 px-5 pb-5"
             >
                 <h3
+                    v-if="servicesLoaded"
                     class="text-3xl text-[#0D0703] font-poppins font-medium text-center"
                 >
                     Je désire :
@@ -564,6 +566,7 @@ onMounted(() => {
                     :selected-services="selectedServiceIds"
                     height="200px"
                     @service-selected="handleServiceSelection"
+                    @loading-complete="servicesLoaded = true"
                     :class="{ 'border-red-500': formStatus.errors.services }"
                 />
                 <div
