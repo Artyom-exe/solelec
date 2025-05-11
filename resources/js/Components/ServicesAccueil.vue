@@ -115,7 +115,6 @@ const centerCardInView = (element, index) => {
                 behavior: 'smooth'
             });
 
-            console.log('Centring card', index, 'at position', elementTop);
         }, 300); // Augmenter le délai pour s'assurer que les animations sont complètes
     }
 };
