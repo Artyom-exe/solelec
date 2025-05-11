@@ -489,21 +489,16 @@ onMounted(() => {
 
 <template>
     <VueFinalModal
-        :overlay-transition="{
-            'enter-active-class': 'transition-opacity duration-200 ease-out',
-            'enter-from-class': 'opacity-0',
-            'enter-to-class': 'opacity-100',
-            'leave-active-class': 'transition-opacity duration-150 ease-in',
-            'leave-from-class': 'opacity-100',
-            'leave-to-class': 'opacity-0'
-        }"
+        overlay-transition="fade"
         content-transition=""
         overlay-class="bg-[rgba(0,0,0,0.4)]"
         class="flex justify-center items-end md:items-center md:px-2 px-0"
         :content-class="[
             'w-full md:max-w-5xl shadow-lg relative md:h-[min(720px,90vh)] md:max-h-[90vh] h-screen max-h-screen flex flex-col transition-all duration-300',
-            modalVisible ? 'translate-y-0 opacity-100 md:scale-100 md:translate-y-0' : 'translate-y-full md:scale-95 md:translate-y-0 opacity-0',
-            'md:ease-[cubic-bezier(0.19,1,0.22,1)] ease-out md:rounded-xl overflow-hidden'
+            modalVisible
+                ? 'translate-y-0 opacity-100 md:scale-100 md:translate-y-0'
+                : 'translate-y-full md:scale-95 md:translate-y-0 opacity-0',
+            'md:ease-[cubic-bezier(0.19,1,0.22,1)] ease-out md:rounded-xl overflow-hidden',
         ]"
         :reserve-scroll-bar-gap="false"
         :lock-scroll="false"
@@ -514,8 +509,19 @@ onMounted(() => {
             class="absolute top-3 right-3 z-20 bg-white/10 hover:bg-white/20 rounded-full p-2 transition-all duration-300 md:top-4 md:right-4"
             aria-label="Fermer"
         >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
+                />
             </svg>
         </button>
         <!-- Message de succès (fallback) -->
@@ -599,7 +605,7 @@ onMounted(() => {
                         <!-- Barre d'outils TipTap -->
                         <div
                             class="toolbar bg-white/10 border border-white/20 rounded-lg p-2 flex flex-col gap-2 relative h-fit"
-                            style="min-width: 40px;"
+                            style="min-width: 40px"
                         >
                             <button
                                 @click="
@@ -756,7 +762,10 @@ onMounted(() => {
                         </div>
                     </div>
                     <!-- Message d'erreur sous l'éditeur -->
-                    <div v-if="formStatus.errors.description" class="text-red-400 text-sm mb-2 text-left">
+                    <div
+                        v-if="formStatus.errors.description"
+                        class="text-red-400 text-sm mb-2 text-left"
+                    >
                         Ce champ est requis
                     </div>
                     <div class="flex flex-col items-start">
@@ -904,27 +913,27 @@ onMounted(() => {
                 'bg-[#2D2D2D]': step === 2,
             }"
         >
-            <div class="flex justify-between">
-                <div v-if="step === 1"></div>
+            <div class="flex flex-col sm:flex-row sm:justify-between gap-4">
+                <div v-if="step === 1" class="hidden sm:block"></div>
                 <SecondaryButton
                     v-if="step === 1"
                     @click="nextStep"
                     variant="dark"
-                    class="transition"
+                    class="transition w-full sm:w-auto"
                 >
                     Suivant
                 </SecondaryButton>
                 <SecondaryButton
                     v-if="step === 2"
                     @click="prevStep"
-                    class="transition"
+                    class="transition w-full sm:w-auto order-2 sm:order-1"
                 >
                     Précédent
                 </SecondaryButton>
                 <PrimaryButton
                     v-if="step === 2"
                     @click="nextStep"
-                    class="transition"
+                    class="transition w-full sm:w-auto order-1 sm:order-2"
                 >
                     Suivant
                 </PrimaryButton>
@@ -932,14 +941,14 @@ onMounted(() => {
                     v-if="step === 3"
                     @click="prevStep"
                     variant="dark"
-                    class="transition"
+                    class="transition w-full sm:w-auto order-2 sm:order-1"
                 >
                     Précédent
                 </SecondaryButton>
                 <PrimaryButton
                     v-if="step === 3"
                     @click="submitForm"
-                    class="transition"
+                    class="transition w-full sm:w-auto order-1 sm:order-2"
                     :disabled="isSubmitting"
                 >
                     <span v-if="isSubmitting">
@@ -1056,7 +1065,7 @@ onMounted(() => {
 }
 
 :deep(.ProseMirror a) {
-    color: #FF8C42;
+    color: #ff8c42;
     text-decoration: underline;
 }
 
@@ -1071,21 +1080,21 @@ onMounted(() => {
 
 /* Styles personnalisés pour le calendrier */
 :deep(.dp__theme_dark) {
-    --dp-background-color: #2D2D2D;
+    --dp-background-color: #2d2d2d;
     --dp-text-color: #fff;
     --dp-hover-color: rgba(255, 255, 255, 0.1);
     --dp-hover-text-color: #fff;
     --dp-hover-icon-color: #fff;
-    --dp-primary-color: #FF8C42;
+    --dp-primary-color: #ff8c42;
     --dp-primary-text-color: #fff;
     --dp-secondary-color: rgba(255, 140, 66, 0.2);
     --dp-border-color: rgba(255, 255, 255, 0.1);
     --dp-menu-border-color: rgba(255, 255, 255, 0.1);
-    --dp-border-color-hover: #FF8C42;
+    --dp-border-color-hover: #ff8c42;
     --dp-disabled-color: rgba(255, 255, 255, 0.3);
     --dp-scroll-bar-background: rgba(255, 255, 255, 0.1);
     --dp-scroll-bar-color: rgba(255, 255, 255, 0.2);
-    --dp-success-color: #82AD84;
+    --dp-success-color: #82ad84;
     --dp-success-color-disabled: rgba(130, 173, 132, 0.3);
     --dp-icon-color: #fff;
     --dp-danger-color: #e53935;
@@ -1109,8 +1118,8 @@ onMounted(() => {
 }
 
 :deep(.dp__action_select) {
-    background-color: #FF8C42 !important;
-    border-color: #FF8C42 !important;
+    background-color: #ff8c42 !important;
+    border-color: #ff8c42 !important;
 }
 
 :deep(.dp__action_button:hover) {
@@ -1131,7 +1140,7 @@ onMounted(() => {
 }
 
 :deep(.dp__active_date) {
-    background-color: #FF8C42 !important;
+    background-color: #ff8c42 !important;
     color: #fff !important;
 }
 
@@ -1140,14 +1149,14 @@ onMounted(() => {
 }
 
 :deep(.dp__today) {
-    border: 1px solid #FF8C42 !important;
+    border: 1px solid #ff8c42 !important;
 }
 
 :deep(.dp__arrow_bottom) {
-    border-color: #FF8C42 transparent transparent transparent !important;
+    border-color: #ff8c42 transparent transparent transparent !important;
 }
 
 :deep(.dp__arrow_top) {
-    border-color: transparent transparent #FF8C42 transparent !important;
+    border-color: transparent transparent #ff8c42 transparent !important;
 }
 </style>
