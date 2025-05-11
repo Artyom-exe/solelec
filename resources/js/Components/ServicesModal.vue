@@ -33,7 +33,7 @@ const isSelected = (serviceId) => {
     return localSelectedServices.value.includes(serviceId);
 };
 
-// Vérifier si un service est touché 
+// Vérifier si un service est touché
 const isTouched = (serviceId) => {
     return touchedServiceId.value === serviceId;
 };
@@ -62,7 +62,7 @@ const toggleService = (service) => {
 // Cache global pour les services (partagé entre toutes les instances du composant)
 const servicesCache = {
     data: null,
-    timestamp: null
+    timestamp: null,
 };
 
 const fetchServices = async () => {
@@ -70,7 +70,11 @@ const fetchServices = async () => {
     const now = Date.now();
     const cacheExpiration = 5 * 60 * 1000; // 5 minutes en millisecondes
 
-    if (servicesCache.data && servicesCache.timestamp && (now - servicesCache.timestamp < cacheExpiration)) {
+    if (
+        servicesCache.data &&
+        servicesCache.timestamp &&
+        now - servicesCache.timestamp < cacheExpiration
+    ) {
         services.value = servicesCache.data;
         loading.value = false;
         return;
@@ -97,7 +101,11 @@ fetchServices();
 
 <template>
     <!-- Indicateur de chargement avec le logo parfaitement centré -->
-    <div v-if="loading" class="w-full h-full flex justify-center items-center" style="min-height: 200px;">
+    <div
+        v-if="loading"
+        class="w-full h-full flex justify-center items-center"
+        style="min-height: 200px"
+    >
         <LogoLoader />
     </div>
 
@@ -116,12 +124,10 @@ fetchServices();
                     : 'text-[#0D0703]',
                 isTouched(service.id)
                     ? 'scale-95 shadow-inner bg-gray-100'
-                    : ''
+                    : '',
             ]"
             :style="[
-                isSelected(service.id)
-                    ? 'background-color: #2D2D2D;'
-                    : '',
+                isSelected(service.id) ? 'background-color: #2D2D2D;' : '',
                 { height: height },
             ]"
             @click="toggleService(service)"
@@ -158,8 +164,10 @@ fetchServices();
             <div
                 class="absolute top-0 left-0 w-full transition-all duration-500 overflow-hidden opacity-0 h-0 group-hover:opacity-100 group-hover:h-1/2"
                 :class="{
-                    'opacity-20 h-full group-hover:opacity-100': isSelected(service.id),
-                    'opacity-100 h-1/2': isTouched(service.id)
+                    'opacity-20 h-full group-hover:opacity-100': isSelected(
+                        service.id
+                    ),
+                    'opacity-100 h-1/2': isTouched(service.id),
                 }"
             >
                 <img
@@ -175,7 +183,8 @@ fetchServices();
                 class="flex flex-col justify-center items-start gap-4 transition-all duration-500 p-6 w-full h-full group-hover:justify-end group-hover:h-1/2 group-hover:mt-auto group-hover:bg-[#2D2D2D]/95 group-hover:text-white"
                 :class="{
                     'bg-[#2D2D2D]/95 text-white': isSelected(service.id),
-                    'justify-end h-1/2 mt-auto bg-[#2D2D2D]/95 text-white': isTouched(service.id)
+                    'justify-end h-1/2 mt-auto bg-[#2D2D2D]/95 text-white':
+                        isTouched(service.id),
                 }"
             >
                 <!-- Icône (masquée au survol, blanche si sélectionné) -->
@@ -185,14 +194,18 @@ fetchServices();
                     :alt="`Icône ${service.title}`"
                     class="w-10 h-10 object-contain transition-all duration-300 group-hover:opacity-0"
                     :class="{
-                        'grayscale-0 brightness-0 invert': isSelected(service.id),
-                        'grayscale': !isSelected(service.id),
-                        'opacity-0': isTouched(service.id)
+                        'grayscale-0 brightness-0 invert': isSelected(
+                            service.id
+                        ),
+                        grayscale: !isSelected(service.id),
+                        'opacity-0': isTouched(service.id),
                     }"
                 />
 
                 <!-- Titre -->
-                <div class="flex flex-col transition-all duration-500 text-left w-full">
+                <div
+                    class="flex flex-col transition-all duration-500 text-left w-full"
+                >
                     <h3
                         class="sm:text-base font-poppins text-xs font-semibold capitalize transition-all duration-500 group-hover:text-[14px]"
                     >
