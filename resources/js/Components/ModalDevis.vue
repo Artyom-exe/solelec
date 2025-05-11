@@ -754,12 +754,10 @@ onMounted(() => {
                                 class="w-full min-h-[180px] max-h-[250px] overflow-y-auto bg-white/10 border border-white/20 text-white rounded-[6px] focus:ring-[#FF8C42] focus:border-[#FF8C42] p-2 font-inter text-base text-left"
                             />
                         </div>
-                        <span
-                            v-if="formStatus.errors.description"
-                            class="text-red-400 text-sm mt-1 text-left"
-                        >
-                            Ce champ est requis
-                        </span>
+                    </div>
+                    <!-- Message d'erreur sous l'éditeur -->
+                    <div v-if="formStatus.errors.description" class="text-red-400 text-sm mb-2 text-left">
+                        Ce champ est requis
                     </div>
                     <div class="flex flex-col items-start">
                         <Datepicker
