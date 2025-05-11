@@ -21,6 +21,7 @@ const emit = defineEmits(["service-selected", "loading-complete"]);
 const services = ref([]);
 const loading = ref(true);
 const localSelectedServices = ref([...props.selectedServices]);
+const touchedServiceId = ref(null); // Pour suivre quel service est actuellement touché
 
 // Calculer les services à afficher (tous les services dans le modal)
 const displayedServices = computed(() => {
@@ -30,6 +31,21 @@ const displayedServices = computed(() => {
 // Vérifier si un service est sélectionné
 const isSelected = (serviceId) => {
     return localSelectedServices.value.includes(serviceId);
+};
+
+// Vérifier si un service est touché 
+const isTouched = (serviceId) => {
+    return touchedServiceId.value === serviceId;
+};
+
+// Gestionnaires d'événements tactiles
+const handleTouchStart = (service) => {
+    touchedServiceId.value = service.id;
+};
+
+const handleTouchEnd = (service) => {
+    touchedServiceId.value = null;
+    toggleService(service);
 };
 
 // Toggle sélection d'un service (avec feedback clavier et souris)
@@ -93,11 +109,14 @@ fetchServices();
         <article
             v-for="(service, index) in displayedServices"
             :key="service.id"
-            class="group relative flex rounded-lg border border-[rgba(13,7,3,0.15)] bg-[#FAF8F3] transition-all duration-500 overflow-hidden shadow-md md:w-[calc(33.33%-0.75rem)] w-[calc(50%-0.5rem)] aspect-square cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500 hover:shadow-lg flex-col"
+            class="group relative flex rounded-lg border border-[rgba(13,7,3,0.15)] bg-[#FAF8F3] transition-all duration-300 overflow-hidden shadow-md md:w-[calc(33.33%-0.75rem)] w-[calc(50%-0.5rem)] aspect-square cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500 hover:shadow-lg active:shadow-inner flex-col"
             :class="[
                 isSelected(service.id)
                     ? 'text-white border-none'
                     : 'text-[#0D0703]',
+                isTouched(service.id)
+                    ? 'scale-95 shadow-inner bg-gray-100'
+                    : ''
             ]"
             :style="[
                 isSelected(service.id)
@@ -106,6 +125,9 @@ fetchServices();
                 { height: height },
             ]"
             @click="toggleService(service)"
+            @touchstart.prevent="handleTouchStart(service)"
+            @touchend.prevent="handleTouchEnd(service)"
+            @touchcancel="touchedServiceId = null"
             v-bind="{
                 tabindex: '0',
                 role: 'button',
@@ -136,7 +158,8 @@ fetchServices();
             <div
                 class="absolute top-0 left-0 w-full transition-all duration-500 overflow-hidden opacity-0 h-0 group-hover:opacity-100 group-hover:h-1/2"
                 :class="{
-                    'opacity-20 h-full group-hover:opacity-100': isSelected(service.id)
+                    'opacity-20 h-full group-hover:opacity-100': isSelected(service.id),
+                    'opacity-100 h-1/2': isTouched(service.id)
                 }"
             >
                 <img
@@ -151,7 +174,8 @@ fetchServices();
             <div
                 class="flex flex-col justify-center items-start gap-4 transition-all duration-500 p-6 w-full h-full group-hover:justify-end group-hover:h-1/2 group-hover:mt-auto group-hover:bg-[#2D2D2D]/95 group-hover:text-white"
                 :class="{
-                    'bg-[#2D2D2D]/95 text-white': isSelected(service.id)
+                    'bg-[#2D2D2D]/95 text-white': isSelected(service.id),
+                    'justify-end h-1/2 mt-auto bg-[#2D2D2D]/95 text-white': isTouched(service.id)
                 }"
             >
                 <!-- Icône (masquée au survol, blanche si sélectionné) -->
@@ -162,7 +186,8 @@ fetchServices();
                     class="w-10 h-10 object-contain transition-all duration-300 group-hover:opacity-0"
                     :class="{
                         'grayscale-0 brightness-0 invert': isSelected(service.id),
-                        'grayscale': !isSelected(service.id)
+                        'grayscale': !isSelected(service.id),
+                        'opacity-0': isTouched(service.id)
                     }"
                 />
 
