@@ -178,8 +178,7 @@ fetchServices();
             }"
             @mouseenter="handleMouseEnter(index)"
             @mouseleave="handleMouseLeave"
-            @click="toggleActive(index, $event)"
-            @touchstart="isMobile ? toggleActive(index, $event) : null"
+            @touchstart="isMobile ? toggleActive(index, $event) : false"
             @keydown.enter.prevent="
                 activeIndex === index
                     ? navigateToServiceDetail(service.id)
