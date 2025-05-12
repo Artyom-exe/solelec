@@ -614,6 +614,9 @@ onMounted(() => {
                 <!-- Utilisation d'un wrapper div pour les animations AOS -->
                 <div
                     class="transition-all w-full"
+                    :class="{
+                        'opacity-0': isDesktopMode && !randomPortfolio.length,
+                    }"
                     :data-aos="isDesktopMode ? 'zoom-in' : null"
                     :data-aos-duration="isDesktopMode ? '800' : null"
                 >
@@ -624,8 +627,8 @@ onMounted(() => {
                             v-for="(item, index) in randomPortfolio"
                             :key="index"
                             class="flex flex-col items-start md:gap-6 gap-4 flex-1"
-                            data-aos="fade-up"
-                            :data-aos-delay="index * 150"
+                            :data-aos="isDesktopMode ? 'fade-up' : null"
+                            :data-aos-delay="isDesktopMode ? index * 150 : null"
                         >
                             <img
                                 :src="item.image"
