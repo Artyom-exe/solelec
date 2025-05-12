@@ -582,70 +582,84 @@ onMounted(() => {
         <!-- Portfolio -->
         <section
             id="portfolioAccueil"
-            class="flex py-[120px] px-16 flex-col items-center gap-20 bg-[#F5F5F5] text-[#0D0703]"
+            class="flex md:py-28 py-16 md:px-16 px-5 flex-col items-center md:gap-20 gap-12 bg-[#F5F5F5] text-[#0D0703]"
         >
             <div
-                class="flex flex-col gap-4 text-[#0D0703]"
+                class="flex flex-col md:gap-4 gap-3 text-[#0D0703]"
                 data-aos="fade-up"
                 dataaos-duration="800"
             >
                 <h2 class="text-center font-inter text-base font-semibold">
                     portfolio
                 </h2>
-                <div class="relative flex flex-col gap-6">
-                    <h3
-                        class="font-poppins text-5xl text-center font-medium leading-[57.6px] tracking-[-0.48px]"
-                    >
-                        Nos projets récents
-                    </h3>
-                    <div
-                        class="absolute bottom-10 left-1/2 border-2 border-[#FF8C42] w-[80%] max-w-[353px] min-w-[200px]"
-                        data-aos="slide-left"
-                        data-aos-duration="1000"
-                    ></div>
-                    <h4 class="font-inter text-lg text-center">
+                <div class="flex flex-col md:gap-6 gap-4">
+                    <div class="relative flex flex-col">
+                        <h3
+                            class="font-poppins md:text-5xl text-4xl text-center font-medium md:leading-[57.6px] leading-[43.2px] md:tracking-[-0.48px] tracking-[-0.36px]"
+                        >
+                            Nos projets récents
+                        </h3>
+                        <div
+                            class="absolute left-1/2 md:translate-x-[6%] translate-x-0 bottom-[-10px] border-2 border-[#FF8C42] md:w-[60%] w-[46%]"
+                            data-aos="slide-left"
+                            data-aos-duration="1000"
+                        ></div>
+                    </div>
+                    <h4 class="font-inter md:text-lg text-base text-center">
                         Découvrez notre expertise à travers nos réalisations.
                     </h4>
                 </div>
             </div>
             <div class="flex flex-col gap-16 items-center">
-                <div class="flex items-start gap-12 flex-wrap justify-center">
-                    <article
-                        v-for="(item, index) in randomPortfolio"
-                        :key="index"
-                        class="flex flex-col items-start gap-6 flex-1"
-                        data-aos="fade-up"
-                        :data-aos-delay="index * 150"
+                <!-- Utilisation d'un wrapper div pour les animations AOS -->
+                <div
+                    class="transition-all w-full"
+                    :data-aos="isDesktopMode ? 'zoom-in' : null"
+                    :data-aos-duration="isDesktopMode ? '800' : null"
+                >
+                    <div
+                        class="flex items-start md:gap-12 gap-8 flex-wrap justify-center"
                     >
-                        <img
-                            :src="item.image"
-                            :alt="item.title"
-                            class="w-full max-h-[356px] min-h-[200px] aspect-[4/3] object-cover rounded-lg"
-                        />
-                        <div class="flex flex-col gap-4 text-[#0D0703]">
-                            <h5 class="font-poppins text-2xl font-medium">
-                                {{ item.title }}
-                            </h5>
-                            <p class="font-inter text-base">
-                                {{ item.description }}
-                            </p>
-                            <div class="flex flex-wrap gap-2 mt-2">
-                                <span
-                                    v-for="tag in item.tags"
-                                    :key="tag.id"
-                                    class="px-[10px] py-1 rounded font-inter text-sm font-semibold border border-[#0D0703] border-opacity-15 bg-[#0D0703] bg-opacity-5"
+                        <article
+                            v-for="(item, index) in randomPortfolio"
+                            :key="index"
+                            class="flex flex-col items-start md:gap-6 gap-4 flex-1"
+                            data-aos="fade-up"
+                            :data-aos-delay="index * 150"
+                        >
+                            <img
+                                :src="item.image"
+                                :alt="item.title"
+                                class="w-full max-h-[356px] min-h-[200px] aspect-[4/3] object-cover rounded-lg"
+                            />
+                            <div class="flex flex-col gap-4 text-[#0D0703]">
+                                <h5
+                                    class="font-poppins md:text-2xl text-xl font-medium"
                                 >
-                                    {{ tag.name }}
-                                </span>
+                                    {{ item.title }}
+                                </h5>
+                                <p class="font-inter md:text-base text-sm">
+                                    {{ item.description }}
+                                </p>
+                                <div class="flex flex-wrap gap-2 mt-2">
+                                    <span
+                                        v-for="tag in item.tags"
+                                        :key="tag.id"
+                                        class="px-[10px] py-1 rounded font-inter text-sm font-semibold border border-[#0D0703] border-opacity-15 bg-[#0D0703] bg-opacity-5"
+                                    >
+                                        {{ tag.name }}
+                                    </span>
+                                </div>
                             </div>
-                        </div>
-                    </article>
+                        </article>
+                    </div>
                 </div>
                 <SecondaryButton
                     variant="dark"
                     @click="
                         navigateToSection('portfolio', 'services-portfolio')
                     "
+                    class="md:self-center w-full"
                     >Voir plus</SecondaryButton
                 >
             </div>
