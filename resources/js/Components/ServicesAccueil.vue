@@ -95,8 +95,8 @@ const centerCardInView = (element) => {
     if (element) {
         // Augmenter le délai pour s'assurer que la transition d'expansion de la carte est complète
         setTimeout(() => {
-            const elementTop =
-                element.getBoundingClientRect().top + window.scrollY;
+            const rect = element.getBoundingClientRect();
+            const elementTop = rect.top + window.scrollY;
             const middleScreen = window.innerHeight / 2;
             window.scrollTo({
                 top: elementTop - middleScreen + 150, // +150px pour ajuster
