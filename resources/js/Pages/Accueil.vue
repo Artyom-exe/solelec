@@ -621,12 +621,12 @@ onMounted(() => {
                     :data-aos-duration="isDesktopMode ? '800' : null"
                 >
                     <div
-                        class="flex items-start md:gap-12 gap-8 flex-wrap justify-center"
+                        class="flex items-start md:flex-row flex-col gap-12 flex-wrap justify-center"
                     >
                         <article
                             v-for="(item, index) in randomPortfolio"
                             :key="index"
-                            class="flex flex-col items-start md:gap-6 gap-4 flex-1"
+                            class="flex flex-col items-start md:gap-6 gap-5 flex-1"
                             :data-aos="isDesktopMode ? 'fade-up' : null"
                             :data-aos-delay="isDesktopMode ? index * 150 : null"
                         >
@@ -635,7 +635,9 @@ onMounted(() => {
                                 :alt="item.title"
                                 class="w-full max-h-[356px] min-h-[200px] aspect-[4/3] object-cover rounded-lg"
                             />
-                            <div class="flex flex-col gap-4 text-[#0D0703]">
+                            <div
+                                class="flex flex-col md:gap-4 gap-3 text-[#0D0703]"
+                            >
                                 <h5
                                     class="font-poppins md:text-2xl text-xl font-medium"
                                 >
