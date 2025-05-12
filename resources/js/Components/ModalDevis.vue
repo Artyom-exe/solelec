@@ -804,7 +804,7 @@ onMounted(() => {
 
             <div
                 v-else-if="step === 3"
-                class="flex flex-col gap-11 w-full max-w-3xl justify-center md:pt-16 pt-12 px-5 pb-5"
+                class="flex flex-col gap-11 w-full max-w-3xl justify-center md:pt-16 pt-64 px-5 pb-5 overflow-y-auto"
             >
                 <div class="self-start">
                     <h3
@@ -815,7 +815,7 @@ onMounted(() => {
                     <div class="h-[2px] w-24 bg-[#FF8C42] mt-2"></div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="md:grid md:grid-cols-2 flex flex-col gap-4">
                     <div>
                         <label class="block text-[#2D2D2D] font-inter"
                             >Nom*</label
