@@ -674,36 +674,45 @@ onMounted(() => {
 
         <section
             id="avis-client"
-            class="flex py-28 px-16 flex-col items-center gap-20 bg-[#2D2D2D] text-white"
+            class="flex md:py-28 py-16 md:px-16 px-5 flex-col items-center md:gap-20 gap-12 bg-[#2D2D2D] text-white"
         >
             <div
-                class="flex flex-col gap-4"
+                class="flex flex-col md:gap-4 gap-3"
                 data-aos="fade-up"
                 dataaos-duration="800"
             >
-                <div class="relative flex flex-col gap-6">
-                    <h3
-                        class="font-poppins text-5xl text-center font-medium leading-[57.6px] tracking-[-0.48px]"
-                    >
-                        Témoignages clients
-                    </h3>
-                    <div
-                        class="absolute bottom-10 right-1/2 border-2 border-[#FF8C42] w-[80%] max-w-[353px] min-w-[200px]"
-                        data-aos="slide-right"
-                        data-aos-duration="1000"
-                    ></div>
-                    <h4 class="font-inter text-lg text-center">
+                <div class="relative flex flex-col md:gap-6 gap-4">
+                    <div class="relative flex flex-col">
+                        <h3
+                            class="font-poppins md:text-5xl text-4xl text-center font-medium md:leading-[57.6px] leading-[43.2px] md:tracking-[-0.48px] tracking-[-0.36px]"
+                        >
+                            Témoignages clients
+                        </h3>
+                        <div
+                            class="absolute right-1/2 md:translate-x-[6%] translate-x-0 md:bottom-[-15px] bottom-[-10px] border-2 border-[#FF8C42] md:w-[90%] w-[48%]"
+                            data-aos="slide-right"
+                            data-aos-duration="1000"
+                        ></div>
+                    </div>
+                    <h4 class="font-inter md:text-lg text-base text-center">
                         Nos clients partagent leur expérience avec Solelec.
                     </h4>
                 </div>
             </div>
 
             <div class="w-screen -mx-16">
-                <ReviewSlider data-aos="fade-up" data-aos-duration="1000" />
+                <div
+                    class="transition-all w-full"
+                    :data-aos="isDesktopMode ? 'fade-up' : null"
+                    :data-aos-duration="isDesktopMode ? '1000' : null"
+                >
+                    <ReviewSlider />
+                </div>
             </div>
 
             <SecondaryButton
                 :to="'https://search.google.com/local/writereview?placeid=ChIJIyOb7r_HvWkRJGDmFy5S2j4'"
+                class="md:self-center w-full"
                 >Donner votre avis sur Google
             </SecondaryButton>
         </section>
