@@ -246,6 +246,9 @@ const fetchTags = async () => {
 fetch;
 
 // Définition des images pour les 2 colonnes
+// Variable réactive qui détecte si on est en mode desktop
+const isDesktopMode = ref(window.innerWidth >= 1024);
+
 const leftImages = ref([
     {
         src: "/images/header/ouvrier-dos.jpg",
@@ -296,7 +299,7 @@ onMounted(() => {
         anchorPlacement: "top-center",
         startEvent: "DOMContentLoaded",
         // Désactiver AOS sur mobile en définissant disable sur true si ce n'est pas desktop
-        disable: !isDesktop
+        disable: !isDesktop,
     });
 
     // Empêcher le débordement horizontal
@@ -307,8 +310,10 @@ onMounted(() => {
     fetchFaq();
 
     // Ajouter un écouteur d'événement pour redémarrer AOS lors du redimensionnement
-    window.addEventListener('resize', () => {
+    window.addEventListener("resize", () => {
         const isDesktopNow = window.innerWidth >= 1024;
+        // Mettre à jour la variable réactive
+        isDesktopMode.value = isDesktopNow;
         // Réinitialiser AOS avec la nouvelle valeur de disable
         AOS.init({
             duration: 1000,
@@ -317,7 +322,7 @@ onMounted(() => {
             easing: "ease-out-cubic",
             offset: 50,
             anchorPlacement: "top-center",
-            disable: !isDesktopNow
+            disable: !isDesktopNow,
         });
     });
 
@@ -357,7 +362,9 @@ onMounted(() => {
                     data-aos="fade-right"
                     data-aos-duration="1200"
                 >
-                    <div class="flex flex-col items-start lg:gap-6 gap-5 text-white">
+                    <div
+                        class="flex flex-col items-start lg:gap-6 gap-5 text-white"
+                    >
                         <h1
                             class="text-white font-poppins md:text-[56px] text-[40px] font-medium leading-[120%] tracking-[-0.56px]"
                             data-aos="fade-up"
@@ -447,7 +454,10 @@ onMounted(() => {
                 </div>
 
                 <!-- Section images pour mobile uniquement - même rendu visuel que desktop -->
-                <div class="lg:hidden w-full mt-8 relative overflow-hidden px-4" style="height: 70vh;">
+                <div
+                    class="lg:hidden w-full mt-8 relative overflow-hidden px-4"
+                    style="height: 70vh"
+                >
                     <!-- Colonne gauche -->
                     <div
                         class="absolute left-0 w-[calc(50%-8px)] h-[130%] flex flex-col gap-4"
@@ -493,7 +503,10 @@ onMounted(() => {
             id="services"
             class="flex md:py-28 py-16 md:px-16 px-5 flex-col md:gap-20 gap-12 bg-[#FBFAF6]"
         >
-            <div class="flex flex-col md:gap-4 gap-3 text-[#0D0703]" data-aos="fade-up">
+            <div
+                class="flex flex-col md:gap-4 gap-3 text-[#0D0703]"
+                data-aos="fade-up"
+            >
                 <h2 class="text-center font-inter text-base font-semibold">
                     services
                 </h2>
@@ -505,7 +518,7 @@ onMounted(() => {
                             Nos Services Principaux
                         </h3>
                         <div
-                        class="absolute right-1/2 translate-x-[6%] bottom-[-10px] border-2 border-[#FF8C42] w-[40%] max-w-[353px] min-w-[180px]"
+                            class="absolute right-1/2 translate-x-[6%] bottom-[-10px] border-2 border-[#FF8C42] w-[40%] max-w-[353px] min-w-[180px]"
                             data-aos="slide-right"
                             data-aos-duration="1000"
                         ></div>
@@ -515,11 +528,14 @@ onMounted(() => {
                     </h4>
                 </div>
             </div>
-            <ServicesAccueil
-                data-aos="zoom-in"
-                data-aos-duration="800"
-                :serviceIds="[4, 2, 3]"
-            />
+            <!-- Utilisation d'un wrapper div pour les animations AOS -->
+            <div
+                class="transition-all w-full"
+                :data-aos="isDesktopMode ? 'zoom-in' : null"
+                :data-aos-duration="isDesktopMode ? '800' : null"
+            >
+                <ServicesAccueil :serviceIds="[4, 2, 3]" />
+            </div>
         </section>
 
         <!-- À propos -->
