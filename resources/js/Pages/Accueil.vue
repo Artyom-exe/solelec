@@ -500,7 +500,7 @@ onMounted(() => {
         </header>
         <!-- Services -->
         <section
-            id="services"
+            id="services-preview"
             class="flex md:py-28 py-16 md:px-16 px-5 flex-col md:gap-20 gap-12 bg-[#FBFAF6]"
         >
             <div
@@ -536,19 +536,27 @@ onMounted(() => {
             >
                 <ServicesAccueil :serviceIds="[4, 2, 3]" />
             </div>
+            <SecondaryButton
+                variant="dark"
+                @click="navigateToSection('services', 'services-portfolio')"
+                class="md:self-center w-full"
+                >Voir plus</SecondaryButton
+            >
         </section>
 
         <!-- À propos -->
         <section
             id="a-propos"
-            class="flex py-28 px-16 gap-20 bg-[#2D2D2D] text-white"
+            class="flex flex-col md:flex-row md:py-28 py-16 md:px-16 px-5 md:gap-20 gap-5 bg-[#2D2D2D] text-white"
         >
             <div
                 class="flex flex-col flex-1 gap-4"
                 data-aos="fade-right"
                 data-aos-duration="1000"
             >
-                <h2 class="font-poppins text-[40px] leading-[48px] font-medium">
+                <h2
+                    class="font-poppins text-[32px] leading-[38.4px] md:text-[40px] md:leading-[48px] font-medium tracking-[-0.32px] md:tracking-[-0.4px]"
+                >
                     Découvrez l'expertise de S<span class="text-[#FF8C42]"
                         >o</span
                     >lelec en électricité et énergies renouvelables.
@@ -560,7 +568,7 @@ onMounted(() => {
                 data-aos-duration="1000"
                 data-aos-delay="200"
             >
-                <p class="font-inter text-lg font-normal">
+                <p class="font-inter md:text-lg text-base font-normal">
                     S<span class="text-[#FF8C42]">o</span>lelec, c'est 3 ans
                     d'expertise dans les solutions électriques et
                     photovoltaïques. Nous guidons nos clients à chaque étape de
