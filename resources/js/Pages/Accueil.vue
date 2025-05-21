@@ -720,21 +720,21 @@ onMounted(() => {
         <!-- FAQ -->
         <section
             id="faq"
-            class="flex flex-col py-28 px-16 gap-20 bg-[#F5F5F5] text-white"
+            class="flex flex-col md:py-28 py-16 px-5 gap-12 md:px-16 md:gap-20 bg-[#F5F5F5] text-white"
         >
             <div class="flex flex-col gap-4 text-[#0D0703]" data-aos="fade-up">
-                <div class="relative flex flex-col gap-6">
+                <div class="relative flex flex-col gap-5 md:gap-6">
                     <h2
-                        class="font-poppins text-5xl text-left font-medium leading-[57.6px] tracking-[-0.48px]"
+                        class="font-poppins md:text-5xl text-4xl text-left font-medium md:leading-[57.6px] leading-[43.2px] md:tracking-[-0.48px] tracking-[-0.36px]"
                     >
                         FAQs
                     </h2>
                     <div
-                        class="absolute bottom-[76px] ml-36 border-2 border-[#FF8C42] w-[100%] max-w-[353px] min-w-[200px]"
+                        class="absolute right-[68px] top-[21.806px] ml-36 border-2 border-[#FF8C42] w-[100%] max-w-[161px]"
                         data-aos="slide-left"
                         data-aos-duration="1000"
                     ></div>
-                    <h4 class="font-inter text-lg text-left">
+                    <h4 class="font-inter md:text-lg text-base text-left">
                         Voici les réponses aux questions les plus fréquentes
                         concernant nos services.
                     </h4>
@@ -753,10 +753,12 @@ onMounted(() => {
                     data-aos-anchor="#faq"
                 >
                     <div
-                        class="flex items py-5 gap-6 justify-between cursor-pointer"
+                        class="flex items md:py-5 py-4 gap-6 justify-between cursor-pointer"
                         @click="toggle(item.id)"
                     >
-                        <h5 class="text-lg font-bold">{{ item.question }}</h5>
+                        <h5 class="md:text-lg text-base font-bold">
+                            {{ item.question }}
+                        </h5>
                         <svg
                             v-if="openedItems.includes(item.id)"
                             xmlns="http://www.w3.org/2000/svg"
@@ -798,7 +800,7 @@ onMounted(() => {
                         "
                     >
                         <p
-                            class="font-inter text-base pb-6 gap-4 max-w-[768px] min-w-[600px]"
+                            class="font-inter text-base md:pb-6 pb-5 gap-4 max-w-[768px] min-w-[600px]"
                         >
                             {{ item.answer }}
                         </p>
@@ -808,11 +810,11 @@ onMounted(() => {
             <div class="flex flex-col gap-6" data-aos="fade-up">
                 <div class="flex flex-col gap-4 text-[#0D0703]">
                     <h3
-                        class="font-poppins text-[32px] font-medium leading-[41.6px]"
+                        class="font-poppins md:text-[32px] text-2xl font-medium md:leading-[41.6px] leading-[31.2px] tracking-[-0.24px]"
                     >
                         Des questions supplémentaires ?
                     </h3>
-                    <p class="font-inter text-lg">
+                    <p class="font-inter md:text-lg text-base">
                         N'hésitez pas à nous contacter.
                     </p>
                 </div>
