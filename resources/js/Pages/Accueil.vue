@@ -730,7 +730,7 @@ onMounted(() => {
                         FAQs
                     </h2>
                     <div
-                        class="absolute right-[68px] top-[21.806px] ml-36 border-2 border-[#FF8C42] w-[100%] max-w-[161px]"
+                        class="absolute right-[68px] top-[21.806px] md:left-36 md:top-7 border-2 border-[#FF8C42] w-[100%] max-w-[161px] md:max-w-[353px]"
                         data-aos="slide-left"
                         data-aos-duration="1000"
                     ></div>
@@ -830,25 +830,30 @@ onMounted(() => {
         <!-- Contact -->
         <section
             id="contact"
-            class="flex py-28 px-16 flex-col gap-20 text-white bg-[#2D2D2D]"
+            class="flex md:py-28 py-16 md:px-16 px-5 flex-col md:gap-20 gap-12 text-white bg-[#2D2D2D]"
         >
-            <div class="flex gap-20">
+            <div class="flex md:flex-row flex-col md:gap-20 gap-12">
                 <div
-                    class="flex flex-col gap-8 flex-1"
+                    class="flex flex-col md:gap-4 gap-3 flex-1"
                     data-aos="fade-right"
                     data-aos-duration="1000"
                 >
                     <h2 class="font-inter text-base font-semibold">Contact</h2>
-                    <div class="relative flex flex-col gap-6">
-                        <h3 class="font-poppins text-5xl font-medium">
+
+                    <div
+                        class="relative flex flex-col md:gap-6 gap-5 md:mb-4 mb-3"
+                    >
+                        <h3
+                            class="font-poppins md:text-5xl text-4xl font-medium"
+                        >
                             Nous contacter
                         </h3>
                         <div
-                            class="absolute bottom-[40px] ml-28 border-2 border-[#FF8C42] w-[100%] max-w-[353px] min-w-[200px]"
+                            class="absolute md:bottom-[40px] bottom-[55.194px] md:ml-28 border-2 border-[#FF8C42] w-[100%] md:max-w-[353px] max-w-[161px]"
                             data-aos="slide-left"
                             data-aos-duration="1000"
                         ></div>
-                        <p class="font-inter text-lg">
+                        <p class="font-inter md:text-lg text-base">
                             Nous sommes là pour répondre à vos questions.
                         </p>
                     </div>
