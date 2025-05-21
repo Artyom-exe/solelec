@@ -202,7 +202,7 @@ onMounted(() => {
     <PublicLayout @devisModalOpened="openDevisModal = $event">
         <section
             id="services"
-            class="flex py-28 px-16 items-start gap-20 bg-[#2D2D2D] text-white"
+            class="flex py-28 px-16 items-start gap-20 bg-[#2D2D2D] text-white mt-[72px]"
         >
             <article
                 class="flex w-1/2 flex-col items-start gap-8 flex-1"
