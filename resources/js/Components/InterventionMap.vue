@@ -54,7 +54,7 @@ onMounted(() => {
         <div class="flex flex-col md:flex-row gap-8">
             <!-- Deux colonnes -->
             <div
-                class="grid grid-cols-2 gap-6 md:w-1/2"
+                class="grid md:grid-cols-2 grid-cols-1 gap-6 md:w-1/2"
                 data-aos="fade-right"
                 data-aos-delay="100"
                 data-aos-duration="800"
@@ -63,25 +63,25 @@ onMounted(() => {
                     v-for="(city, index) in cities"
                     :key="city.name"
                     @click="centerOn(city.coords)"
-                    class="group flex flex-col items-start gap-2 px-6 py-5 rounded-lg border border-transparent transition-all duration-300 ease-in-out hover:bg-[#f9f9f9] hover:border-[#FF8C42] hover:shadow-md"
+                    class="group flex flex-col items-start gap-2 px-6 py-5 rounded-lg border border-transparent transition-all duration-300 ease-in-out hover:bg-[#f9f9f9] hover:border-[#FF8C42] hover:shadow-md focus:border-[#FF8C42] focus:bg-[#f9f9f9] focus:shadow-md"
                     :data-aos="index % 2 === 0 ? 'fade-up' : 'fade-down'"
                     :data-aos-delay="150 + index * 50"
                     data-aos-duration="600"
                     data-aos-easing="ease-in-out"
                 >
                     <h3
-                        class="text-left text-xl font-semibold text-[#0D0703] group-hover:text-[#FF8C42] transition-colors duration-300 font-poppins"
+                        class="text-left text-xl font-semibold group-hover:text-[#FF8C42] group-focus:text-[#FF8C42] transition-colors duration-300 font-poppins"
                     >
                         {{ city.name }}
                     </h3>
                     <div class="flex gap-3 items-center">
                         <p
-                            class="text-left text-sm font-medium text-gray-500 group-hover:text-[#0D0703] font-inter"
+                            class="text-left text-sm font-medium text-gray-500 group-hover:text-[#0D0703] group-focus:text-[#0D0703] font-inter"
                         >
                             Voir sur la carte
                         </p>
                         <svg
-                            class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1 text-gray-500 group-hover:text-[#FF8C42]"
+                            class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1 text-gray-500 group-hover:text-[#FF8C42] group-focus:translate-x-1 group-focus:text-[#FF8C42]"
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 448 512"
                             fill="currentColor"
