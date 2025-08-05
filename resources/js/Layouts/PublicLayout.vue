@@ -218,11 +218,15 @@ provide("navigateToSection", navigateToSection);
             <slot />
         </main>
 
+        <!-- footer -->
+
         <footer
-            class="flex py-20 px-16 flex-col items-center gap-20 bg-[#2D2D2D]"
+            class="flex md:py-20 py-12 md:px-16 px-5 flex-col items-center md:gap-20 gap-12 bg-[#2D2D2D]"
         >
-            <div class="flex justify-between w-full items-center self-stretch">
-                <div class="flex flex-col items-start gap-8">
+            <div
+                class="flex md:flex-row flex-col justify-between w-full md:items-center self-stretch md:gap-0 gap-12"
+            >
+                <div class="flex flex-col items-start md:gap-8 gap-6">
                     <logo />
                     <div
                         class="flex flex-col text-[#ffff] font-inter items-start gap-6 self-stretch"
@@ -315,12 +319,18 @@ provide("navigateToSection", navigateToSection);
                 </div>
             </div>
             <div
-                class="flex flex-col flex-start gap-8 self-stretch text-[#ffff] font-inter text-sm"
+                class="flex flex-col flex-start md:gap-8 gap-6 self-stretch text-[#ffff] font-inter text-sm"
             >
                 <div class="border-t border-white/20"></div>
-                <div class="flex justify-between items-start self-stretch">
-                    <p class="">© 2025 Solelec. Tous droits réservés.</p>
-                    <div class="flex flex-start gap-6">
+                <div
+                    class="flex md:flex-row flex-col justify-between items-start self-stretch md:gap-0 gap-8"
+                >
+                    <p class="order-2 md:order-1">
+                        © 2025 Solelec. Tous droits réservés.
+                    </p>
+                    <div
+                        class="flex md:flex-row flex-col flex-start md:gap-6 gap-4"
+                    >
                         <a
                             class="underline underline-offset-2 decoration-solid decoration-1 hover:text-[#FF8C42] transition-colors"
                             href=""
