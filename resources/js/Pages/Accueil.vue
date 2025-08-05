@@ -1045,24 +1045,24 @@ onMounted(() => {
         <!-- zones d'intervention -->
         <section
             id="zones"
-            class="flex py-28 px-16 flex-col gap-20 bg-[#F5F5F5] text-[#0D0703]"
+            class="flex md:py-28 py-16 md:px-16 px-5 flex-col md:gap-20 gap-12 bg-[#F5F5F5] text-[#0D0703]"
         >
             <div
-                class="flex flex-col gap-8 flex-1"
+                class="flex flex-col md:gap-8 gap-3 flex-1"
                 data-aos="fade-right"
                 data-aos-duration="1000"
             >
                 <h2 class="font-inter text-base font-semibold">Zones</h2>
-                <div class="relative flex flex-col gap-6">
-                    <h3 class="font-poppins text-5xl font-medium">
+                <div class="relative flex flex-col md:gap-6 gap-5">
+                    <h3 class="font-poppins md:text-5xl text-4xl font-medium">
                         Interventions
                     </h3>
                     <div
-                        class="absolute bottom-[72px] ml-[340px] border-2 border-[#FF8C42] w-[100%] max-w-[353px] min-w-[200px]"
+                        class="absolute md:bottom-[72px] md:ml-[340px] bottom-[80px] border-2 border-[#FF8C42] w-[100%] md:max-w-[353px] max-w-[161px]"
                         data-aos="slide-left"
                         data-aos-duration="1000"
                     ></div>
-                    <p class="font-inter text-lg">
+                    <p class="font-inter md:text-lg text-base font-normal">
                         Nous intervenons dans
                         <strong>toute la Wallonie</strong> et à
                         <strong>Bruxelles</strong>. Voici quelques villes
