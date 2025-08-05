@@ -1,8 +1,9 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed } from "vue";
 
 const mapElement = ref(null);
 const map = ref(null);
+const isMobile = ref(false);
 
 const cities = [
     { name: "Ottignies", coords: { lat: 50.6683, lng: 4.6144 } },
@@ -22,7 +23,19 @@ const centerOn = (coords) => {
     }
 };
 
+const checkMobile = () => {
+    if (typeof window !== "undefined") {
+        isMobile.value = window.innerWidth < 768;
+    }
+};
+
 onMounted(() => {
+    checkMobile();
+
+    if (typeof window !== "undefined") {
+        window.addEventListener("resize", checkMobile);
+    }
+
     window.initMap = () => {
         map.value = new google.maps.Map(mapElement.value, {
             center: cities[0].coords,
@@ -54,7 +67,7 @@ onMounted(() => {
         <div class="flex flex-col md:flex-row gap-8">
             <!-- Deux colonnes -->
             <div
-                class="grid md:grid-cols-2 grid-cols-1 gap-6 md:w-1/2"
+                class="md:grid md:grid-cols-2 flex flex-col md:gap-6 gap-4 md:w-1/2 md:overflow-visible overflow-y-auto md:max-h-none max-h-[300px]"
                 data-aos="fade-right"
                 data-aos-delay="100"
                 data-aos-duration="800"
@@ -63,9 +76,17 @@ onMounted(() => {
                     v-for="(city, index) in cities"
                     :key="city.name"
                     @click="centerOn(city.coords)"
-                    class="group flex flex-col items-start gap-2 px-6 py-5 rounded-lg border border-transparent transition-all duration-300 ease-in-out hover:bg-[#f9f9f9] hover:border-[#FF8C42] hover:shadow-md focus:border-[#FF8C42] focus:bg-[#f9f9f9] focus:shadow-md"
-                    :data-aos="index % 2 === 0 ? 'fade-up' : 'fade-down'"
-                    :data-aos-delay="150 + index * 50"
+                    class="group flex flex-col items-start gap-2 px-6 py-5 rounded-lg border border-transparent transition-all duration-300 ease-in-out hover:bg-[#f9f9f9] hover:border-[#FF8C42] hover:shadow-md focus:border-[#FF8C42] focus:bg-[#f9f9f9] focus:shadow-md flex-shrink-0"
+                    :data-aos="
+                        index < 3 || !isMobile
+                            ? index % 2 === 0
+                                ? 'fade-up'
+                                : 'fade-down'
+                            : ''
+                    "
+                    :data-aos-delay="
+                        index < 3 || !isMobile ? 150 + index * 50 : 0
+                    "
                     data-aos-duration="600"
                     data-aos-easing="ease-in-out"
                 >
