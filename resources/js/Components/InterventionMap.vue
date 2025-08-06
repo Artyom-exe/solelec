@@ -1,9 +1,10 @@
 <script setup>
-import { onMounted, ref, computed } from "vue";
+import { onMounted, ref, computed, nextTick } from "vue";
 
 const mapElement = ref(null);
 const map = ref(null);
 const isMobile = ref(false);
+const cityButtons = ref([]);
 
 const cities = [
     { name: "Ottignies", coords: { lat: 50.6683, lng: 4.6144 } },
@@ -27,6 +28,16 @@ const checkMobile = () => {
     if (typeof window !== "undefined") {
         isMobile.value = window.innerWidth < 768;
     }
+};
+
+const focusFirstCity = () => {
+    // Attendre que les animations AOS se terminent avant de faire le focus
+    // La durée maximale des animations est de 800ms + délai de 150ms + (7 * 50ms) = 1300ms
+    setTimeout(() => {
+        if (cityButtons.value && cityButtons.value[0]) {
+            cityButtons.value[0].focus();
+        }
+    }, 1400); // Ajouter une petite marge de sécurité
 };
 
 onMounted(() => {
@@ -55,6 +66,11 @@ onMounted(() => {
     if (window.google && window.google.maps) {
         window.initMap();
     }
+
+    // Attendre le prochain tick pour que les éléments soient rendus
+    nextTick(() => {
+        focusFirstCity();
+    });
 });
 </script>
 
@@ -75,8 +91,13 @@ onMounted(() => {
                 <button
                     v-for="(city, index) in cities"
                     :key="city.name"
+                    :ref="
+                        (el) => {
+                            if (index === 0) cityButtons[0] = el;
+                        }
+                    "
                     @click="centerOn(city.coords)"
-                    class="group flex flex-col items-start gap-2 px-6 py-5 rounded-lg border border-transparent transition-all duration-300 ease-in-out hover:bg-[#f9f9f9] hover:border-[#FF8C42] hover:shadow-md focus:border-[#FF8C42] focus:bg-[#f9f9f9] focus:shadow-md flex-shrink-0"
+                    class="group flex flex-col items-start gap-2 px-6 py-5 rounded-lg border border-transparent transition-all duration-300 ease-in-out hover:bg-[#f9f9f9] hover:border-[#FF8C42] hover:shadow-md focus:border-[#FF8C42] focus:bg-[#f9f9f9] focus:shadow-md focus:outline-none flex-shrink-0"
                     :data-aos="
                         index < 3 || !isMobile
                             ? index % 2 === 0
