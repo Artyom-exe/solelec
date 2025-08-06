@@ -453,21 +453,21 @@ onMounted(() => {
         </section>
         <section
             id="portfolio"
-            class="flex py-28 px-16 flex-col items-center gap-20"
+            class="flex md:py-28 py-16 md:px-16 px-5 flex-col items-center md:gap-20 gap-12"
         >
             <div class="flex flex-col gap-4 text-[#0D0703]" data-aos="fade-up">
-                <div class="relative flex flex-col gap-6">
+                <div class="relative flex flex-col md:gap-6 gap-5">
                     <h2
-                        class="font-poppins text-5xl text-center font-medium leading-[57.6px] tracking-[-0.48px]"
+                        class="font-poppins md:text-5xl text-4xl text-center font-medium leading-[57.6px] tracking-[-0.48px]"
                     >
                         Nos réalisations
                     </h2>
                     <div
-                        class="absolute bottom-10 right-1/2 border-2 border-[#FF8C42] w-[40%] min-w-[353px]"
+                        class="absolute bottom-10 right-1/2 border-2 border-[#FF8C42] w-[40%] md:min-w-[353px] min-w-[187px]"
                         data-aos="slide-right"
                         data-aos-duration="1000"
                     ></div>
-                    <h4 class="font-inter text-lg text-center">
+                    <h4 class="font-inter md:text-lg text-base text-center">
                         Découvrez nos réalisations en électricité.
                     </h4>
                 </div>
