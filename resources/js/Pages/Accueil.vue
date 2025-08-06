@@ -289,7 +289,7 @@ onMounted(() => {
     // Vérifier si on est sur desktop (largeur d'écran >= 1024px)
     const isDesktop = window.innerWidth >= 1024;
 
-    // Configuration AOS - activer uniquement sur desktop
+    // Configuration AOS - activer sur tous les appareils
     AOS.init({
         duration: 1000,
         once: true,
@@ -298,12 +298,13 @@ onMounted(() => {
         offset: 50,
         anchorPlacement: "top-center",
         startEvent: "DOMContentLoaded",
-        // Désactiver AOS sur mobile en définissant disable sur true si ce n'est pas desktop
-        disable: !isDesktop,
+        // Activer AOS sur tous les appareils (mobile et desktop)
+        disable: false,
     });
 
     // Empêcher le débordement horizontal
     document.documentElement.style.overflowX = "hidden";
+    document.body.style.overflowX = "hidden";
 
     fetchPortfolio();
     fetchTags();
@@ -314,7 +315,7 @@ onMounted(() => {
         const isDesktopNow = window.innerWidth >= 1024;
         // Mettre à jour la variable réactive
         isDesktopMode.value = isDesktopNow;
-        // Réinitialiser AOS avec la nouvelle valeur de disable
+        // Réinitialiser AOS - activer sur tous les appareils
         AOS.init({
             duration: 1000,
             once: true,
@@ -322,7 +323,7 @@ onMounted(() => {
             easing: "ease-out-cubic",
             offset: 50,
             anchorPlacement: "top-center",
-            disable: !isDesktopNow,
+            disable: false,
         });
     });
 
@@ -531,8 +532,8 @@ onMounted(() => {
             <!-- Utilisation d'un wrapper div pour les animations AOS -->
             <div
                 class="transition-all w-full"
-                :data-aos="isDesktopMode ? 'zoom-in' : null"
-                :data-aos-duration="isDesktopMode ? '800' : null"
+                data-aos="zoom-in"
+                data-aos-duration="800"
             >
                 <ServicesAccueil :serviceIds="[4, 2, 3]" />
             </div>
@@ -614,11 +615,8 @@ onMounted(() => {
                 <!-- Utilisation d'un wrapper div pour les animations AOS -->
                 <div
                     class="transition-all w-full"
-                    :class="{
-                        'opacity-0': isDesktopMode && !randomPortfolio.length,
-                    }"
-                    :data-aos="isDesktopMode ? 'zoom-in' : null"
-                    :data-aos-duration="isDesktopMode ? '800' : null"
+                    data-aos="zoom-in"
+                    data-aos-duration="800"
                 >
                     <div
                         class="flex items-start md:flex-row flex-col gap-12 flex-wrap justify-center"
@@ -627,8 +625,8 @@ onMounted(() => {
                             v-for="(item, index) in randomPortfolio"
                             :key="index"
                             class="flex flex-col items-start md:gap-6 gap-5 flex-1"
-                            :data-aos="isDesktopMode ? 'fade-up' : null"
-                            :data-aos-delay="isDesktopMode ? index * 150 : null"
+                            data-aos="fade-up"
+                            :data-aos-delay="index * 150"
                         >
                             <img
                                 :src="item.image"
@@ -703,8 +701,8 @@ onMounted(() => {
             <div class="w-screen -mx-16">
                 <div
                     class="transition-all w-full"
-                    :data-aos="isDesktopMode ? 'fade-up' : null"
-                    :data-aos-duration="isDesktopMode ? '1000' : null"
+                    data-aos="fade-up"
+                    data-aos-duration="1000"
                 >
                     <ReviewSlider />
                 </div>
@@ -1085,5 +1083,15 @@ onMounted(() => {
 /* Assurez-vous que les colonnes peuvent déborder en toute sécurité */
 #header > div {
     overflow: visible;
+}
+
+/* Empêcher le débordement global pendant les animations */
+:deep(body) {
+    overflow-x: hidden !important;
+}
+
+/* Empêcher les débordements pendant les animations AOS */
+:deep([data-aos]:not(.aos-animate)) {
+    overflow: hidden;
 }
 </style>

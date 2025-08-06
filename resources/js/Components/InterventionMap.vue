@@ -38,30 +38,10 @@ const centerOn = (coords, cityIndex) => {
 
 // Fonction pour gérer le changement de slide Splide
 const onSlideChange = (splide, newIndex) => {
-    // Debug pour comprendre le problème
-    console.log(
-        "Splide moved to:",
-        newIndex.index,
-        "cities length:",
-        cities.length
-    );
-
     const realIndex = newIndex.index; // Plus de modulo car pas de loop
-    console.log(
-        "Real index:",
-        realIndex,
-        "Current active:",
-        activeCityIndex.value
-    );
 
     if (activeCityIndex.value !== realIndex && cities[realIndex]) {
         activeCityIndex.value = realIndex;
-        console.log(
-            "Updated activeCityIndex to:",
-            realIndex,
-            "City:",
-            cities[realIndex].name
-        );
 
         // Mettre à jour la carte avec la nouvelle ville
         if (map.value) {
