@@ -1,10 +1,8 @@
 <script setup>
 import { ref, onMounted, watch, inject } from "vue";
 import axios from "axios";
-import { router, usePage } from "@inertiajs/vue3";
 import PublicLayout from "@/Layouts/PublicLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
-import MasonryWall from "@yeger/vue-masonry-wall";
 // Importez AOS
 import AOS from "aos";
 import "aos/dist/aos.css";
@@ -202,16 +200,16 @@ onMounted(() => {
     <PublicLayout @devisModalOpened="openDevisModal = $event">
         <section
             id="services"
-            class="flex py-28 px-16 items-start gap-20 bg-[#2D2D2D] text-white mt-[72px]"
+            class="flex md:flex-row flex-col md:py-28 py-16 md:px-16 px-5 items-start md:gap-20 gap-6 bg-[#2D2D2D] text-white md:mt-[72px] mt-[64px]"
         >
             <article
-                class="flex w-1/2 flex-col items-start gap-8 flex-1"
+                class="flex md:w-1/2 w-full flex-col items-start gap-8 flex-1"
                 data-aos="fade-right"
                 data-aos-delay="200"
             >
                 <!-- Partie gauche avec animations -->
                 <div
-                    class="flex flex-col items-start gap-4 self-stretch"
+                    class="flex flex-col items-start md:gap-4 gap-3 self-stretch"
                     data-aos="fade-up"
                     data-aos-delay="300"
                 >
@@ -222,16 +220,18 @@ onMounted(() => {
                     >
                         Services
                     </h3>
-                    <div class="flex flex-col items-start gap-6 self-stretch">
+                    <div
+                        class="flex flex-col items-start md:gap-6 gap-5 self-stretch"
+                    >
                         <h2
-                            class="font-poppins text-5xl font-medium"
+                            class="font-poppins md:text-5xl text-4xl font-medium"
                             data-aos="fade-up"
                             data-aos-delay="500"
                         >
                             Nos Services Électriques de Qualité
                         </h2>
                         <p
-                            class="font-inter text-lg"
+                            class="font-inter md:text-lg text-base"
                             data-aos="fade-up"
                             data-aos-delay="600"
                         >
@@ -260,12 +260,14 @@ onMounted(() => {
                         }"
                         @click="selectService(index)"
                     >
-                        <h4 class="font-poppins text-2xl font-medium">
+                        <h4
+                            class="font-poppins md:text-2xl text-xl font-medium"
+                        >
                             {{ service.title }}
                         </h4>
                         <div class="w-full">
                             <p
-                                class="description font-inter"
+                                class="description font-inter text-base font-normal"
                                 :class="
                                     isActive(index) ? 'expanded' : 'collapsed'
                                 "
@@ -276,6 +278,7 @@ onMounted(() => {
                     </div>
                 </div>
                 <PrimaryButton
+                    class="hidden md:flex"
                     @click="openDevisModal"
                     data-aos="fade-up"
                     data-aos-delay="500"
@@ -284,13 +287,13 @@ onMounted(() => {
                 </PrimaryButton>
             </article>
             <div
-                class="w-1/2 flex justify-center items-center"
+                class="md:w-1/2 w-full flex justify-center items-center"
                 data-aos="fade-left"
                 data-aos-delay="400"
             >
                 <div
                     v-if="services.length > 0"
-                    class="relative w-full h-[640px]"
+                    class="relative w-full md:h-[640px] h-[346px]"
                 >
                     <!-- Images avec animations -->
                     <div
@@ -316,6 +319,14 @@ onMounted(() => {
                     <p class="text-gray-400">Chargement des services...</p>
                 </div>
             </div>
+            <PrimaryButton
+                class="md:hidden flex"
+                @click="openDevisModal"
+                data-aos="fade-up"
+                data-aos-delay="500"
+            >
+                Devis
+            </PrimaryButton>
         </section>
         <section
             id="portfolio"
