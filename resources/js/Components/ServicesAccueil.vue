@@ -125,8 +125,7 @@ const toggleActive = (index, event) => {
 
 // Fonction pour naviguer vers la page services-portfolio avec le service concerné
 const navigateToServiceDetail = (serviceId) => {
-    router.visit("/services-portfolio#services", {
-        data: { serviceId: serviceId },
+    router.visit(`/services-portfolio#service-${serviceId}`, {
         preserveState: true,
     });
 };

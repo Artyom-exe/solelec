@@ -3,6 +3,8 @@ import { ref, onMounted, watch, inject, nextTick } from "vue";
 import axios from "axios";
 import PublicLayout from "@/Layouts/PublicLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
+import { Splide, SplideSlide } from "@splidejs/vue-splide";
+import "@splidejs/vue-splide/css";
 // Importez AOS
 import AOS from "aos";
 import "aos/dist/aos.css";
@@ -17,9 +19,8 @@ const activeIndex = ref(0);
 const prevActiveIndex = ref(0);
 // Ajout de la définition de portfolio
 const portfolio = ref([]);
-// Variables pour le parallaxe mobile
-const scrollContainer = ref(null);
-const isScrolling = ref(false);
+// Variables pour Splide
+const splideRef = ref(null);
 
 // Récupérer les services depuis l'API Laravel
 const fetchServices = async () => {
@@ -65,7 +66,14 @@ const checkForServiceSelection = () => {
             // Mettre à jour l'index actif pour sélectionner le service
             activeIndex.value = serviceIndex;
 
-            // Faire défiler jusqu'au service spécifique dans le conteneur
+            // Sur mobile, naviguer vers la slide correspondante avec Splide
+            if (window.innerWidth < 768 && splideRef.value) {
+                setTimeout(() => {
+                    splideRef.value.go(serviceIndex);
+                }, 600);
+            }
+
+            // Faire défiler jusqu'au service spécifique dans le conteneur (desktop)
             setTimeout(() => {
                 const serviceElement = document.getElementById(
                     "service-" + serviceId
@@ -106,7 +114,15 @@ const checkForServiceSelection = () => {
             if (serviceIndex !== -1) {
                 // Mettre à jour l'index actif pour sélectionner le service
                 activeIndex.value = serviceIndex;
-                // Faire défiler vers le service
+
+                // Sur mobile, naviguer vers la slide correspondante avec Splide
+                if (window.innerWidth < 768 && splideRef.value) {
+                    setTimeout(() => {
+                        splideRef.value.go(serviceIndex);
+                    }, 600);
+                }
+
+                // Faire défiler vers le service (desktop)
                 setTimeout(() => {
                     const serviceElement = document.getElementById(
                         hash.substring(1)
@@ -140,9 +156,48 @@ const selectService = (index) => {
     prevActiveIndex.value = activeIndex.value;
     activeIndex.value = index;
 
-    // Sur mobile, faire défiler vers le service
-    if (window.innerWidth < 768) {
-        scrollToService(index);
+    // Sur mobile, naviguer vers la slide correspondante
+    if (window.innerWidth < 768 && splideRef.value) {
+        splideRef.value.go(index);
+    } else {
+        // Sur desktop, faire défiler jusqu'au service sélectionné
+        const serviceId = services.value[index]?.id;
+        if (serviceId) {
+            setTimeout(() => {
+                const serviceElement = document.getElementById(
+                    "service-" + serviceId
+                );
+                if (serviceElement) {
+                    // Faire défiler le conteneur parent (avec la classe overflow-y-auto)
+                    const container =
+                        serviceElement.closest(".overflow-y-auto");
+                    if (container) {
+                        // Calcul précis de la position de défilement
+                        const containerTop =
+                            container.getBoundingClientRect().top;
+                        const elementTop =
+                            serviceElement.getBoundingClientRect().top;
+                        const scrollOffset = elementTop - containerTop - 20; // 20px de marge pour la lisibilité
+
+                        container.scrollTop += scrollOffset;
+
+                        // Alternative: utiliser scrollIntoView pour un défilement plus naturel
+                        serviceElement.scrollIntoView({
+                            behavior: "smooth",
+                            block: "center",
+                        });
+                    }
+                }
+            }, 100);
+        }
+    }
+};
+
+// Fonction pour gérer le changement de slide Splide
+const onSlideChange = (splide, newIndex) => {
+    const realIndex = newIndex.index;
+    if (activeIndex.value !== realIndex && services.value[realIndex]) {
+        activeIndex.value = realIndex;
     }
 };
 
@@ -158,43 +213,6 @@ watch(activeIndex, (newVal) => {
         AOS.refresh();
     }, 100);
 });
-
-// Fonction pour gérer le parallaxe mobile
-const handleParallaxScroll = () => {
-    if (!scrollContainer.value) return;
-
-    const container = scrollContainer.value;
-    const scrollLeft = container.scrollLeft;
-    const containerWidth = container.scrollWidth - container.clientWidth;
-
-    if (containerWidth === 0) return;
-
-    // Calculer l'index basé sur la position de scroll
-    const progress = scrollLeft / containerWidth;
-    const newIndex = Math.round(progress * (services.value.length - 1));
-
-    if (
-        newIndex !== activeIndex.value &&
-        newIndex >= 0 &&
-        newIndex < services.value.length
-    ) {
-        activeIndex.value = newIndex;
-    }
-};
-
-// Fonction pour faire défiler vers un service spécifique
-const scrollToService = (index) => {
-    if (!scrollContainer.value) return;
-
-    const container = scrollContainer.value;
-    const containerWidth = container.scrollWidth - container.clientWidth;
-    const targetScroll = (containerWidth / (services.value.length - 1)) * index;
-
-    container.scrollTo({
-        left: targetScroll,
-        behavior: "smooth",
-    });
-};
 
 // Appel au montage
 onMounted(() => {
@@ -234,31 +252,17 @@ onMounted(() => {
                 if (serviceIndex !== -1) {
                     // Mettre à jour l'index actif pour sélectionner le service
                     activeIndex.value = serviceIndex;
+
+                    // Sur mobile, naviguer vers la slide correspondante avec Splide
+                    if (window.innerWidth < 768 && splideRef.value) {
+                        setTimeout(() => {
+                            splideRef.value.go(serviceIndex);
+                        }, 600);
+                    }
                 }
             }
         }, 300);
     }
-
-    // Ajouter throttle pour optimiser les performances du parallaxe
-    let ticking = false;
-    const throttledScroll = () => {
-        if (!ticking) {
-            requestAnimationFrame(() => {
-                handleParallaxScroll();
-                ticking = false;
-            });
-            ticking = true;
-        }
-    };
-
-    // Attacher l'événement de scroll après le montage
-    nextTick(() => {
-        if (scrollContainer.value) {
-            scrollContainer.value.addEventListener("scroll", throttledScroll, {
-                passive: true,
-            });
-        }
-    });
 });
 </script>
 
@@ -345,7 +349,7 @@ onMounted(() => {
                     </div>
                 </div>
 
-                <!-- Version mobile - carrousel horizontal avec parallaxe -->
+                <!-- Version mobile - carrousel Splide -->
                 <div
                     class="md:hidden w-full"
                     data-aos="fade-up"
@@ -360,45 +364,59 @@ onMounted(() => {
                             :class="
                                 isActive(index)
                                     ? 'bg-[#FF8C42] scale-125'
-                                    : 'bg-gray-600'
+                                    : 'bg-gray-600 hover:bg-gray-500'
                             "
                             @click="selectService(index)"
                         ></button>
                     </div>
 
-                    <!-- Conteneur de scroll horizontal -->
-                    <div
-                        ref="scrollContainer"
-                        class="flex overflow-x-auto hide-scrollbar gap-4 pb-4 scroll-smooth snap-x snap-mandatory"
-                        @scroll="handleParallaxScroll"
+                    <!-- Carrousel Splide -->
+                    <Splide
+                        ref="splideRef"
+                        :options="{
+                            type: 'slide',
+                            gap: '16px',
+                            perPage: 1,
+                            arrows: false,
+                            pagination: false,
+                            drag: true,
+                            snap: true,
+                            speed: 400,
+                            focus: 'center',
+                            trimSpace: false,
+                            autoWidth: false,
+                            rewind: true,
+                        }"
+                        @splide:moved="onSlideChange"
+                        @splide:active="onSlideChange"
+                        class="w-full"
                     >
-                        <div
+                        <SplideSlide
                             v-for="(service, index) in services"
-                            :key="'mobile-service-' + index"
-                            :id="'mobile-service-' + service.id"
-                            class="min-w-[85vw] flex flex-col p-6 bg-[#242424] rounded-lg border-l-4 snap-center transition-all duration-500"
-                            :class="{
-                                'border-[#FF8C42] shadow-lg scale-[1.02]':
-                                    isActive(index),
-                                'border-gray-600 opacity-70': !isActive(index),
-                            }"
-                            :style="{
-                                transform: `translateX(${
-                                    (index - activeIndex) * 10
-                                }px)`,
-                                filter: isActive(index)
-                                    ? 'brightness(1)'
-                                    : 'brightness(0.7)',
-                            }"
+                            :key="'slide-' + index"
+                            class="w-full"
                         >
-                            <h4 class="font-poppins text-xl font-medium mb-3">
-                                {{ service.title }}
-                            </h4>
-                            <p class="font-inter text-sm leading-relaxed">
-                                {{ service.description }}
-                            </p>
-                        </div>
-                    </div>
+                            <div
+                                :id="'mobile-service-' + service.id"
+                                class="flex flex-col p-6 bg-[#242424] rounded-lg border-l-4 transition-all duration-500 min-h-[160px] w-full"
+                                :class="{
+                                    'border-[#FF8C42] shadow-lg':
+                                        isActive(index),
+                                    'border-gray-600 opacity-70':
+                                        !isActive(index),
+                                }"
+                            >
+                                <h4
+                                    class="font-poppins text-xl font-medium mb-3"
+                                >
+                                    {{ service.title }}
+                                </h4>
+                                <p class="font-inter text-sm leading-relaxed">
+                                    {{ service.description }}
+                                </p>
+                            </div>
+                        </SplideSlide>
+                    </Splide>
                 </div>
                 <PrimaryButton
                     class="hidden md:flex"
