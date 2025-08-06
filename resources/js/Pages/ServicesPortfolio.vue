@@ -231,6 +231,7 @@ onMounted(() => {
     });
 
     document.documentElement.style.overflowX = "hidden";
+    document.body.style.overflowX = "hidden";
 
     // Vérifier si l'URL contient un fragment (ancre)
     const hash = window.location.hash;
@@ -656,5 +657,15 @@ onMounted(() => {
 .depth-effect {
     transform-style: preserve-3d;
     perspective: 1000px;
+}
+
+/* Empêcher le débordement global pendant les animations */
+:deep(body) {
+    overflow-x: hidden !important;
+}
+
+/* Empêcher les débordements pendant les animations AOS */
+:deep([data-aos]:not(.aos-animate)) {
+    overflow: hidden;
 }
 </style>
