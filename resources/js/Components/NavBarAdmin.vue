@@ -4,22 +4,6 @@ import { Link } from "@inertiajs/vue3";
 import logo from "./logo.vue";
 
 const mobileMenuOpen = ref(false);
-const aboutDropdownOpen = ref(false);
-
-// Pour fermer le dropdown si on clique ailleurs
-const closeDropdowns = (event) => {
-    if (!event.target.closest(".about-dropdown")) {
-        aboutDropdownOpen.value = false;
-    }
-};
-
-onMounted(() => {
-    document.addEventListener("click", closeDropdowns);
-});
-
-onBeforeUnmount(() => {
-    document.removeEventListener("click", closeDropdowns);
-});
 
 const toggleMobileMenu = () => {
     mobileMenuOpen.value = !mobileMenuOpen.value;
@@ -35,22 +19,18 @@ const navItems = [
 
 <template>
     <nav
-        class="fixed top-0 left-0 right-0 bg-[#2D2D2D] px-16 justify-center flex-col items-center py-4 z-50"
+        class="flex fixed top-0 left-0 right-0 bg-[#2D2D2D] md:px-16 px-5 justify-center flex-col items-center md:h-[72px] h-[64px] z-50"
     >
-        <div class="flex justify-center items-center gap-8 self-stretch">
-            <!-- Logo (maintenant en position absolute) -->
-            <div class="absolute left-16">
-                <logo />
-            </div>
+        <div class="flex justify-between items-center md:gap-8 self-stretch">
+            <!-- Logo -->
+            <logo />
 
             <!-- Navigation principale (Desktop) -->
-            <div class="hidden md:flex items-center justify-center">
-                <div class="flex gap-8">
+            <div class="hidden md:flex items-center space-x-8">
+                <div class="flex space-x-6">
                     <!-- Items de navigation standard -->
                     <template v-for="item in navItems" :key="item.name">
-                        <!-- Lien standard sans ancre -->
                         <Link
-                            v-if="!item.anchor"
                             :href="route(item.route)"
                             class="font-inter text-white text-base hover:text-[#FF8C42] transition-colors duration-200"
                             :class="{
@@ -64,57 +44,155 @@ const navItems = [
                     </template>
                 </div>
             </div>
-            <!-- Hamburger (Mobile) -->
-            <button
-                @click="toggleMobileMenu"
-                class="md:hidden flex items-center text-white absolute right-16"
-            >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
+
+            <!-- Hamburger (Mobile) avec animation cross - masqué sur desktop avec v-if -->
+            <div class="md:hidden">
+                <button
+                    @click="toggleMobileMenu"
+                    class="hamburger-icon cross-animation z-[100] my-auto"
+                    :class="{ open: mobileMenuOpen }"
+                    aria-label="Menu"
                 >
-                    <path
-                        v-if="!mobileMenuOpen"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M4 6h16M4 12h16M4 18h16"
-                    />
-                    <path
-                        v-else
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M6 18L18 6M6 6l12 12"
-                    />
-                </svg>
-            </button>
+                    <span></span>
+                </button>
+            </div>
         </div>
 
         <!-- Menu Mobile avec sous-menus -->
-        <div
-            v-if="mobileMenuOpen"
-            class="md:hidden absolute top-full left-0 right-0 bg-white shadow-lg py-4 px-6"
+        <transition
+            enter-active-class="transition-all duration-300 ease-out"
+            enter-from-class="opacity-0 translate-x-full"
+            enter-to-class="opacity-100 translate-x-0"
+            leave-active-class="transition-all duration-300 ease-in"
+            leave-from-class="opacity-100 translate-x-0"
+            leave-to-class="opacity-0 translate-x-full"
         >
-            <div class="flex flex-col space-y-4">
-                <Link
-                    v-for="item in navItems"
-                    :key="item.name"
-                    :href="route(item.route)"
-                    class="font-inter text-gray-700 py-2 hover:text-[#FF8C42]"
-                    :class="{
-                        'text-[#FF8C42] font-medium': route().current(
-                            item.route
-                        ),
-                    }"
-                    @click="toggleMobileMenu"
-                >
-                    {{ item.name }}
-                </Link>
+            <div
+                v-if="mobileMenuOpen"
+                class="md:hidden fixed top-[64px] left-0 right-0 bottom-0 bg-white shadow-lg py-4 px-6 overflow-y-auto z-50"
+            >
+                <div class="flex flex-col space-y-6 mt-4">
+                    <!-- Animation des éléments du menu -->
+                    <Link
+                        v-for="(item, index) in navItems"
+                        :key="item.name"
+                        :href="route(item.route)"
+                        class="font-inter text-gray-700 py-2 hover:text-[#FF8C42] text-lg border-b border-gray-100 pb-3 transition-all duration-300 transform"
+                        :style="{
+                            'animation-delay': index * 100 + 'ms',
+                            animation: 'fadeInDown 0.5s ease forwards',
+                        }"
+                        :class="{
+                            'text-[#FF8C42] font-medium': route().current(
+                                item.route
+                            ),
+                        }"
+                        @click="toggleMobileMenu"
+                    >
+                        {{ item.name }}
+                    </Link>
+                </div>
             </div>
-        </div>
+        </transition>
     </nav>
 </template>
+
+<style scoped>
+/* Animations pour le menu mobile */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Animation du hamburger */
+.hamburger-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+    position: relative;
+    width: 30px;
+    margin: auto 0;
+}
+
+.hamburger-icon span {
+    border-radius: 3px;
+    background-color: white;
+    display: block;
+    height: 3px;
+    margin: 0 auto;
+    position: relative;
+    width: 30px;
+}
+
+.hamburger-icon span:before {
+    border-radius: 3px;
+    background-color: white;
+    content: "";
+    display: block;
+    height: 3px;
+    margin-top: -9px;
+    position: absolute;
+    width: 30px;
+}
+
+.hamburger-icon span:after {
+    border-radius: 3px;
+    background-color: white;
+    content: "";
+    display: block;
+    height: 3px;
+    margin-top: 9px;
+    position: absolute;
+    width: 30px;
+}
+
+/* Animation */
+.cross-animation span {
+    transition-delay: 0.2s;
+    transition-duration: 0s;
+}
+
+.cross-animation span:before {
+    transition-delay: 0.2s, 0s;
+    transition-duration: 0.2s;
+    transition-property: margin, transform;
+}
+
+.cross-animation span:after {
+    transition-delay: 0.2s, 0s;
+    transition-duration: 0.2s;
+    transition-property: margin, transform;
+}
+
+.cross-animation:hover span:before {
+    margin-top: -12px;
+}
+
+.cross-animation:hover span:after {
+    margin-top: 12px;
+}
+
+.cross-animation.open span {
+    transition-delay: 0.2s;
+    background-color: rgba(255, 255, 255, 0);
+}
+
+.cross-animation.open span:before {
+    transform: rotate(45deg);
+    transition-delay: 0s, 0.2s;
+    margin-top: 0;
+}
+
+.cross-animation.open span:after {
+    transform: rotate(-45deg);
+    transition-delay: 0s, 0.2s;
+    margin-top: 0;
+}
+</style>
