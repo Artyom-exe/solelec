@@ -1,5 +1,7 @@
 <script setup>
 import { onMounted, ref, nextTick, onUnmounted } from "vue";
+import { Splide, SplideSlide } from "@splidejs/vue-splide";
+import "@splidejs/vue-splide/css";
 
 const mapElement = ref(null);
 const map = ref(null);
@@ -7,9 +9,8 @@ const isMobile = ref(false);
 const scrollableElement = ref(null);
 const showGradient = ref(true);
 const activeCityIndex = ref(0); // Index de la ville active par défaut
-// Variables pour le parallaxe mobile
-const citiesScrollContainer = ref(null);
-const isScrolling = ref(false);
+// Variables pour Splide
+const splideRef = ref(null);
 
 const cities = [
     { name: "Ottignies", coords: { lat: 50.6683, lng: 4.6144 } },
@@ -29,53 +30,45 @@ const centerOn = (coords, cityIndex) => {
         map.value.setZoom(12);
     }
 
-    // Sur mobile, faire défiler vers la ville dans le carrousel
-    if (isMobile.value) {
-        scrollToCity(cityIndex);
+    // Sur mobile, naviguer vers la slide correspondante
+    if (isMobile.value && splideRef.value) {
+        splideRef.value.go(cityIndex);
     }
 };
 
-// Fonction pour gérer le parallaxe mobile des villes
-const handleCitiesParallaxScroll = () => {
-    if (!citiesScrollContainer.value || !isMobile.value) return;
+// Fonction pour gérer le changement de slide Splide
+const onSlideChange = (splide, newIndex) => {
+    // Debug pour comprendre le problème
+    console.log(
+        "Splide moved to:",
+        newIndex.index,
+        "cities length:",
+        cities.length
+    );
 
-    const container = citiesScrollContainer.value;
-    const scrollLeft = container.scrollLeft;
-    const containerWidth = container.scrollWidth - container.clientWidth;
+    const realIndex = newIndex.index; // Plus de modulo car pas de loop
+    console.log(
+        "Real index:",
+        realIndex,
+        "Current active:",
+        activeCityIndex.value
+    );
 
-    if (containerWidth === 0) return;
-
-    // Calculer l'index basé sur la position de scroll
-    const progress = scrollLeft / containerWidth;
-    const newIndex = Math.round(progress * (cities.length - 1));
-
-    if (
-        newIndex !== activeCityIndex.value &&
-        newIndex >= 0 &&
-        newIndex < cities.length
-    ) {
-        activeCityIndex.value = newIndex;
+    if (activeCityIndex.value !== realIndex && cities[realIndex]) {
+        activeCityIndex.value = realIndex;
+        console.log(
+            "Updated activeCityIndex to:",
+            realIndex,
+            "City:",
+            cities[realIndex].name
+        );
 
         // Mettre à jour la carte avec la nouvelle ville
         if (map.value) {
-            map.value.setCenter(cities[newIndex].coords);
+            map.value.setCenter(cities[realIndex].coords);
             map.value.setZoom(12);
         }
     }
-};
-
-// Fonction pour faire défiler vers une ville spécifique
-const scrollToCity = (index) => {
-    if (!citiesScrollContainer.value) return;
-
-    const container = citiesScrollContainer.value;
-    const containerWidth = container.scrollWidth - container.clientWidth;
-    const targetScroll = (containerWidth / (cities.length - 1)) * index;
-
-    container.scrollTo({
-        left: targetScroll,
-        behavior: "smooth",
-    });
 };
 
 const checkMobile = () => {
@@ -121,27 +114,6 @@ onMounted(() => {
             scrollableElement.value.addEventListener("scroll", handleScroll);
             handleScroll(); // Vérifier l'état initial
         }
-
-        // Ajouter throttle pour optimiser les performances du parallaxe des villes
-        let ticking = false;
-        const throttledCitiesScroll = () => {
-            if (!ticking) {
-                requestAnimationFrame(() => {
-                    handleCitiesParallaxScroll();
-                    ticking = false;
-                });
-                ticking = true;
-            }
-        };
-
-        // Attacher l'événement de scroll pour le carrousel des villes
-        if (citiesScrollContainer.value) {
-            citiesScrollContainer.value.addEventListener(
-                "scroll",
-                throttledCitiesScroll,
-                { passive: true }
-            );
-        }
     });
 });
 
@@ -150,13 +122,6 @@ onUnmounted(() => {
 
     if (scrollableElement.value) {
         scrollableElement.value.removeEventListener("scroll", handleScroll);
-    }
-
-    if (citiesScrollContainer.value) {
-        citiesScrollContainer.value.removeEventListener(
-            "scroll",
-            handleCitiesParallaxScroll
-        );
     }
 });
 </script>
@@ -229,7 +194,7 @@ onUnmounted(() => {
                     </button>
                 </div>
 
-                <!-- Version mobile - carrousel horizontal avec parallaxe -->
+                <!-- Version mobile - carrousel Splide -->
                 <div
                     class="md:hidden w-full"
                     data-aos="fade-right"
@@ -237,7 +202,7 @@ onUnmounted(() => {
                     data-aos-duration="800"
                 >
                     <!-- Indicateurs de navigation -->
-                    <div class="flex justify-center mb-4 gap-2">
+                    <div class="flex justify-center mb-6 gap-2">
                         <button
                             v-for="(city, index) in cities"
                             :key="'indicator-' + index"
@@ -245,90 +210,109 @@ onUnmounted(() => {
                             :class="
                                 activeCityIndex === index
                                     ? 'bg-[#FF8C42] scale-125'
-                                    : 'bg-gray-400'
+                                    : 'bg-gray-400 hover:bg-gray-500'
                             "
                             @click="centerOn(city.coords, index)"
                         ></button>
                     </div>
 
-                    <!-- Conteneur de scroll horizontal -->
-                    <div
-                        ref="citiesScrollContainer"
-                        class="flex overflow-x-auto hide-scrollbar gap-4 p-4 scroll-smooth snap-x snap-mandatory"
+                    <!-- Carrousel Splide -->
+                    <Splide
+                        ref="splideRef"
+                        :options="{
+                            type: 'slide',
+                            perPage: 1,
+                            gap: '16px',
+                            padding: { left: '16px', right: '16px' },
+                            arrows: false,
+                            pagination: false,
+                            drag: true,
+                            snap: true,
+                            speed: 300,
+                            focus: 'center',
+                            trimSpace: false,
+                            autoWidth: false,
+                            rewind: true,
+                        }"
+                        @splide:moved="onSlideChange"
+                        @splide:active="onSlideChange"
+                        class="w-full"
                     >
-                        <div
+                        <SplideSlide
                             v-for="(city, index) in cities"
-                            :key="'mobile-city-' + index"
-                            class="min-w-[80vw] flex flex-col p-6 bg-white rounded-lg border-2 snap-center transition-all duration-500 shadow-sm"
-                            :class="{
-                                'border-[#FF8C42] shadow-lg scale-[1.02] bg-[#f9f9f9]':
-                                    activeCityIndex === index,
-                                'border-gray-200 opacity-75':
-                                    activeCityIndex !== index,
-                            }"
-                            :style="{
-                                transform: `translateX(${
-                                    (index - activeCityIndex) * 8
-                                }px) scale(${
-                                    activeCityIndex === index ? 1.02 : 0.98
-                                })`,
-                                filter:
-                                    activeCityIndex === index
-                                        ? 'brightness(1)'
-                                        : 'brightness(0.85)',
-                            }"
+                            :key="'slide-' + index"
+                            class="w-full"
                         >
-                            <div class="flex items-center justify-between mb-3">
-                                <h3
-                                    class="text-xl font-semibold font-poppins transition-colors duration-300"
-                                    :class="
-                                        activeCityIndex === index
-                                            ? 'text-[#FF8C42]'
-                                            : 'text-gray-700'
-                                    "
-                                >
-                                    {{ city.name }}
-                                </h3>
-                                <svg
-                                    class="w-5 h-5 transition-all duration-300"
-                                    :class="
-                                        activeCityIndex === index
-                                            ? 'text-[#FF8C42] translate-x-1'
-                                            : 'text-gray-400'
-                                    "
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 384 512"
-                                    fill="currentColor"
-                                >
-                                    <path
-                                        d="M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"
-                                    />
-                                </svg>
-                            </div>
-                            <p
-                                class="text-sm font-medium font-inter transition-colors duration-300"
-                                :class="
-                                    activeCityIndex === index
-                                        ? 'text-[#0D0703]'
-                                        : 'text-gray-500'
-                                "
+                            <div
+                                class="flex flex-col p-6 my-2 bg-white rounded-xl border-2 transition-all duration-500 min-h-[140px] w-full"
+                                :class="{
+                                    'border-[#FF8C42] bg-gradient-to-br from-white to-[#fef8f5] ':
+                                        activeCityIndex === index,
+                                    'border-gray-200 opacity-90':
+                                        activeCityIndex !== index,
+                                }"
                             >
-                                Zone d'intervention électrique
-                            </p>
-                            <div class="mt-3 flex items-center gap-2">
-                                <span
-                                    class="text-xs px-2 py-1 rounded-full transition-all duration-300"
+                                <div
+                                    class="flex items-center justify-between mb-4"
+                                >
+                                    <h3
+                                        class="text-xl font-bold font-poppins transition-colors duration-300"
+                                        :class="
+                                            activeCityIndex === index
+                                                ? 'text-[#FF8C42]'
+                                                : 'text-gray-700'
+                                        "
+                                    >
+                                        {{ city.name }}
+                                    </h3>
+                                    <svg
+                                        class="w-6 h-6 transition-all duration-300"
+                                        :class="
+                                            activeCityIndex === index
+                                                ? 'text-[#FF8C42] translate-x-1 scale-110'
+                                                : 'text-gray-400'
+                                        "
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 384 512"
+                                        fill="currentColor"
+                                    >
+                                        <path
+                                            d="M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"
+                                        />
+                                    </svg>
+                                </div>
+                                <p
+                                    class="text-base font-medium font-inter transition-colors duration-300 mb-6"
                                     :class="
                                         activeCityIndex === index
-                                            ? 'bg-[#FF8C42] text-white'
-                                            : 'bg-gray-200 text-gray-600'
+                                            ? 'text-[#0D0703]'
+                                            : 'text-gray-500'
                                     "
                                 >
-                                    Disponible
-                                </span>
+                                    Zone d'intervention électrique
+                                </p>
+                                <div class="flex items-center justify-between">
+                                    <span
+                                        class="text-sm px-4 py-2 rounded-full font-medium transition-all duration-300"
+                                        :class="
+                                            activeCityIndex === index
+                                                ? 'bg-[#FF8C42] text-white shadow-sm'
+                                                : 'bg-gray-100 text-gray-600'
+                                        "
+                                    >
+                                        Disponible
+                                    </span>
+                                    <div
+                                        class="flex items-center gap-1 text-xs text-gray-400"
+                                    >
+                                        <span>{{ index + 1 }}</span>
+                                        <span>/</span>
+                                        <span>{{ cities.length }}</span>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
+                        </SplideSlide>
+                    </Splide>
                 </div>
             </div>
             <!-- Carte -->
@@ -354,34 +338,7 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-/* Styles pour le carrousel mobile avec parallaxe */
-.hide-scrollbar {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
-    scroll-behavior: smooth;
-}
-
-.hide-scrollbar::-webkit-scrollbar {
-    display: none; /* Chrome, Safari and Opera */
-}
-
-/* Snap scrolling pour mobile */
-.snap-x {
-    scroll-snap-type: x mandatory;
-}
-
-.snap-center {
-    scroll-snap-align: center;
-}
-
-/* Animation smooth pour les transitions parallaxe des villes */
-.mobile-city-card {
-    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-        filter 0.4s ease, opacity 0.4s ease, scale 0.3s ease,
-        border-color 0.3s ease, background-color 0.3s ease;
-}
-
-/* Indicateurs de navigation personnalisés */
+/* Styles personnalisés pour les indicateurs */
 .nav-indicator {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
@@ -392,27 +349,44 @@ onUnmounted(() => {
     opacity: 0.8;
 }
 
-/* Effet de profondeur pour les cartes des villes */
-.city-depth-effect {
-    transform-style: preserve-3d;
-    perspective: 1000px;
-}
-
-/* Animation pour les icônes */
-.city-icon {
-    transition: transform 0.3s ease, color 0.3s ease;
-}
-
-/* Effet de focus amélioré */
+/* Effet de focus amélioré pour les cartes */
 .city-card:focus {
     outline: none;
     box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.3);
 }
 
+/* Animation pour les icônes avec rebond */
+.city-icon {
+    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55),
+        color 0.3s ease;
+}
+
+/* Styles pour les slides Splide */
+.splide__slide {
+    opacity: 0.7;
+    transform: scale(0.95);
+    transition: all 0.4s ease;
+}
+
+.splide__slide.is-active {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Customisation des styles Splide */
+.splide__track {
+    padding: 0.5rem 0;
+}
+
 /* Responsive adjustments */
 @media (max-width: 640px) {
-    .min-w-\[80vw\] {
-        min-width: 85vw;
+    .splide__slide {
+        opacity: 0.8;
+        transform: scale(0.96);
+    }
+
+    .splide__slide.is-active {
+        transform: scale(1.02);
     }
 }
 </style>
