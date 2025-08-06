@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch, inject } from "vue";
+import { ref, onMounted, watch, inject, nextTick } from "vue";
 import axios from "axios";
 import PublicLayout from "@/Layouts/PublicLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
@@ -17,6 +17,9 @@ const activeIndex = ref(0);
 const prevActiveIndex = ref(0);
 // Ajout de la définition de portfolio
 const portfolio = ref([]);
+// Variables pour le parallaxe mobile
+const scrollContainer = ref(null);
+const isScrolling = ref(false);
 
 // Récupérer les services depuis l'API Laravel
 const fetchServices = async () => {
@@ -136,6 +139,11 @@ const fetchPortfolio = async () => {
 const selectService = (index) => {
     prevActiveIndex.value = activeIndex.value;
     activeIndex.value = index;
+
+    // Sur mobile, faire défiler vers le service
+    if (window.innerWidth < 768) {
+        scrollToService(index);
+    }
 };
 
 // Vérifier si une description est active (et donc déployée)
@@ -150,6 +158,43 @@ watch(activeIndex, (newVal) => {
         AOS.refresh();
     }, 100);
 });
+
+// Fonction pour gérer le parallaxe mobile
+const handleParallaxScroll = () => {
+    if (!scrollContainer.value) return;
+
+    const container = scrollContainer.value;
+    const scrollLeft = container.scrollLeft;
+    const containerWidth = container.scrollWidth - container.clientWidth;
+
+    if (containerWidth === 0) return;
+
+    // Calculer l'index basé sur la position de scroll
+    const progress = scrollLeft / containerWidth;
+    const newIndex = Math.round(progress * (services.value.length - 1));
+
+    if (
+        newIndex !== activeIndex.value &&
+        newIndex >= 0 &&
+        newIndex < services.value.length
+    ) {
+        activeIndex.value = newIndex;
+    }
+};
+
+// Fonction pour faire défiler vers un service spécifique
+const scrollToService = (index) => {
+    if (!scrollContainer.value) return;
+
+    const container = scrollContainer.value;
+    const containerWidth = container.scrollWidth - container.clientWidth;
+    const targetScroll = (containerWidth / (services.value.length - 1)) * index;
+
+    container.scrollTo({
+        left: targetScroll,
+        behavior: "smooth",
+    });
+};
 
 // Appel au montage
 onMounted(() => {
@@ -193,6 +238,27 @@ onMounted(() => {
             }
         }, 300);
     }
+
+    // Ajouter throttle pour optimiser les performances du parallaxe
+    let ticking = false;
+    const throttledScroll = () => {
+        if (!ticking) {
+            requestAnimationFrame(() => {
+                handleParallaxScroll();
+                ticking = false;
+            });
+            ticking = true;
+        }
+    };
+
+    // Attacher l'événement de scroll après le montage
+    nextTick(() => {
+        if (scrollContainer.value) {
+            scrollContainer.value.addEventListener("scroll", throttledScroll, {
+                passive: true,
+            });
+        }
+    });
 });
 </script>
 
@@ -242,8 +308,9 @@ onMounted(() => {
                         </p>
                     </div>
                 </div>
+                <!-- Version desktop - liste verticale -->
                 <div
-                    class="flex flex-col items-start self-stretch max-h-[294px] overflow-y-auto hide-scrollbar"
+                    class="hidden md:flex flex-col items-start self-stretch max-h-[294px] overflow-y-auto hide-scrollbar"
                     data-aos="fade-up"
                     data-aos-delay="700"
                 >
@@ -272,6 +339,62 @@ onMounted(() => {
                                     isActive(index) ? 'expanded' : 'collapsed'
                                 "
                             >
+                                {{ service.description }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Version mobile - carrousel horizontal avec parallaxe -->
+                <div
+                    class="md:hidden w-full"
+                    data-aos="fade-up"
+                    data-aos-delay="700"
+                >
+                    <!-- Indicateurs de navigation -->
+                    <div class="flex justify-center mb-4 gap-2">
+                        <button
+                            v-for="(service, index) in services"
+                            :key="'indicator-' + index"
+                            class="w-2 h-2 rounded-full transition-all duration-300"
+                            :class="
+                                isActive(index)
+                                    ? 'bg-[#FF8C42] scale-125'
+                                    : 'bg-gray-600'
+                            "
+                            @click="selectService(index)"
+                        ></button>
+                    </div>
+
+                    <!-- Conteneur de scroll horizontal -->
+                    <div
+                        ref="scrollContainer"
+                        class="flex overflow-x-auto hide-scrollbar gap-4 pb-4 scroll-smooth snap-x snap-mandatory"
+                        @scroll="handleParallaxScroll"
+                    >
+                        <div
+                            v-for="(service, index) in services"
+                            :key="'mobile-service-' + index"
+                            :id="'mobile-service-' + service.id"
+                            class="min-w-[85vw] flex flex-col p-6 bg-[#242424] rounded-lg border-l-4 snap-center transition-all duration-500"
+                            :class="{
+                                'border-[#FF8C42] shadow-lg scale-[1.02]':
+                                    isActive(index),
+                                'border-gray-600 opacity-70': !isActive(index),
+                            }"
+                            :style="{
+                                transform: `translateX(${
+                                    (index - activeIndex) * 10
+                                }px)`,
+                                filter: isActive(index)
+                                    ? 'brightness(1)'
+                                    : 'brightness(0.7)',
+                            }"
+                        >
+                            <h4 class="font-poppins text-xl font-medium mb-3">
+                                {{ service.title }}
+                            </h4>
+                            <p class="font-inter text-sm leading-relaxed">
                                 {{ service.description }}
                             </p>
                         </div>
@@ -402,6 +525,7 @@ onMounted(() => {
 .hide-scrollbar {
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
+    scroll-behavior: smooth;
 }
 
 .hide-scrollbar::-webkit-scrollbar {
@@ -471,5 +595,48 @@ onMounted(() => {
 
 [data-aos].aos-animate {
     pointer-events: auto;
+}
+
+/* Styles pour le carrousel mobile avec parallaxe */
+.snap-x {
+    scroll-snap-type: x mandatory;
+}
+
+.snap-center {
+    scroll-snap-align: center;
+}
+
+/* Animation smooth pour les transitions parallaxe */
+.mobile-service-card {
+    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+        filter 0.4s ease, opacity 0.4s ease, scale 0.3s ease;
+}
+
+/* Amélioration du scroll horizontal */
+.hide-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+    scroll-behavior: smooth;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+}
+
+/* Indicateurs personnalisés */
+.nav-indicator {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+}
+
+.nav-indicator:hover {
+    transform: scale(1.2);
+    opacity: 0.8;
+}
+
+/* Effet de profondeur pour les cartes inactives */
+.depth-effect {
+    transform-style: preserve-3d;
+    perspective: 1000px;
 }
 </style>
