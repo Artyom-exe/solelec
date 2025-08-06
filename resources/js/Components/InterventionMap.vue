@@ -1,10 +1,12 @@
 <script setup>
-import { onMounted, ref, computed, nextTick } from "vue";
+import { onMounted, ref, nextTick, onUnmounted } from "vue";
 
 const mapElement = ref(null);
 const map = ref(null);
 const isMobile = ref(false);
-const cityButtons = ref([]);
+const scrollableElement = ref(null);
+const showGradient = ref(true);
+const activeCityIndex = ref(0); // Index de la ville active par défaut
 
 const cities = [
     { name: "Ottignies", coords: { lat: 50.6683, lng: 4.6144 } },
@@ -17,7 +19,8 @@ const cities = [
     { name: "Bruxelles", coords: { lat: 50.8503, lng: 4.3517 } },
 ];
 
-const centerOn = (coords) => {
+const centerOn = (coords, cityIndex) => {
+    activeCityIndex.value = cityIndex; // Mettre à jour la ville active
     if (map.value) {
         map.value.setCenter(coords);
         map.value.setZoom(12);
@@ -25,32 +28,27 @@ const centerOn = (coords) => {
 };
 
 const checkMobile = () => {
-    if (typeof window !== "undefined") {
-        isMobile.value = window.innerWidth < 768;
-    }
+    isMobile.value = window.innerWidth < 768;
 };
 
-const focusFirstCity = () => {
-    // Attendre que les animations AOS se terminent avant de faire le focus
-    // La durée maximale des animations est de 800ms + délai de 150ms + (7 * 50ms) = 1300ms
-    setTimeout(() => {
-        if (cityButtons.value && cityButtons.value[0]) {
-            cityButtons.value[0].focus();
-        }
-    }, 1400); // Ajouter une petite marge de sécurité
+const handleScroll = () => {
+    if (!scrollableElement.value || !isMobile.value) return;
+
+    const { scrollTop, scrollHeight, clientHeight } = scrollableElement.value;
+    const threshold = 10; // Marge de 10px pour détecter le bas
+
+    // Cacher le dégradé si on est proche du bas
+    showGradient.value = scrollTop + clientHeight < scrollHeight - threshold;
 };
 
 onMounted(() => {
     checkMobile();
-
-    if (typeof window !== "undefined") {
-        window.addEventListener("resize", checkMobile);
-    }
+    window.addEventListener("resize", checkMobile);
 
     window.initMap = () => {
         map.value = new google.maps.Map(mapElement.value, {
             center: cities[0].coords,
-            zoom: 9,
+            zoom: 12,
             disableDefaultUI: true,
         });
 
@@ -67,10 +65,20 @@ onMounted(() => {
         window.initMap();
     }
 
-    // Attendre le prochain tick pour que les éléments soient rendus
     nextTick(() => {
-        focusFirstCity();
+        if (scrollableElement.value) {
+            scrollableElement.value.addEventListener("scroll", handleScroll);
+            handleScroll(); // Vérifier l'état initial
+        }
     });
+});
+
+onUnmounted(() => {
+    window.removeEventListener("resize", checkMobile);
+
+    if (scrollableElement.value) {
+        scrollableElement.value.removeEventListener("scroll", handleScroll);
+    }
 });
 </script>
 
@@ -82,60 +90,71 @@ onMounted(() => {
     >
         <div class="flex flex-col md:flex-row gap-8">
             <!-- Deux colonnes -->
-            <div
-                class="md:grid md:grid-cols-2 flex flex-col md:gap-6 gap-4 md:w-1/2 md:overflow-visible overflow-y-auto md:max-h-none max-h-[300px]"
-                data-aos="fade-right"
-                data-aos-delay="100"
-                data-aos-duration="800"
-            >
-                <button
-                    v-for="(city, index) in cities"
-                    :key="city.name"
-                    :ref="
-                        (el) => {
-                            if (index === 0) cityButtons[0] = el;
-                        }
-                    "
-                    @click="centerOn(city.coords)"
-                    class="group flex flex-col items-start gap-2 px-6 py-5 rounded-lg border border-transparent transition-all duration-300 ease-in-out hover:bg-[#f9f9f9] hover:border-[#FF8C42] hover:shadow-md focus:border-[#FF8C42] focus:bg-[#f9f9f9] focus:shadow-md focus:outline-none flex-shrink-0"
-                    :data-aos="
-                        index < 3 || !isMobile
-                            ? index % 2 === 0
-                                ? 'fade-up'
-                                : 'fade-down'
-                            : ''
-                    "
-                    :data-aos-delay="
-                        index < 3 || !isMobile ? 150 + index * 50 : 0
-                    "
-                    data-aos-duration="600"
-                    data-aos-easing="ease-in-out"
+            <div class="relative md:w-1/2">
+                <div
+                    ref="scrollableElement"
+                    class="md:grid md:grid-cols-2 flex flex-col md:gap-6 gap-4 md:overflow-visible overflow-y-auto md:max-h-none max-h-[300px]"
+                    data-aos="fade-right"
+                    data-aos-delay="100"
+                    data-aos-duration="800"
                 >
-                    <h3
-                        class="text-left text-xl font-semibold group-hover:text-[#FF8C42] group-focus:text-[#FF8C42] transition-colors duration-300 font-poppins"
+                    <button
+                        v-for="(city, index) in cities"
+                        :key="city.name"
+                        @click="centerOn(city.coords, index)"
+                        class="group flex flex-col items-start gap-2 px-6 py-5 rounded-lg border transition-all duration-300 ease-in-out focus:outline-none flex-shrink-0"
+                        :class="
+                            activeCityIndex === index
+                                ? 'border-[#FF8C42] bg-[#f9f9f9] shadow-md'
+                                : 'border-transparent hover:bg-[#f9f9f9] hover:border-[#FF8C42] hover:shadow-md'
+                        "
                     >
-                        {{ city.name }}
-                    </h3>
-                    <div class="flex gap-3 items-center">
-                        <p
-                            class="text-left text-sm font-medium text-gray-500 group-hover:text-[#0D0703] group-focus:text-[#0D0703] font-inter"
+                        <h3
+                            class="text-left text-xl font-semibold transition-colors duration-300 font-poppins"
+                            :class="
+                                activeCityIndex === index
+                                    ? 'text-[#FF8C42]'
+                                    : 'group-hover:text-[#FF8C42]'
+                            "
                         >
-                            Voir sur la carte
-                        </p>
-                        <svg
-                            class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1 text-gray-500 group-hover:text-[#FF8C42] group-focus:translate-x-1 group-focus:text-[#FF8C42]"
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 448 512"
-                            fill="currentColor"
-                        >
-                            <path
-                                d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"
-                            />
-                        </svg>
-                    </div>
-                </button>
-            </div>
+                            {{ city.name }}
+                        </h3>
+                        <div class="flex gap-3 items-center">
+                            <p
+                                class="text-left text-sm font-medium transition-colors duration-300 font-inter"
+                                :class="
+                                    activeCityIndex === index
+                                        ? 'text-[#0D0703]'
+                                        : 'text-gray-500 group-hover:text-[#0D0703]'
+                                "
+                            >
+                                Voir sur la carte
+                            </p>
+                            <svg
+                                class="w-4 h-4 transition-all duration-300"
+                                :class="
+                                    activeCityIndex === index
+                                        ? 'text-[#FF8C42] translate-x-1'
+                                        : 'text-gray-500 group-hover:text-[#FF8C42] group-hover:translate-x-1'
+                                "
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 448 512"
+                                fill="currentColor"
+                            >
+                                <path
+                                    d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"
+                                />
+                            </svg>
+                        </div>
+                    </button>
+                </div>
 
+                <!-- Dégradé en bas (uniquement mobile et si pas en bas) -->
+                <div
+                    v-show="showGradient && isMobile"
+                    class="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-[#F5F5F5] to-transparent pointer-events-none"
+                ></div>
+            </div>
             <!-- Carte -->
             <div
                 class="md:w-1/2 h-[440px] rounded-lg overflow-hidden shadow"
