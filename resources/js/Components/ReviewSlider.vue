@@ -1,7 +1,7 @@
 <script setup>
 import { Splide, SplideSlide } from "@splidejs/vue-splide";
 import { AutoScroll } from "@splidejs/splide-extension-auto-scroll";
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted } from "vue";
 import axios from "axios";
 
 const reviews = ref([]);
