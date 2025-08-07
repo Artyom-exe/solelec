@@ -249,22 +249,26 @@ const deleteClient = (clientId) => {
 </script>
 <template>
     <AdminLayout>
-        <section class="flex py-28 px-16 flex-col gap-20 mt-14 bg-[#2D2D2D]">
-            <div class="flex justify-between self-stretch">
+        <section
+            class="flex md:py-28 md:px-16 py-16 px-5 flex-col gap-20 md:mt-14 mt-16 bg-[#2D2D2D]"
+        >
+            <div class="flex md:flex-row flex-col justify-between self-stretch">
                 <div
-                    class="flex max-w-[768px] flex-col items-start gap-4 text-white"
+                    class="flex md:max-w-[768px] flex-col items-start gap-4 text-white"
                 >
-                    <h2 class="text-center font-inter text-base font-semibold">
+                    <h2
+                        class="md:text-center font-inter text-base font-semibold"
+                    >
                         Clients
                     </h2>
                     <div class="relative flex flex-col gap-6">
                         <h3
-                            class="font-poppins text-5xl text-center font-medium leading-[57.6px] tracking-[-0.48px] mb-6"
+                            class="font-poppins text-4xl md:text-5xl md:text-center font-medium md:leading-[57.6px] leading-[43.2px] tracking-[-0.36px] md:tracking-[-0.48px] mb-6"
                         >
                             Liste de mes clients
                         </h3>
                         <div
-                            class="absolute bottom-0 left-1/3 border-2 border-[#FF8C42] w-[80%] max-w-[353px] min-w-[200px]"
+                            class="absolute md:bottom-0 bottom-10 md:left-1/3 left-32 border-2 border-[#FF8C42] md:w-[80%] w-[61%] max-w-[353px] md:min-w-[200px] min-w-[188px]"
                         ></div>
                     </div>
                 </div>
