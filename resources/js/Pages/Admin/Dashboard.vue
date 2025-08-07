@@ -80,7 +80,8 @@ defineProps({
                     v-if="recentActivities && recentActivities.length"
                     class="overflow-x-auto"
                 >
-                    <table class="w-full border-collapse">
+                    <!-- Vue desktop : tableau classique -->
+                    <table class="w-full border-collapse hidden md:table">
                         <thead>
                             <tr>
                                 <th
@@ -157,6 +158,47 @@ defineProps({
                             </tr>
                         </tbody>
                     </table>
+
+                    <!-- Vue mobile : cartes empilées -->
+                    <div class="md:hidden space-y-4">
+                        <div
+                            v-for="(activity, index) in recentActivities"
+                            :key="activity.id"
+                            class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm"
+                        >
+                            <div class="flex justify-between items-start mb-3">
+                                <span
+                                    :class="{
+                                        'bg-[#E7F6E7] text-[#28A745]':
+                                            activity.type === 'create',
+                                        'bg-[#E6F3FF] text-[#0D6EFD]':
+                                            activity.type === 'update',
+                                        'bg-[#FEECEC] text-[#DC3545]':
+                                            activity.type === 'delete',
+                                        'bg-[#FFF4EC] text-[#FF8C42]':
+                                            activity.type === 'quote',
+                                        'bg-[#F3EBFF] text-[#6F42C1]':
+                                            activity.type === 'intervention',
+                                    }"
+                                    class="px-3 py-1 rounded-full text-xs font-medium font-inter"
+                                >
+                                    {{ activity.typeLabel }}
+                                </span>
+                                <span
+                                    class="text-xs font-inter text-[#6C757D]"
+                                    :title="activity.date"
+                                >
+                                    {{ activity.timeAgo }}
+                                </span>
+                            </div>
+                            <p class="font-inter text-[#0D0703] text-sm mb-2">
+                                {{ activity.description }}
+                            </p>
+                            <p class="font-inter text-[#6C757D] text-xs">
+                                Par {{ activity.user }}
+                            </p>
+                        </div>
+                    </div>
                 </div>
                 <div
                     v-else
