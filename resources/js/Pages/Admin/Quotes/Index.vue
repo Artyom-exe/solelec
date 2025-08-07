@@ -18,6 +18,28 @@ const currentFilter = ref("all"); // 'all', 'type', ou 'client'
 const selectedType = ref(null);
 const selectedClient = ref(null);
 
+// État pour gérer l'affichage des actions mobiles
+const showMobileActions = ref({});
+
+// Fonction pour gérer l'appui long sur mobile
+let longPressTimer = null;
+const startLongPress = (quoteId) => {
+    longPressTimer = setTimeout(() => {
+        showMobileActions.value = { [quoteId]: true };
+    }, 500); // 500ms pour déclencher l'appui long
+};
+
+const cancelLongPress = () => {
+    if (longPressTimer) {
+        clearTimeout(longPressTimer);
+        longPressTimer = null;
+    }
+};
+
+const hideMobileActions = (quoteId) => {
+    showMobileActions.value = { ...showMobileActions.value, [quoteId]: false };
+};
+
 // Fonction pour supprimer un devis
 const deleteQuote = (id) => {
     if (confirm("Êtes-vous sûr de vouloir supprimer ce devis ?")) {
@@ -199,15 +221,30 @@ const renderMarkdown = (text) => {
                     <div
                         v-for="quote in filteredQuotes"
                         :key="quote.id"
-                        class="bg-[#242424] rounded-lg border border-white/20 text-white p-8 gap-6 items-start w-full group relative"
+                        class="bg-[#242424] rounded-lg border border-white/20 text-white p-4 md:p-8 gap-6 items-start w-full group relative cursor-pointer md:cursor-default transition-all duration-300 active:scale-[0.98] active:bg-gray-800/50"
+                        @touchstart="startLongPress(quote.id)"
+                        @touchend="cancelLongPress"
+                        @touchcancel="cancelLongPress"
+                        @mousedown="startLongPress(quote.id)"
+                        @mouseup="cancelLongPress"
+                        @mouseleave="cancelLongPress"
                     >
-                        <!-- Actions d'édition/suppression qui apparaissent au survol -->
+                        <!-- Actions d'édition/suppression qui apparaissent au survol sur desktop et après appui long sur mobile -->
                         <div
-                            class="absolute top-[-0.5rem] right-[-0.5rem] opacity-0 group-hover:opacity-100 transition-opacity flex gap-2"
+                            class="absolute top-[-0.5rem] right-[-0.5rem] transition-opacity flex gap-2 z-10"
+                            :class="
+                                showMobileActions[quote.id]
+                                    ? 'opacity-100 md:opacity-0 md:group-hover:opacity-100'
+                                    : 'opacity-0 md:group-hover:opacity-100'
+                            "
+                            @click.stop
+                            @touchstart.stop
+                            @mousedown.stop
                         >
                             <button
                                 @click="deleteQuote(quote.id)"
                                 title="Supprimer"
+                                class="p-2 rounded-xl bg-red-600/20 hover:bg-red-600/30 border border-red-500/30 transition-all duration-200 active:scale-95"
                             >
                                 <img
                                     src="/assets/icons/clients/delete-icon.svg"
@@ -216,6 +253,14 @@ const renderMarkdown = (text) => {
                                 />
                             </button>
                         </div>
+
+                        <!-- Zone de clic pour fermer les actions mobiles quand on clique ailleurs -->
+                        <div
+                            v-if="showMobileActions[quote.id]"
+                            class="fixed inset-0 z-0 bg-black/20 backdrop-blur-sm md:hidden"
+                            @click="hideMobileActions(quote.id)"
+                            @touchstart="hideMobileActions(quote.id)"
+                        ></div>
                         <div
                             class="flex flex-col items-start gap-8 self-stretch"
                         >
@@ -460,5 +505,47 @@ const renderMarkdown = (text) => {
     margin-right: 0;
     font-style: italic;
     color: rgba(255, 255, 255, 0.8);
+}
+
+/* Animations pour les actions mobiles */
+@keyframes slide-in-from-right {
+    from {
+        opacity: 0;
+        transform: translateX(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.animate-in {
+    animation-duration: 0.2s;
+    animation-timing-function: ease-out;
+    animation-fill-mode: both;
+}
+
+.slide-in-from-right-2 {
+    animation-name: slide-in-from-right;
+}
+
+/* Effet de pulsation pour indiquer l'appui long */
+.group:active {
+    animation: pulse-subtle 0.5s ease-in-out;
+}
+
+@keyframes pulse-subtle {
+    0%,
+    100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(0.98);
+    }
+}
+
+/* Amélioration des transitions pour les boutons */
+button {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 </style>
