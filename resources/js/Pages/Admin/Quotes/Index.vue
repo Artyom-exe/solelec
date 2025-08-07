@@ -103,15 +103,15 @@ const renderMarkdown = (text) => {
 <template>
     <AdminLayout>
         <section
-            class="flex py-28 px-16 items-start gap-20 bg-[#2D2D2D] min-h-screen"
+            class="flex md:flex-row flex-col md:py-28 md:px-16 py-16 px-5 items-start gap-20 bg-[#2D2D2D] md:mt-14 mt-16 min-h-screen"
         >
-            <div class="flex flex-col items-start gap-4 text-white w-3/4">
+            <div class="flex flex-col items-start gap-4 text-white md:w-3/4">
                 <h2 class="text-center font-inter text-base font-semibold">
                     Devis
                 </h2>
                 <div class="relative flex flex-col gap-6">
                     <h3
-                        class="font-poppins text-5xl text-left font-medium leading-[57.6px] tracking-[-0.48px] mb-6"
+                        class="font-poppins md:text-5xl text-4xl text-left font-medium md:leading-[57.6px] leading-[43.2px] tracking-[-0.36px] md:tracking-[-0.48px] mb-6"
                     >
                         Mes demande de devis
                     </h3>
@@ -224,7 +224,7 @@ const renderMarkdown = (text) => {
                                     class="flex items-center gap-4 flex-1 flex-wrap"
                                 >
                                     <h4
-                                        class="font-poppins text-2xl font-medium tracking-[-0.24px]"
+                                        class="font-poppins md:text-2xl text-xl font-medium tracking-[-0.24px]"
                                     >
                                         {{ quote.client?.name }}
                                         {{ quote.client?.lastname }}
@@ -278,7 +278,7 @@ const renderMarkdown = (text) => {
                                                     d="M17.297 6.57202C16.887 6.57202 16.547 6.23202 16.547 5.82202V4.59802C15.773 4.57202 14.864 4.57202 13.797 4.57202H11.797C10.729 4.57202 9.821 4.57202 9.047 4.59802V5.82202C9.047 6.23202 8.707 6.57202 8.297 6.57202C7.887 6.57202 7.547 6.23202 7.547 5.82202V4.70602C6.602 4.82902 5.953 5.06602 5.497 5.52202C4.895 6.12402 4.675 7.06202 4.594 8.57202H21C20.919 7.06202 20.698 6.12402 20.097 5.52202C19.641 5.06602 18.992 4.82902 18.047 4.70602V5.82202C18.047 6.23202 17.707 6.57202 17.297 6.57202ZM21.041 10.072C21.0463 10.6007 21.0483 11.184 21.047 11.822V12.822C21.047 13.232 21.387 13.572 21.797 13.572C22.207 13.572 22.547 13.232 22.547 12.822V11.822C22.547 7.84202 22.547 5.85202 21.157 4.46202C20.385 3.69002 19.427 3.34702 18.047 3.19402V2.32202C18.047 1.91202 17.707 1.57202 17.297 1.57202C16.887 1.57202 16.547 1.91202 16.547 2.32202V3.09702C15.751 3.07202 14.842 3.07202 13.797 3.07202H11.797C10.751 3.07202 9.843 3.07202 9.047 3.09702V2.32202C9.047 1.91202 8.707 1.57202 8.297 1.57202C7.887 1.57202 7.547 1.91202 7.547 2.32202V3.19402C6.167 3.34702 5.209 3.69002 4.437 4.46202C3.047 5.85202 3.047 7.85202 3.047 11.822V13.822C3.047 17.802 3.047 19.792 4.437 21.182C5.827 22.572 7.817 22.572 11.797 22.572C12.207 22.572 12.547 22.232 12.547 21.822C12.547 21.412 12.207 21.072 11.797 21.072C8.237 21.072 6.447 21.072 5.497 20.122C4.547 19.172 4.547 17.382 4.547 13.822V11.822C4.54633 11.1847 4.548 10.6014 4.552 10.072H21.041ZM17.797 23.072C15.177 23.072 13.047 20.942 13.047 18.322C13.047 15.702 15.177 13.572 17.797 13.572C20.417 13.572 22.547 15.702 22.547 18.322C22.547 20.942 20.417 23.072 17.797 23.072ZM17.797 15.072C16.007 15.072 14.547 16.532 14.547 18.322C14.547 20.112 16.007 21.572 17.797 21.572C19.587 21.572 21.047 20.112 21.047 18.322C21.047 16.532 19.587 15.072 17.797 15.072ZM18.267 19.852C18.417 20.002 18.607 20.072 18.797 20.072C18.987 20.072 19.177 20.002 19.327 19.852C19.617 19.562 19.617 19.082 19.327 18.792L18.547 18.012V16.322C18.547 15.912 18.207 15.572 17.797 15.572C17.387 15.572 17.047 15.912 17.047 16.322V18.322C17.047 18.522 17.127 18.712 17.267 18.852L18.267 19.852Z"
                                                 />
                                             </svg>
-                                            <span>
+                                            <span class="text-sm md:text-base">
                                                 {{
                                                     quote.requested_date !==
                                                     null
@@ -302,7 +302,7 @@ const renderMarkdown = (text) => {
                                                     quote.client?.phone !== null
                                                 "
                                                 :href="`tel:${quote.client?.phone}`"
-                                                class="flex gap-3 hover:text-[#FF8C42] transition-colors duration-300"
+                                                class="flex gap-3 hover:text-[#FF8C42] transition-colors duration-300 text-sm md:text-base"
                                             >
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
@@ -329,7 +329,7 @@ const renderMarkdown = (text) => {
                                                     quote.client?.email !== null
                                                 "
                                                 :href="`mailto:${quote.client?.email}`"
-                                                class="flex gap-3 items-center hover:text-[#FF8C42] transition-colors duration-300"
+                                                class="flex gap-3 items-center hover:text-[#FF8C42] transition-colors duration-300 text-sm md:text-base"
                                             >
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
@@ -357,7 +357,7 @@ const renderMarkdown = (text) => {
                                                 )}`"
                                                 target="_blank"
                                                 rel="noopener"
-                                                class="font-inter text-blue-300 text-base font-normal hover:text-[#FF8C42] transition-colors cursor-pointer flex items-center gap-3"
+                                                class="font-inter text-blue-300 font-normal hover:text-[#FF8C42] transition-colors cursor-pointer flex items-center gap-3 text-sm md:text-base"
                                             >
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
