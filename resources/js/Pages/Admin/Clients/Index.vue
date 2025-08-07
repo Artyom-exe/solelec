@@ -278,19 +278,24 @@ const deleteClient = (clientId) => {
                 <div
                     class="flex md:max-w-[768px] flex-col items-start gap-4 text-white"
                 >
-                    <h2
-                        class="md:text-center font-inter text-base font-semibold"
-                    >
-                        Clients
-                    </h2>
-                    <div class="relative flex flex-col gap-6">
+                    <div class="relative w-full">
+                        <h2
+                            class="md:text-center font-inter text-base font-semibold"
+                        >
+                            Clients
+                        </h2>
+                        <div
+                            class="flex md:hidden absolute bottom-1/2 top-1/2 left-16 border-2 border-[#FF8C42] w-[70%]"
+                        ></div>
+                    </div>
+                    <div class="relative flex flex-col gap-6 w-full">
                         <h3
                             class="font-poppins text-4xl md:text-5xl md:text-center font-medium md:leading-[57.6px] leading-[43.2px] tracking-[-0.36px] md:tracking-[-0.48px] mb-6"
                         >
                             Liste de mes clients
                         </h3>
                         <div
-                            class="absolute md:bottom-0 bottom-10 md:left-1/3 left-32 border-2 border-[#FF8C42] md:w-[80%] w-[61%] max-w-[353px] md:min-w-[200px] min-w-[188px]"
+                            class="md:flex hidden absolute md:bottom-0 border-2 left-1/3 border-[#FF8C42] w-[80%]"
                         ></div>
                     </div>
                 </div>
