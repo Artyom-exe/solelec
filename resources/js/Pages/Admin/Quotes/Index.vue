@@ -1,7 +1,7 @@
 <script setup>
 import AdminLayout from "@/Layouts/AdminLayout.vue";
 import { Link } from "@inertiajs/vue3";
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import { router } from "@inertiajs/vue3";
 import { marked } from "marked";
 
@@ -24,8 +24,14 @@ const showMobileActions = ref({});
 // Fonction pour gérer l'appui long sur mobile
 let longPressTimer = null;
 const startLongPress = (quoteId) => {
+    // Annuler le timer précédent s'il existe
+    if (longPressTimer) {
+        clearTimeout(longPressTimer);
+    }
+
     longPressTimer = setTimeout(() => {
         showMobileActions.value = { [quoteId]: true };
+        longPressTimer = null; // Reset du timer après utilisation
     }, 500); // 500ms pour déclencher l'appui long
 };
 
@@ -39,6 +45,32 @@ const cancelLongPress = () => {
 const hideMobileActions = (quoteId) => {
     showMobileActions.value = { ...showMobileActions.value, [quoteId]: false };
 };
+
+const hideAllMobileActions = () => {
+    showMobileActions.value = {};
+};
+
+// Fonction pour gérer les clics globaux
+const handleGlobalClick = (event) => {
+    // Vérifier si le clic est en dehors des boutons d'action
+    const actionButton = event.target.closest(".mobile-action-button");
+    const actionContainer = event.target.closest(".mobile-action-container");
+
+    if (!actionButton && !actionContainer) {
+        hideAllMobileActions();
+    }
+};
+
+// Ajouter/retirer l'écouteur d'événements global
+onMounted(() => {
+    document.addEventListener("click", handleGlobalClick);
+    document.addEventListener("touchstart", handleGlobalClick);
+});
+
+onUnmounted(() => {
+    document.removeEventListener("click", handleGlobalClick);
+    document.removeEventListener("touchstart", handleGlobalClick);
+});
 
 // Fonction pour supprimer un devis
 const deleteQuote = (id) => {
@@ -225,13 +257,10 @@ const renderMarkdown = (text) => {
                         @touchstart="startLongPress(quote.id)"
                         @touchend="cancelLongPress"
                         @touchcancel="cancelLongPress"
-                        @mousedown="startLongPress(quote.id)"
-                        @mouseup="cancelLongPress"
-                        @mouseleave="cancelLongPress"
                     >
                         <!-- Actions d'édition/suppression qui apparaissent au survol sur desktop et après appui long sur mobile -->
                         <div
-                            class="absolute top-[-0.5rem] right-[-0.5rem] transition-opacity flex gap-2 z-10"
+                            class="absolute top-[-0.5rem] right-[-0.5rem] transition-opacity flex gap-2 z-20 mobile-action-container"
                             :class="
                                 showMobileActions[quote.id]
                                     ? 'opacity-100 md:opacity-0 md:group-hover:opacity-100'
@@ -239,12 +268,11 @@ const renderMarkdown = (text) => {
                             "
                             @click.stop
                             @touchstart.stop
-                            @mousedown.stop
                         >
                             <button
                                 @click="deleteQuote(quote.id)"
                                 title="Supprimer"
-                                class="p-2 rounded-xl bg-red-600/20 hover:bg-red-600/30 border border-red-500/30 transition-all duration-200 active:scale-95"
+                                class="p-2 rounded-xl bg-red-600/20 hover:bg-red-600/30 border border-red-500/30 transition-all duration-200 active:scale-95 mobile-action-button"
                             >
                                 <img
                                     src="/assets/icons/clients/delete-icon.svg"
@@ -254,13 +282,12 @@ const renderMarkdown = (text) => {
                             </button>
                         </div>
 
-                        <!-- Zone de clic pour fermer les actions mobiles quand on clique ailleurs -->
+                        <!-- Overlay de flou qui apparaît uniquement sur mobile -->
                         <div
                             v-if="showMobileActions[quote.id]"
-                            class="fixed inset-0 z-0 bg-black/20 backdrop-blur-sm md:hidden"
-                            @click="hideMobileActions(quote.id)"
-                            @touchstart="hideMobileActions(quote.id)"
+                            class="absolute inset-0 z-10 bg-black/20 backdrop-blur-sm md:hidden rounded-lg pointer-events-none"
                         ></div>
+
                         <div
                             class="flex flex-col items-start gap-8 self-stretch"
                         >
