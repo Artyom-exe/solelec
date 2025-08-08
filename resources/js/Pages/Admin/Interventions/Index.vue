@@ -2,7 +2,15 @@
 import AdminLayout from "@/Layouts/AdminLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import secondaryButton from "@/Components/SecondaryButton.vue";
-import { computed, ref, reactive, inject, watch } from "vue";
+import {
+    computed,
+    ref,
+    reactive,
+    inject,
+    watch,
+    onMounted,
+    onUnmounted,
+} from "vue";
 import { router, usePage } from "@inertiajs/vue3";
 
 // Import des fonctions de validation
@@ -176,6 +184,64 @@ function deleteIntervention(interventionId) {
         });
     }
 }
+
+// État pour gérer l'affichage des actions mobiles
+const showMobileActions = ref({});
+
+// Fonction pour gérer l'appui long sur mobile
+let longPressTimer = null;
+const startLongPress = (interventionId) => {
+    // Annuler tout timer existant
+    if (longPressTimer) {
+        clearTimeout(longPressTimer);
+    }
+
+    longPressTimer = setTimeout(() => {
+        // Fermer toutes les autres actions mobiles avant d'ouvrir celle-ci
+        showMobileActions.value = { [interventionId]: true };
+    }, 500); // 500ms pour déclencher l'appui long
+};
+
+const cancelLongPress = () => {
+    if (longPressTimer) {
+        clearTimeout(longPressTimer);
+        longPressTimer = null;
+    }
+};
+
+const hideMobileActions = (interventionId) => {
+    showMobileActions.value = {
+        ...showMobileActions.value,
+        [interventionId]: false,
+    };
+};
+
+// Fonction pour fermer toutes les actions mobiles
+const hideAllMobileActions = () => {
+    showMobileActions.value = {};
+};
+
+// Fonction pour gérer les clics globaux
+const handleGlobalClick = (event) => {
+    // Vérifier si le clic est en dehors des boutons d'action
+    const actionButton = event.target.closest(".mobile-action-button");
+    const actionContainer = event.target.closest(".mobile-action-container");
+
+    if (!actionButton && !actionContainer) {
+        hideAllMobileActions();
+    }
+};
+
+// Ajouter/retirer l'écouteur d'événements global
+onMounted(() => {
+    document.addEventListener("click", handleGlobalClick);
+    document.addEventListener("touchstart", handleGlobalClick);
+});
+
+onUnmounted(() => {
+    document.removeEventListener("click", handleGlobalClick);
+    document.removeEventListener("touchstart", handleGlobalClick);
+});
 
 watch(
     () => page.props.flash,
@@ -833,15 +899,27 @@ const sortedInterventions = computed(() => {
                 <div
                     v-for="intervention in sortedInterventions"
                     :key="intervention.id"
-                    class="flex md:p-8 p-6 flex-col items-start md:gap-6 gap-5 rounded-lg border border-white/20 bg-[#242424] h-auto relative hover-card"
+                    class="flex md:p-8 p-6 flex-col items-start md:gap-6 gap-5 rounded-lg border border-white/20 bg-[#242424] h-auto relative group cursor-pointer md:cursor-default transition-all duration-300 hover-card"
+                    @touchstart="startLongPress(intervention.id)"
+                    @touchend="cancelLongPress"
+                    @touchcancel="cancelLongPress"
+                    @touchmove="cancelLongPress"
                 >
-                    <!-- Actions d'édition/suppression qui apparaissent au survol -->
+                    <!-- Actions d'édition/suppression qui apparaissent au survol sur desktop et après appui long sur mobile -->
                     <div
-                        class="absolute top-[-0.5rem] right-[-0.5rem] opacity-0 delete-button transition-opacity flex gap-2"
+                        class="absolute top-[-0.5rem] right-[-0.5rem] transition-opacity flex gap-2 z-20 mobile-action-container"
+                        :class="
+                            showMobileActions[intervention.id]
+                                ? 'opacity-100 md:opacity-0 md:group-hover:opacity-100'
+                                : 'opacity-0 md:group-hover:opacity-100'
+                        "
+                        @click.stop
+                        @touchstart.stop
                     >
                         <button
                             @click="deleteIntervention(intervention.id)"
                             title="Supprimer"
+                            class="p-2 rounded-xl bg-red-600/20 hover:bg-red-600/30 border border-red-500/30 transition-all duration-200 active:scale-95 mobile-action-button"
                         >
                             <img
                                 src="/assets/icons/clients/delete-icon.svg"
@@ -850,6 +928,14 @@ const sortedInterventions = computed(() => {
                             />
                         </button>
                     </div>
+
+                    <!-- Overlay de flou qui apparaît uniquement sur mobile -->
+                    <div
+                        v-if="showMobileActions[intervention.id]"
+                        class="absolute inset-0 z-10 bg-black/20 backdrop-blur-sm md:hidden rounded-lg pointer-events-none"
+                    ></div>
+
+                    <div class="flex justify-between w-full"></div>
                     <div class="flex justify-between w-full">
                         <h4
                             class="text-white font-poppins md:text-2xl text-xl font-medium"
@@ -1001,14 +1087,57 @@ const sortedInterventions = computed(() => {
 </template>
 
 <style scoped>
-/* Style pour le bouton de suppression qui apparaît au survol de la carte */
-.hover-card:hover .delete-button {
-    opacity: 1;
-}
-
 /* Style pour le popup de services qui apparaît uniquement au survol de l'élément de service */
 .service-group:hover .service-popup {
     opacity: 1 !important;
     visibility: visible !important;
+}
+
+/* Animations pour les actions mobiles */
+@keyframes slide-in-from-right {
+    from {
+        opacity: 0;
+        transform: translateX(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.animate-in {
+    animation-duration: 0.2s;
+    animation-timing-function: ease-out;
+    animation-fill-mode: both;
+}
+
+.slide-in-from-right-2 {
+    animation-name: slide-in-from-right;
+}
+
+/* Effet de pulsation pour indiquer l'appui long */
+.group:active {
+    animation: pulse-subtle 0.5s ease-in-out;
+}
+
+@keyframes pulse-subtle {
+    0%,
+    100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(0.98);
+    }
+}
+
+/* Amélioration des transitions pour les boutons */
+button {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Amélioration des focus states pour l'accessibilité */
+.hover-card:focus-within {
+    outline: 2px solid #ff8c42;
+    outline-offset: 2px;
 }
 </style>
