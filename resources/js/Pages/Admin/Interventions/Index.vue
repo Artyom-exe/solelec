@@ -739,12 +739,12 @@ const sortedInterventions = computed(() => {
             </div>
             <div
                 v-else
-                class="grid md:grid-cols-2 grid-cols-1 gap-8 w-full items-start mt-4"
+                class="grid md:grid-cols-2 grid-cols-1 md:gap-8 gap-6 w-full items-start mt-4"
             >
                 <div
                     v-for="intervention in sortedInterventions"
                     :key="intervention.id"
-                    class="flex p-8 flex-col items-start gap-6 rounded-lg border border-white/20 bg-[#242424] h-auto relative hover-card"
+                    class="flex md:p-8 p-6 flex-col items-start md:gap-6 gap-5 rounded-lg border border-white/20 bg-[#242424] h-auto relative hover-card"
                 >
                     <!-- Actions d'édition/suppression qui apparaissent au survol -->
                     <div
@@ -763,7 +763,7 @@ const sortedInterventions = computed(() => {
                     </div>
                     <div class="flex justify-between w-full">
                         <h4
-                            class="text-white font-poppins text-2xl font-medium"
+                            class="text-white font-poppins md:text-2xl text-xl font-medium"
                         >
                             {{ intervention.client?.name }}
                             {{ intervention.client?.lastname }}
@@ -810,7 +810,9 @@ const sortedInterventions = computed(() => {
                         </div>
                     </div>
                     <div class="flex justify-between w-full">
-                        <p class="text-white font-inter font-light text-lg">
+                        <p
+                            class="text-white font-inter font-light md:text-lg text-base"
+                        >
                             Intervention #{{ intervention.id }}
                         </p>
                         <button
@@ -851,7 +853,7 @@ const sortedInterventions = computed(() => {
                             />
                         </svg>
                         <span
-                            class="text-white font-inter text-base font-light"
+                            class="text-white font-inter md:text-base text-sm font-light"
                         >
                             Crée le
                             {{ formatDate(intervention.created_at) }}</span
@@ -861,7 +863,7 @@ const sortedInterventions = computed(() => {
                         <a
                             v-if="intervention.client?.phone !== null"
                             :href="`tel:${intervention.client?.phone}`"
-                            class="flex gap-3 text-[#FF8C42] hover:text-white transition-colors duration-300"
+                            class="flex gap-3 text-[#FF8C42] hover:text-white transition-colors duration-300 md:text-base text-sm"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
