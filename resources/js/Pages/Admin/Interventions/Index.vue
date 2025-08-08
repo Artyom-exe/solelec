@@ -280,7 +280,7 @@ const sortedInterventions = computed(() => {
         // Toujours mettre les interventions terminées à la fin, peu importe le tri
         if (a.status === "terminée" && b.status !== "terminée") return 1;
         if (a.status !== "terminée" && b.status === "terminée") return -1;
-        
+
         // Si les deux interventions ont le même statut (les deux terminées ou les deux non terminées),
         // alors on applique le tri par date ou statut
         if (sortBy.value === "date") {
@@ -308,23 +308,30 @@ const sortedInterventions = computed(() => {
 <template>
     <AdminLayout>
         <section
-            class="flex py-28 px-16 flex-col gap-20 mt-14 bg-[#2D2D2D] min-h-screen"
+            class="flex md:py-28 md:px-16 py-16 px-5 flex-col md:gap-20 gap-12 md:mt-14 mt-16 bg-[#2D2D2D] min-h-screen"
         >
-            <div class="flex justify-between self-stretch">
+            <div class="flex md:flex-row flex-col justify-between self-stretch">
                 <div
-                    class="flex max-w-[768px] flex-col items-start gap-4 text-white"
+                    class="flex md:max-w-[768px] flex-col items-start md:gap-4 gap-3 text-white"
                 >
-                    <h2 class="text-center font-inter text-base font-semibold">
-                        Interventions
-                    </h2>
+                    <div class="relative w-full">
+                        <h2
+                            class="text-left font-inter text-base font-semibold"
+                        >
+                            Interventions
+                        </h2>
+                        <div
+                            class="absolute flex md:hidden border-2 border-[#FF8C42] bottom-1/2 top-1/2 left-28 w-[60%]"
+                        ></div>
+                    </div>
                     <div class="relative flex flex-col gap-6">
                         <h3
-                            class="font-poppins text-5xl text-center font-medium leading-[57.6px] tracking-[-0.48px] mb-6"
+                            class="font-poppins md:text-5xl text-4xl md:text-center font-medium md:leading-[57.6px] leading-[43.2px] tracking-[-0.36px] md:tracking-[-0.48px] mb-6"
                         >
                             Liste de mes interventions
                         </h3>
                         <div
-                            class="absolute bottom-0 right-[-20%] border-2 border-[#FF8C42] w-[80%] max-w-[353px] min-w-[200px]"
+                            class="absolute md:flex hidden bottom-0 right-[-20%] border-2 border-[#FF8C42] w-[80%]"
                         ></div>
                     </div>
                 </div>
@@ -339,7 +346,7 @@ const sortedInterventions = computed(() => {
             </div>
             <div class="flex flex-col gap-6 w-full">
                 <!-- Filtres -->
-                <div class="flex items-center w-full">
+                <div class="flex items-center md:w-full flex-wrap">
                     <button
                         @click="setFilter('all')"
                         :class="{
@@ -506,7 +513,7 @@ const sortedInterventions = computed(() => {
             <!-- Formulaire d'ajout d'intervention -->
             <div
                 v-if="showAddForm"
-                class="grid grid-cols-2 gap-8 w-full items-start"
+                class="grid md:grid-cols-2 grid-cols-1 md:gap-8 gap-6 w-full items-start"
             >
                 <div
                     class="flex p-8 flex-col items-start gap-6 rounded-lg border border-white/20 bg-[#242424] h-auto"
@@ -730,7 +737,10 @@ const sortedInterventions = computed(() => {
                     intervention
                 </p>
             </div>
-            <div v-else class="grid grid-cols-2 gap-8 w-full items-start mt-4">
+            <div
+                v-else
+                class="grid md:grid-cols-2 grid-cols-1 gap-8 w-full items-start mt-4"
+            >
                 <div
                     v-for="intervention in sortedInterventions"
                     :key="intervention.id"
