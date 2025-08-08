@@ -79,6 +79,7 @@ const newIntervention = reactive({
     new_client_lastname: "",
     new_client_phone: "",
     new_client_email: "",
+    new_client_adress: "",
     isNewClient: false, // Pour basculer entre client existant et nouveau client
 });
 
@@ -105,6 +106,7 @@ function toggleClientMode() {
         newIntervention.new_client_lastname = "";
         newIntervention.new_client_phone = "";
         newIntervention.new_client_email = "";
+        newIntervention.new_client_adress = "";
     }
 }
 
@@ -135,6 +137,7 @@ function submitNewIntervention() {
             newIntervention.new_client_lastname = "";
             newIntervention.new_client_phone = "";
             newIntervention.new_client_email = "";
+            newIntervention.new_client_adress = "";
             newIntervention.isNewClient = false;
         },
         onError: (errors) => {
@@ -519,7 +522,9 @@ const sortedInterventions = computed(() => {
                     class="flex p-8 flex-col items-start gap-6 rounded-lg border border-white/20 bg-[#242424] h-auto"
                 >
                     <!-- En-tête avec Nouveau client à gauche et Services à droite -->
-                    <div class="flex justify-between w-full items-center mb-4">
+                    <div
+                        class="flex justify-between gap-4 w-full items-center mb-4"
+                    >
                         <div>
                             <button
                                 @click="toggleClientMode"
@@ -588,10 +593,17 @@ const sortedInterventions = computed(() => {
                     <!-- Section de sélection du client -->
                     <div class="w-full mb-4">
                         <!-- Sélection d'un client existant -->
-                        <div v-if="!newIntervention.isNewClient">
+                        <div
+                            v-if="!newIntervention.isNewClient"
+                            class="space-y-2"
+                        >
+                            <label
+                                class="text-xs font-medium text-gray-400 uppercase tracking-wider"
+                                >Client</label
+                            >
                             <select
                                 v-model="newIntervention.clients_id"
-                                class="bg-[#242424] text-white font-poppins text-lg p-2 rounded-md border border-white/20 w-full"
+                                class="bg-[#1A1A1A] border border-white/20 rounded-lg text-white font-poppins text-lg focus:outline-none focus:border-[#FF8C42] focus:ring-2 focus:ring-[#FF8C42]/20 px-3 py-2 transition-all duration-200 w-full"
                                 required
                             >
                                 <option value="" disabled>
@@ -608,65 +620,56 @@ const sortedInterventions = computed(() => {
                         </div>
 
                         <!-- Création d'un nouveau client -->
-                        <div v-else class="flex flex-col gap-2">
-                            <div class="flex gap-2">
-                                <input
-                                    v-model="newIntervention.new_client_name"
-                                    type="text"
-                                    class="bg-[#242424] text-white font-poppins text-xl font-medium p-2 rounded-md border border-white/20 w-1/2"
-                                    placeholder="Prénom"
-                                    required
-                                />
-                                <input
-                                    v-model="
-                                        newIntervention.new_client_lastname
-                                    "
-                                    type="text"
-                                    class="bg-[#242424] text-white font-poppins text-xl font-medium p-2 rounded-md border border-white/20 w-1/2"
-                                    placeholder="Nom"
-                                />
-                            </div>
-                            <div class="flex gap-2">
-                                <div class="relative w-1/2">
-                                    <div
-                                        class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
+                        <div v-else class="flex flex-col gap-3">
+                            <!-- Nom et prénom -->
+                            <div class="flex flex-col gap-3">
+                                <div class="space-y-2">
+                                    <label
+                                        class="text-xs font-medium text-gray-400 uppercase tracking-wider"
+                                        >Prénom</label
                                     >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="16"
-                                            height="16"
-                                            fill="#FF8C42"
-                                            class="bi bi-telephone"
-                                            viewBox="0 0 16 16"
-                                        >
-                                            <path
-                                                d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.6 17.6 0 0 0 4.168 6.608 17.6 17.6 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.678.678 0 0 0-.58-.122l-2.19.547a1.75 1.75 0 0 1-1.657-.459L5.482 8.062a1.75 1.75 0 0 1-.46-1.657l.548-2.19a.678.678 0 0 0-.122-.58L3.654 1.328zM1.884.511a1.745 1.745 0 0 1 2.612.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.68.68 0 0 0 .178.643l2.457 2.457a.68.68 0 0 0 .644.178l2.189-.547a1.75 1.75 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.6 18.6 0 0 1-7.01-4.42 18.6 18.6 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877L1.885.511z"
-                                            />
-                                        </svg>
-                                    </div>
                                     <input
                                         v-model="
-                                            newIntervention.new_client_phone
+                                            newIntervention.new_client_name
                                         "
-                                        type="tel"
-                                        class="bg-[#242424] text-[#FF8C42] font-inter text-base p-2 pl-10 rounded-md border border-white/20 w-full"
-                                        placeholder="Téléphone"
+                                        type="text"
+                                        class="bg-[#1A1A1A] border border-white/20 rounded-lg text-white font-medium font-poppins text-lg focus:outline-none focus:border-[#FF8C42] focus:ring-2 focus:ring-[#FF8C42]/20 px-3 py-2 transition-all duration-200 w-full"
+                                        placeholder="Prénom"
+                                        required
                                     />
                                 </div>
-                                <div class="relative w-1/2">
+                                <div class="space-y-2">
+                                    <label
+                                        class="text-xs font-medium text-gray-400 uppercase tracking-wider"
+                                        >Nom</label
+                                    >
+                                    <input
+                                        v-model="
+                                            newIntervention.new_client_lastname
+                                        "
+                                        type="text"
+                                        class="bg-[#1A1A1A] border border-white/20 rounded-lg text-white font-medium font-poppins text-lg focus:outline-none focus:border-[#FF8C42] focus:ring-2 focus:ring-[#FF8C42]/20 px-3 py-2 transition-all duration-200 w-full"
+                                        placeholder="Nom"
+                                    />
+                                </div>
+                            </div>
+
+                            <!-- Email et téléphone -->
+                            <div class="flex flex-col gap-3">
+                                <div class="flex items-center gap-3">
                                     <div
-                                        class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
+                                        class="flex-shrink-0 w-8 h-8 bg-gray-700/50 rounded-lg flex items-center justify-center"
                                     >
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
-                                            width="16"
-                                            height="16"
-                                            fill="white"
-                                            class="bi bi-envelope"
+                                            width="14"
+                                            height="14"
+                                            fill="currentColor"
+                                            class="bi bi-envelope text-gray-300"
                                             viewBox="0 0 16 16"
                                         >
                                             <path
-                                                d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4Zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2Zm13 2.383-4.708 2.825L15 11.105V5.383Zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741ZM1 11.105l4.708-2.897L1 5.383v5.722Z"
+                                                d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z"
                                             />
                                         </svg>
                                     </div>
@@ -675,49 +678,135 @@ const sortedInterventions = computed(() => {
                                             newIntervention.new_client_email
                                         "
                                         type="email"
-                                        class="bg-[#242424] text-white font-inter text-base p-2 pl-10 rounded-md border border-white/20 w-full"
+                                        class="flex-1 bg-[#1A1A1A] border border-white/20 rounded-lg text-white font-inter text-sm focus:outline-none focus:border-[#FF8C42] focus:ring-2 focus:ring-[#FF8C42]/20 px-3 py-2 transition-all duration-200"
                                         placeholder="Email"
+                                    />
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="flex-shrink-0 w-8 h-8 bg-[#FF8C42]/20 rounded-lg flex items-center justify-center"
+                                    >
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="14"
+                                            height="14"
+                                            fill="currentColor"
+                                            class="bi bi-telephone text-[#FF8C42]"
+                                            viewBox="0 0 16 16"
+                                        >
+                                            <path
+                                                d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.6 17.6 0 0 0 4.168 6.608 17.6 17.6 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.678.678 0 0 0-.58-.122l-2.19.547a1.75 1.75 0 0 1-1.657-.459L5.482 8.062a1.75 1.75 0 0 1-.46-1.657l.548-2.19a.678.678 0 0 0-.122-.58zM1.884.511a1.745 1.745 0 0 1 2.612.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.68.68 0 0 0 .178.643l2.457 2.457a.68.68 0 0 0 .644.178l2.189-.547a1.75 1.75 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.6 18.6 0 0 1-7.01-4.42 18.6 18.6 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877z"
+                                            />
+                                        </svg>
+                                    </div>
+                                    <input
+                                        v-model="
+                                            newIntervention.new_client_phone
+                                        "
+                                        type="tel"
+                                        class="flex-1 bg-[#1A1A1A] border border-white/20 rounded-lg text-[#FF8C42] font-inter text-sm focus:outline-none focus:border-[#FF8C42] focus:ring-2 focus:ring-[#FF8C42]/20 px-3 py-2 transition-all duration-200"
+                                        placeholder="Téléphone"
+                                    />
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="flex-shrink-0 w-8 h-8 bg-blue-600/20 rounded-lg flex items-center justify-center"
+                                    >
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="14"
+                                            height="14"
+                                            fill="currentColor"
+                                            class="bi bi-geo-alt text-blue-300"
+                                            viewBox="0 0 16 16"
+                                        >
+                                            <path
+                                                d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A32 32 0 0 1 8 14.58a32 32 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10"
+                                            />
+                                            <path
+                                                d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4m0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6"
+                                            />
+                                        </svg>
+                                    </div>
+                                    <input
+                                        v-model="
+                                            newIntervention.new_client_adress
+                                        "
+                                        type="text"
+                                        class="flex-1 bg-[#1A1A1A] border border-white/20 rounded-lg text-blue-300 font-inter text-sm focus:outline-none focus:border-[#FF8C42] focus:ring-2 focus:ring-[#FF8C42]/20 px-3 py-2 transition-all duration-200"
+                                        placeholder="Adresse"
                                     />
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="flex flex-col w-full gap-4">
-                        <p class="text-white font-inter font-medium text-base">
-                            Services :
-                        </p>
-                        <div class="flex flex-wrap gap-2 mb-2">
-                            <button
-                                v-for="service in props.services"
-                                :key="service.id"
-                                @click="toggleService(service.id)"
-                                :class="{
-                                    'bg-[#FF8C42] text-white':
-                                        newIntervention.services.includes(
-                                            service.id
-                                        ),
-                                    'bg-[#333] text-white':
-                                        !newIntervention.services.includes(
-                                            service.id
-                                        ),
-                                }"
-                                class="px-3 py-1 text-sm rounded-md border border-white/20 hover:bg-[#FF8C42] hover:text-white transition-colors duration-300"
+                        <div class="space-y-3">
+                            <label
+                                class="text-xs font-medium text-gray-400 uppercase tracking-wider"
+                                >Services requis</label
                             >
-                                {{ service.title }}
-                            </button>
+                            <div class="flex flex-wrap gap-2">
+                                <button
+                                    v-for="service in props.services"
+                                    :key="service.id"
+                                    @click="toggleService(service.id)"
+                                    :class="{
+                                        'bg-[#FF8C42] text-white border-[#FF8C42]':
+                                            newIntervention.services.includes(
+                                                service.id
+                                            ),
+                                        'bg-[#1A1A1A] text-white border-white/20 hover:border-[#FF8C42] hover:bg-[#FF8C42]/10':
+                                            !newIntervention.services.includes(
+                                                service.id
+                                            ),
+                                    }"
+                                    class="px-3 py-2 text-sm rounded-lg border transition-all duration-200 font-medium active:scale-95"
+                                >
+                                    {{ service.title }}
+                                </button>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">
+                                Sélectionnez un ou plusieurs services pour cette
+                                intervention
+                            </p>
                         </div>
                     </div>
-                    <div class="flex gap-2 mt-2">
+                    <div class="flex gap-3 mt-4">
                         <button
                             @click="submitNewIntervention"
-                            class="text-white bg-[#FF8C42] hover:bg-orange-700 transition-colors rounded-full px-4 py-1 text-sm"
+                            class="flex-1 text-white bg-[#FF8C42] hover:bg-orange-600 transition-all duration-200 rounded-xl px-4 py-2.5 text-sm font-medium active:scale-95 flex items-center justify-center gap-2"
                         >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="currentColor"
+                                class="bi bi-check2"
+                                viewBox="0 0 16 16"
+                            >
+                                <path
+                                    d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
+                                />
+                            </svg>
                             Confirmer
                         </button>
                         <button
                             @click="showAddForm = false"
-                            class="text-white hover:text-gray-400 transition-colors text-sm"
+                            class="px-4 py-2.5 text-gray-300 hover:text-white transition-all duration-200 text-sm font-medium active:scale-95 flex items-center justify-center gap-2"
                         >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="currentColor"
+                                class="bi bi-x"
+                                viewBox="0 0 16 16"
+                            >
+                                <path
+                                    d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"
+                                />
+                            </svg>
                             Annuler
                         </button>
                     </div>
@@ -770,7 +859,7 @@ const sortedInterventions = computed(() => {
                         </h4>
                         <div class="relative service-group">
                             <div
-                                class="flex py-1 px-[10px] items-start rounded-[4px] border border-white/5 bg-white/5 text-[#FF8C42] font-inter font-semibold text-sm cursor-pointer"
+                                class="flex py-1 px-[10px] items-start rounded-[4px] border border-white/5 bg-white/5 text-[#FF8C42] font-inter font-semibold text-sm cursor-pointer w-auto"
                             >
                                 {{
                                     intervention.devis?.services &&
