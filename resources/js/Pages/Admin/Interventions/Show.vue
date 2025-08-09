@@ -1073,23 +1073,23 @@ function compiledMarkdown(text) {
         <main class="w-full max-w-full">
             <!-- Détails de l'intervention -->
             <section
-                class="flex content-center items-start gap-20 py-28 px-16 flex-wrap"
+                class="flex content-center items-start md:gap-20 gap-12 md:py-28 py-16 md:px-16 px-5 flex-wrap"
             >
                 <div class="relative flex flex-col gap-6">
                     <h2
-                        class="text-[#0D0703] font-poppins text-[2.5rem] font-medium leading-[120%] tracking-[-.4px] mb-3"
+                        class="text-[#0D0703] font-poppins md:text-[2.5rem] text-[2rem] font-medium leading-[120%] tracking-[-.4px] mb-3"
                     >
                         Détails de l'intervention
                     </h2>
                     <div
-                        class="absolute bottom-0 right-[-10%] border-2 border-[#FF8C42] w-[75%] max-w-[353px] min-w-[200px]"
+                        class="absolute bottom-0 md:right-[-10%] right-[43%] border-2 border-[#FF8C42] md:w-[75%] w-[63%]"
                     ></div>
                 </div>
                 <div
-                    class="flex w-[672px] h-[304px] p-8 flex-col items-start gap-6 rounded-lg border border-white/20 bg-[#F2F2F2] overflow-y-auto hide-scrollbar"
+                    class="flex md:w-[672px] md:h-[304px] h-[400px] md:p-8 p-6 flex-col items-start gap-6 rounded-lg border border-white/20 bg-[#F2F2F2] overflow-y-auto hide-scrollbar"
                 >
                     <div
-                        class="text-[#0D0703] font-inter text-xl font-normal markdown-content"
+                        class="text-[#0D0703] font-inter md:text-xl text-lg font-normal markdown-content"
                         v-html="
                             compiledMarkdown(
                                 intervention.devis.description || ''
@@ -1101,25 +1101,32 @@ function compiledMarkdown(text) {
 
             <!-- Photos -->
             <section
-                class="flex py-28 px-16 flex-col gap-20 content-center items-start bg-[#2D2D2D] w-screen"
+                class="flex md:py-28 py-16 md:px-16 px-5 flex-col md:gap-20 gap-12 content-center items-start bg-[#2D2D2D] w-screen"
             >
-                <div class="flex justify-between self-stretch">
+                <div
+                    class="flex md:flex-row flex-col justify-between self-stretch"
+                >
                     <div
-                        class="flex max-w-[768px] flex-col items-start gap-4 text-white"
+                        class="flex flex-col md:max-w-[768px] items-start md:gap-4 gap-3 text-white"
                     >
-                        <h2
-                            class="text-center font-inter text-base font-semibold"
-                        >
-                            Photos
-                        </h2>
-                        <div class="relative flex flex-col gap-6">
+                        <div class="relative w-full">
+                            <div
+                                class="absolute flex md:hidden bottom-1/2 left-[20%] border-2 border-[#FF8C42] w-[80%] top-1/2"
+                            ></div>
+                            <h2
+                                class="md:text-center font-inter text-base font-semibold"
+                            >
+                                Photos
+                            </h2>
+                        </div>
+                        <div class="relative flex flex-col md:gap-6 gap-0">
                             <h3
-                                class="font-poppins text-5xl text-center font-medium leading-[57.6px] tracking-[-0.48px] mb-6"
+                                class="font-poppins md:text-5xl text-4xl md:text-center font-medium md:leading-[57.6px] leading-[120%] md:tracking-[-0.48px] tracking-[-0.36px] mb-6"
                             >
                                 Mes photos
                             </h3>
                             <div
-                                class="absolute bottom-0 left-[-25%] border-2 border-[#FF8C42] w-[180%] max-w-[370px] min-w-[200px]"
+                                class="absolute md:flex hidden bottom-0 left-[-25%] border-2 border-[#FF8C42] w-[130%]"
                             ></div>
                         </div>
                     </div>
