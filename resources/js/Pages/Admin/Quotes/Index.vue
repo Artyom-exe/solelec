@@ -301,13 +301,39 @@ const renderMarkdown = (text) => {
                                         {{ quote.client?.name }}
                                         {{ quote.client?.lastname }}
                                     </h4>
-                                    <span
-                                        v-for="service in quote.services"
-                                        :key="service.id"
-                                        class="flex py-1 px-[10px] items-start rounded-[4px] border border-white/5 bg-white/5 text-[#FF8C42] font-inter font-semibold text-sm"
+                                    <!-- Affichage compact des services avec popup au survol -->
+                                    <div
+                                        class="relative service-group"
+                                        v-if="
+                                            quote.services &&
+                                            quote.services.length > 0
+                                        "
                                     >
-                                        {{ service.title }}
-                                    </span>
+                                        <div
+                                            class="flex py-1 px-[10px] items-start rounded-[4px] border border-white/5 bg-white/5 text-[#FF8C42] font-inter font-semibold text-sm cursor-pointer"
+                                        >
+                                            {{ quote.services[0].title }}
+                                            <span
+                                                v-if="quote.services.length > 1"
+                                                class="ml-1"
+                                            >
+                                                +{{ quote.services.length - 1 }}
+                                            </span>
+                                        </div>
+                                        <!-- Popup qui apparaît au survol -->
+                                        <div
+                                            v-if="quote.services.length > 1"
+                                            class="absolute z-10 top-full left-0 mt-1 bg-[#1A1A1A] border border-white/10 rounded-md p-2 shadow-lg opacity-0 invisible service-popup transition-all duration-200 min-w-[150px]"
+                                        >
+                                            <div
+                                                v-for="service in quote.services"
+                                                :key="service.id"
+                                                class="py-1 px-2 text-[#FF8C42] font-inter font-semibold text-sm whitespace-nowrap"
+                                            >
+                                                {{ service.title }}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="flex gap-2 h-max items-center">
                                     <Link
@@ -574,5 +600,11 @@ const renderMarkdown = (text) => {
 /* Amélioration des transitions pour les boutons */
 button {
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Style pour le popup de services qui apparaît uniquement au survol de l'élément de service */
+.service-group:hover .service-popup {
+    opacity: 1 !important;
+    visibility: visible !important;
 }
 </style>
