@@ -1130,7 +1130,7 @@ function compiledMarkdown(text) {
 
                 <!-- Côté droit -->
                 <div
-                    class="flex md:min-w-[464px] w-full flex-col items-start md:gap-8 gap-6"
+                    class="flex md:max-w-[464px] w-full flex-col items-start md:gap-8 gap-6"
                 >
                     <div class="flex w-full md:gap-8 gap-6">
                         <div class="flex flex-col gap-2 items-start w-1/2">
