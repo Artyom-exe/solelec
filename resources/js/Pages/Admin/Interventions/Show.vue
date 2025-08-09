@@ -156,6 +156,26 @@ const selectedImage = ref(null);
 // Variable pour détecter si on est sur mobile
 const isMobile = ref(false);
 
+// Variables pour la pagination mobile avec Splide
+const imagesPerPage = 9;
+
+// Computed pour grouper les images par pages pour Splide
+const imagePages = computed(() => {
+    if (!isMobile.value || !intervention.images)
+        return [intervention.images || []];
+
+    const pages = [];
+    for (let i = 0; i < intervention.images.length; i += imagesPerPage) {
+        pages.push(intervention.images.slice(i, i + imagesPerPage));
+    }
+    return pages.length > 0 ? pages : [[]];
+});
+
+const totalPages = computed(() => {
+    if (!intervention.images) return 0;
+    return Math.ceil(intervention.images.length / imagesPerPage);
+});
+
 // Fonction pour détecter la taille d'écran
 const checkMobile = () => {
     isMobile.value = window.innerWidth <= 768;
@@ -271,6 +291,9 @@ function uploadPhotos() {
                 // Réinitialiser les fichiers sélectionnés
                 selectedFiles.value = [];
                 isUploading.value = false;
+
+                // Les nouvelles images seront automatiquement affichées dans Splide
+                // Pas besoin de gérer manuellement la pagination
             },
             onError: (errors) => {
                 console.error(errors);
@@ -421,6 +444,9 @@ function deleteImage(imageId) {
                     intervention.images.splice(index, 1);
                 }
             }
+
+            // Ajuster la pagination n'est plus nécessaire avec Splide
+            // Splide se met à jour automatiquement quand imagePages change
         },
         onError: (errors) => {
             console.error(errors);
@@ -1252,55 +1278,99 @@ function compiledMarkdown(text) {
                     v-if="intervention.images && intervention.images.length > 0"
                     :class="isMobile ? 'w-full' : 'w-screen -mx-16 relative'"
                 >
-                    <!-- Affichage mobile : grille de carrés cliquables -->
-                    <div v-if="isMobile" class="grid grid-cols-3 gap-2 p-4">
-                        <div
-                            v-for="image in intervention.images"
-                            :key="image.id"
-                            class="relative aspect-square group"
-                            @click="openImageModal(image)"
+                    <!-- Affichage mobile : Splide avec pages de 9 images -->
+                    <div v-if="isMobile" class="pb-10">
+                        <Splide
+                            :options="{
+                                type: 'slide',
+                                perPage: 1,
+                                perMove: 1,
+                                gap: '2rem',
+                                pagination: true,
+                                arrows: false,
+                                drag: true,
+                                snap: true,
+                                speed: 400,
+                                easing: 'cubic-bezier(.25,.46,.45,.94)',
+                                classes: {
+                                    pagination:
+                                        'splide__pagination splide__pagination--mobile',
+                                    page: 'splide__pagination__page splide__pagination__page--mobile',
+                                },
+                            }"
                         >
-                            <!-- Bouton de suppression pour mobile -->
-                            <div class="absolute top-1 right-1 z-10">
-                                <button
-                                    @click.prevent.stop="deleteImage(image.id)"
-                                    title="Supprimer"
-                                    class="bg-white bg-opacity-80 rounded-full p-1 shadow-md transition-colors"
-                                >
-                                    <img
-                                        src="/assets/icons/clients/delete-icon.svg"
-                                        alt="Delete"
-                                        class="w-4 h-4"
-                                    />
-                                </button>
-                            </div>
-
-                            <img
-                                :src="`/storage/${image.url_image}`"
-                                :alt="`Intervention ${intervention.id}`"
-                                class="w-full h-full object-cover rounded-lg cursor-pointer transition-transform active:scale-95"
-                            />
-
-                            <!-- Overlay pour indiquer que c'est cliquable -->
-                            <div
-                                class="absolute inset-0 bg-black bg-opacity-0 active:bg-opacity-20 transition-all rounded-lg flex items-center justify-center"
+                            <SplideSlide
+                                v-for="(page, pageIndex) in imagePages"
+                                :key="`page-${pageIndex}`"
                             >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    class="h-6 w-6 text-white opacity-0 group-active:opacity-100 transition-opacity"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
+                                <!-- Grille de 9 images maximum par slide (3x3) -->
+                                <div
+                                    class="grid grid-cols-3 gap-2 min-h-[300px]"
                                 >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"
-                                    />
-                                </svg>
-                            </div>
-                        </div>
+                                    <div
+                                        v-for="image in page"
+                                        :key="image.id"
+                                        class="relative aspect-square group"
+                                        @click="openImageModal(image)"
+                                    >
+                                        <!-- Bouton de suppression pour mobile -->
+                                        <div
+                                            class="absolute top-1 right-1 z-10"
+                                        >
+                                            <button
+                                                @click.prevent.stop="
+                                                    deleteImage(image.id)
+                                                "
+                                                title="Supprimer"
+                                                class="bg-white bg-opacity-80 rounded-full p-1 shadow-md transition-colors"
+                                            >
+                                                <img
+                                                    src="/assets/icons/clients/delete-icon.svg"
+                                                    alt="Delete"
+                                                    class="w-4 h-4"
+                                                />
+                                            </button>
+                                        </div>
+
+                                        <img
+                                            :src="`/storage/${image.url_image}`"
+                                            :alt="`Intervention ${intervention.id}`"
+                                            class="w-full h-full object-cover rounded-lg cursor-pointer transition-transform active:scale-95"
+                                        />
+
+                                        <!-- Overlay pour indiquer que c'est cliquable -->
+                                        <div
+                                            class="absolute inset-0 bg-black bg-opacity-0 active:bg-opacity-20 transition-all rounded-lg flex items-center justify-center"
+                                        >
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                class="h-6 w-6 text-white opacity-0 group-active:opacity-100 transition-opacity"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"
+                                                />
+                                            </svg>
+                                        </div>
+                                    </div>
+
+                                    <!-- Cases vides pour compléter la grille si moins de 9 images -->
+                                    <div
+                                        v-for="n in Math.max(
+                                            0,
+                                            9 - page.length
+                                        )"
+                                        :key="`empty-${pageIndex}-${n}`"
+                                        class="aspect-square opacity-0"
+                                    ></div>
+                                </div>
+                            </SplideSlide>
+                        </Splide>
                     </div>
 
                     <!-- Affichage desktop : Splide horizontal -->
@@ -1973,6 +2043,66 @@ function compiledMarkdown(text) {
 
 .overlay-button:hover {
     background: rgba(255, 255, 255, 1);
+}
+
+/* Styles personnalisés pour la pagination mobile Splide */
+.splide__pagination--mobile {
+    bottom: -4rem !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    display: flex !important;
+    justify-content: center !important;
+    gap: 0.75rem !important;
+    padding: 1rem 0 !important;
+}
+
+.splide__pagination__page--mobile {
+    width: 10px !important;
+    height: 10px !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.3) !important;
+    border: none !important;
+    transition: all 0.3s ease !important;
+    opacity: 1 !important;
+    transform: scale(1) !important;
+}
+
+.splide__pagination__page--mobile.is-active {
+    background: #ff8c42 !important;
+    transform: scale(1.3) !important;
+}
+
+.splide__pagination__page--mobile:hover {
+    background: rgba(255, 255, 255, 0.6) !important;
+    transform: scale(1.2) !important;
+}
+
+.splide__pagination__page--mobile.is-active:hover {
+    background: #ff8c42 !important;
+    transform: scale(1.2) !important;
+}
+
+/* Styles pour l'affichage compact sur mobile */
+@media (max-width: 480px) {
+    .mobile-pagination {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .mobile-pagination .pagination-controls {
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    /* Ajustement pour très petits écrans */
+    .splide__pagination--mobile {
+        bottom: -3rem !important;
+    }
+
+    .splide__pagination__page--mobile {
+        width: 10px !important;
+        height: 10px !important;
+    }
 }
 
 .hide-scrollbar::-webkit-scrollbar {
