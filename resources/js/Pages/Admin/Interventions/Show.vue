@@ -83,6 +83,16 @@ function handleGlobalClick(e) {
     if (clickedOutside) {
         hideAllDeleteButtons();
     }
+
+    // Vérifier si le clic est en dehors des boutons d'action des notes
+    const noteActionButton = e.target.closest(".mobile-action-button-note");
+    const noteActionContainer = e.target.closest(
+        ".mobile-action-container-note"
+    );
+
+    if (!noteActionButton && !noteActionContainer) {
+        hideAllMobileActionsNotes();
+    }
 }
 
 // Supprimer l'écouteur d'événement lors du démontage du composant
@@ -223,10 +233,45 @@ const newNote = ref("");
 // État pour gérer l'affichage des boutons de suppression sur mobile
 const showDeleteButtons = ref({});
 
+// État pour gérer l'affichage des actions mobiles pour les notes
+const showMobileActionsNotes = ref({});
+
 // Fonction pour gérer l'appui long sur mobile pour les images
 let longPressTimer = null;
 let touchStartTime = 0;
 let hasMoved = false;
+
+// Fonction pour gérer l'appui long sur mobile pour les notes
+let longPressTimerNotes = null;
+const startLongPressNote = (noteId) => {
+    // Annuler le timer précédent s'il existe
+    if (longPressTimerNotes) {
+        clearTimeout(longPressTimerNotes);
+    }
+
+    longPressTimerNotes = setTimeout(() => {
+        showMobileActionsNotes.value = { [noteId]: true };
+        longPressTimerNotes = null; // Reset du timer après utilisation
+    }, 500); // 500ms pour déclencher l'appui long
+};
+
+const cancelLongPressNote = () => {
+    if (longPressTimerNotes) {
+        clearTimeout(longPressTimerNotes);
+        longPressTimerNotes = null;
+    }
+};
+
+const hideMobileActionsNote = (noteId) => {
+    showMobileActionsNotes.value = {
+        ...showMobileActionsNotes.value,
+        [noteId]: false,
+    };
+};
+
+const hideAllMobileActionsNotes = () => {
+    showMobileActionsNotes.value = {};
+};
 
 const startLongPress = (imageId, event) => {
     // Ne pas interférer avec le glissement de Splide
@@ -1797,15 +1842,27 @@ function compiledMarkdown(text) {
                         <div
                             v-for="note in intervention.notes"
                             :key="note.id"
-                            class="flex p-6 flex-col items-start gap-6 rounded-lg border border-white/20 bg-[#F2F2F2] font-inter text-base font-normal text-[#0D0703] relative group w-full"
+                            class="flex p-6 flex-col items-start gap-6 rounded-lg border border-white/20 bg-[#F2F2F2] font-inter text-base font-normal text-[#0D0703] relative group w-full cursor-pointer md:cursor-default transition-all duration-300 active:scale-[0.98] active:bg-gray-200"
                             style="width: 100%; max-width: 100%"
+                            @touchstart="startLongPressNote(note.id)"
+                            @touchend="cancelLongPressNote"
+                            @touchcancel="cancelLongPressNote"
                         >
+                            <!-- Actions d'édition/suppression qui apparaissent au survol sur desktop et après appui long sur mobile -->
                             <div
-                                class="absolute top-[-0.5rem] right-[-0.5rem] opacity-0 delete-button transition-opacity flex gap-2"
+                                class="absolute top-[-0.5rem] right-[-0.5rem] transition-opacity flex gap-2 z-20 mobile-action-container-note"
+                                :class="
+                                    showMobileActionsNotes[note.id]
+                                        ? 'opacity-100 md:opacity-0 md:group-hover:opacity-100'
+                                        : 'opacity-0 md:group-hover:opacity-100'
+                                "
+                                @click.stop
+                                @touchstart.stop
                             >
                                 <button
                                     @click="deleteNote(note.id)"
                                     title="Supprimer"
+                                    class="p-2 rounded-xl bg-white/80 hover:bg-white border border-gray-300 transition-all duration-200 active:scale-95 mobile-action-button-note"
                                 >
                                     <img
                                         src="/assets/icons/clients/delete-icon.svg"
@@ -1814,6 +1871,13 @@ function compiledMarkdown(text) {
                                     />
                                 </button>
                             </div>
+
+                            <!-- Overlay de flou qui apparaît uniquement sur mobile -->
+                            <div
+                                v-if="showMobileActionsNotes[note.id]"
+                                class="absolute inset-0 z-10 bg-black/20 backdrop-blur-sm md:hidden rounded-lg pointer-events-none"
+                            ></div>
+
                             <div
                                 class="text-gray-700 w-full overflow-hidden break-words prose prose-sm"
                                 v-html="compiledMarkdown(note.content)"
@@ -2401,5 +2465,47 @@ main {
 .text-gray-700 img {
     max-width: 100%;
     height: auto;
+}
+
+/* Animations pour les actions mobiles des notes */
+@keyframes slide-in-from-right {
+    from {
+        opacity: 0;
+        transform: translateX(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.animate-in {
+    animation-duration: 0.2s;
+    animation-timing-function: ease-out;
+    animation-fill-mode: both;
+}
+
+.slide-in-from-right-2 {
+    animation-name: slide-in-from-right;
+}
+
+/* Effet de pulsation pour indiquer l'appui long sur les notes */
+.group:active {
+    animation: pulse-subtle 0.5s ease-in-out;
+}
+
+@keyframes pulse-subtle {
+    0%,
+    100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(0.98);
+    }
+}
+
+/* Amélioration des transitions pour les boutons de notes */
+.mobile-action-button-note {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 </style>
