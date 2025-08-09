@@ -30,11 +30,43 @@ const showServiceSelector = ref(false);
 // Ajouter un écouteur d'événement pour fermer le sélecteur de services lors d'un clic en dehors
 onMounted(() => {
     document.addEventListener("click", closeServiceSelectorOnClickOutside);
+
+    // Initialiser la détection mobile
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
+    // Écouter les événements de clavier pour la navigation d'images
+    const handleKeyDown = (e) => {
+        if (showImageModal.value) {
+            if (e.key === "Escape") {
+                closeImageModal();
+            } else if (e.key === "ArrowLeft") {
+                navigateImage("prev");
+            } else if (e.key === "ArrowRight") {
+                navigateImage("next");
+            }
+        }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    // Nettoyer les event listeners au démontage
+    onUnmounted(() => {
+        document.removeEventListener(
+            "click",
+            closeServiceSelectorOnClickOutside
+        );
+        window.removeEventListener("resize", checkMobile);
+        document.removeEventListener("keydown", handleKeyDown);
+        document.body.style.overflow = "auto";
+    });
 });
 
 // Supprimer l'écouteur d'événement lors du démontage du composant
 onUnmounted(() => {
     document.removeEventListener("click", closeServiceSelectorOnClickOutside);
+    window.removeEventListener("resize", checkMobile);
+    document.body.style.overflow = "auto";
 });
 
 // Fonction pour fermer le sélecteur de services quand on clique en dehors
@@ -120,6 +152,25 @@ const selectedFiles = ref([]);
 // Variables pour le modal d'image
 const showImageModal = ref(false);
 const selectedImage = ref(null);
+
+// Variable pour détecter si on est sur mobile
+const isMobile = ref(false);
+
+// Fonction pour détecter la taille d'écran
+const checkMobile = () => {
+    isMobile.value = window.innerWidth <= 768;
+};
+
+// Initialiser la détection mobile au montage
+onMounted(() => {
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+});
+
+// Nettoyer l'event listener au démontage
+onUnmounted(() => {
+    window.removeEventListener("resize", checkMobile);
+});
 
 // Variable pour la nouvelle note
 const newNote = ref("");
@@ -236,6 +287,7 @@ function uploadPhotos() {
 function openImageModal(image) {
     selectedImage.value = image;
     showImageModal.value = true;
+
     // Bloquer le défilement du corps de la page
     document.body.style.overflow = "hidden";
 }
@@ -244,8 +296,58 @@ function openImageModal(image) {
 function closeImageModal() {
     showImageModal.value = false;
     selectedImage.value = null;
+
     // Rétablir le défilement du corps de la page
     document.body.style.overflow = "auto";
+}
+
+// Navigation entre les images
+function navigateImage(direction) {
+    if (!intervention.images || intervention.images.length <= 1) return;
+
+    const currentIndex = intervention.images.findIndex(
+        (img) => img.id === selectedImage.value?.id
+    );
+    let newIndex;
+
+    if (direction === "next") {
+        newIndex = (currentIndex + 1) % intervention.images.length;
+    } else {
+        newIndex =
+            currentIndex <= 0
+                ? intervention.images.length - 1
+                : currentIndex - 1;
+    }
+
+    selectedImage.value = intervention.images[newIndex];
+}
+
+// Gestion des événements de swipe pour mobile
+let touchStartX = 0;
+let touchEndX = 0;
+
+function handleTouchStart(e) {
+    touchStartX = e.changedTouches[0].screenX;
+}
+
+function handleTouchEnd(e) {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe();
+}
+
+function handleSwipe() {
+    const swipeThreshold = 50;
+    const swipeDistance = touchEndX - touchStartX;
+
+    if (Math.abs(swipeDistance) > swipeThreshold) {
+        if (swipeDistance > 0) {
+            // Swipe vers la droite - image précédente
+            navigateImage("prev");
+        } else {
+            // Swipe vers la gauche - image suivante
+            navigateImage("next");
+        }
+    }
 }
 
 // Fonction pour ajouter une note
@@ -1145,12 +1247,65 @@ function compiledMarkdown(text) {
                     </div>
                 </div>
 
-                <!-- Galerie de photos avec Splide ou message si pas de photos -->
+                <!-- Galerie de photos avec affichage responsive -->
                 <div
                     v-if="intervention.images && intervention.images.length > 0"
-                    class="w-screen -mx-16 relative"
+                    :class="isMobile ? 'w-full' : 'w-screen -mx-16 relative'"
                 >
+                    <!-- Affichage mobile : grille de carrés cliquables -->
+                    <div v-if="isMobile" class="grid grid-cols-3 gap-2 p-4">
+                        <div
+                            v-for="image in intervention.images"
+                            :key="image.id"
+                            class="relative aspect-square group"
+                            @click="openImageModal(image)"
+                        >
+                            <!-- Bouton de suppression pour mobile -->
+                            <div class="absolute top-1 right-1 z-10">
+                                <button
+                                    @click.prevent.stop="deleteImage(image.id)"
+                                    title="Supprimer"
+                                    class="bg-white bg-opacity-80 rounded-full p-1 shadow-md transition-colors"
+                                >
+                                    <img
+                                        src="/assets/icons/clients/delete-icon.svg"
+                                        alt="Delete"
+                                        class="w-4 h-4"
+                                    />
+                                </button>
+                            </div>
+
+                            <img
+                                :src="`/storage/${image.url_image}`"
+                                :alt="`Intervention ${intervention.id}`"
+                                class="w-full h-full object-cover rounded-lg cursor-pointer transition-transform active:scale-95"
+                            />
+
+                            <!-- Overlay pour indiquer que c'est cliquable -->
+                            <div
+                                class="absolute inset-0 bg-black bg-opacity-0 active:bg-opacity-20 transition-all rounded-lg flex items-center justify-center"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    class="h-6 w-6 text-white opacity-0 group-active:opacity-100 transition-opacity"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"
+                                    />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Affichage desktop : Splide horizontal -->
                     <Splide
+                        v-else
                         :options="{
                             perPage: 1,
                             perMove: 1,
@@ -1542,10 +1697,14 @@ function compiledMarkdown(text) {
         <!-- Modal pour afficher l'image en grand format -->
         <div
             v-if="showImageModal"
-            class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-75 overflow-hidden"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90 overflow-hidden"
+            @click="closeImageModal"
         >
+            <!-- Desktop modal -->
             <div
+                v-if="!isMobile"
                 class="relative max-w-4xl w-full max-h-[90vh] bg-white rounded-lg shadow-xl overflow-hidden"
+                @click.stop
             >
                 <!-- Bouton de fermeture -->
                 <button
@@ -1580,6 +1739,152 @@ function compiledMarkdown(text) {
                     />
                 </div>
             </div>
+
+            <!-- Mobile modal plein écran -->
+            <div
+                v-else
+                class="relative w-full h-full flex flex-col bg-black"
+                @click.stop
+                @touchstart="handleTouchStart"
+                @touchend="handleTouchEnd"
+            >
+                <!-- Header mobile avec bouton fermer -->
+                <div
+                    class="absolute top-0 left-0 right-0 z-20 flex justify-between items-center p-4 bg-gradient-to-b from-black/50 to-transparent"
+                >
+                    <button
+                        @click="closeImageModal"
+                        class="p-2 bg-white/20 backdrop-blur-sm rounded-full text-white hover:bg-white/30 transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-6 w-6"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"
+                            />
+                        </svg>
+                    </button>
+                    <div class="text-white text-sm font-medium">
+                        {{
+                            intervention.images?.findIndex(
+                                (img) => img.id === selectedImage?.id
+                            ) + 1
+                        }}
+                        / {{ intervention.images?.length }}
+                    </div>
+                </div>
+
+                <!-- Image plein écran avec zoom et pan -->
+                <div
+                    class="flex-1 flex items-center justify-center overflow-hidden"
+                    @touchstart="handleTouchStart"
+                    @touchend="handleTouchEnd"
+                >
+                    <img
+                        v-if="selectedImage"
+                        :src="`/storage/${selectedImage.url_image}`"
+                        :alt="`Intervention ${intervention.id}`"
+                        class="max-w-full max-h-full object-contain touch-manipulation select-none"
+                        style="
+                            user-select: none;
+                            -webkit-user-select: none;
+                            -webkit-touch-callout: none;
+                        "
+                        draggable="false"
+                    />
+                </div>
+
+                <!-- Zones de navigation invisible (swipe) -->
+                <div class="absolute inset-0 flex">
+                    <!-- Zone gauche pour image précédente -->
+                    <div
+                        class="w-1/3 h-full flex items-center justify-start pl-4"
+                        @click="navigateImage('prev')"
+                        v-if="
+                            intervention.images &&
+                            intervention.images.length > 1
+                        "
+                    >
+                        <div
+                            class="text-white/50 hover:text-white transition-colors"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-8 w-8"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M15 19l-7-7 7-7"
+                                />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Zone centrale (aucune action) -->
+                    <div class="w-1/3 h-full"></div>
+
+                    <!-- Zone droite pour image suivante -->
+                    <div
+                        class="w-1/3 h-full flex items-center justify-end pr-4"
+                        @click="navigateImage('next')"
+                        v-if="
+                            intervention.images &&
+                            intervention.images.length > 1
+                        "
+                    >
+                        <div
+                            class="text-white/50 hover:text-white transition-colors"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-8 w-8"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M9 5l7 7-7 7"
+                                />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation mobile -->
+                <div
+                    v-if="intervention.images && intervention.images.length > 1"
+                    class="absolute bottom-0 left-0 right-0 z-20 p-4 bg-gradient-to-t from-black/50 to-transparent"
+                >
+                    <div class="flex justify-center gap-2">
+                        <button
+                            v-for="(image, index) in intervention.images"
+                            :key="image.id"
+                            @click="selectedImage = image"
+                            :class="[
+                                'w-3 h-3 rounded-full transition-all duration-200',
+                                selectedImage?.id === image.id
+                                    ? 'bg-white scale-125'
+                                    : 'bg-white/50 hover:bg-white/75',
+                            ]"
+                        ></button>
+                    </div>
+                </div>
+            </div>
         </div>
     </AdminLayout>
 </template>
@@ -1596,6 +1901,78 @@ function compiledMarkdown(text) {
     -ms-overflow-style: none; /* Pour Internet Explorer et Edge */
     scrollbar-width: none; /* Pour Firefox */
     overflow-y: auto;
+}
+
+/* Mobile image gallery styles */
+@media (max-width: 768px) {
+    /* Grille responsive pour les images */
+    .mobile-image-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 0.5rem;
+    }
+
+    /* Amélioration tactile pour mobile */
+    .mobile-image-item {
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Animation de pression pour feedback tactile */
+    .mobile-image-item:active {
+        transform: scale(0.95);
+        transition: transform 0.1s ease;
+    }
+
+    /* Modal plein écran sur mobile */
+    .mobile-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: #000;
+        z-index: 9999;
+    }
+
+    /* Image avec support zoom natif mobile */
+    .mobile-modal img {
+        max-width: none;
+        min-width: 100%;
+        min-height: 100%;
+        object-fit: contain;
+        touch-action: pinch-zoom;
+    }
+}
+
+/* Animations pour les interactions */
+.image-hover-effect {
+    transition: all 0.2s ease-in-out;
+}
+
+.image-hover-effect:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Style pour les indicateurs de navigation */
+.nav-indicator {
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.nav-indicator:hover {
+    transform: scale(1.2);
+}
+
+/* Amélioration du contraste pour les boutons sur images */
+.overlay-button {
+    backdrop-filter: blur(4px);
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.overlay-button:hover {
+    background: rgba(255, 255, 255, 1);
 }
 
 .hide-scrollbar::-webkit-scrollbar {
