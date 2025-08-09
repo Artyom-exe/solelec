@@ -30,6 +30,8 @@ const showServiceSelector = ref(false);
 // Ajouter un écouteur d'événement pour fermer le sélecteur de services lors d'un clic en dehors
 onMounted(() => {
     document.addEventListener("click", closeServiceSelectorOnClickOutside);
+    document.addEventListener("click", handleGlobalClick);
+    document.addEventListener("touchstart", handleGlobalClick);
 
     // Initialiser la détection mobile
     checkMobile();
@@ -56,15 +58,38 @@ onMounted(() => {
             "click",
             closeServiceSelectorOnClickOutside
         );
+        document.removeEventListener("click", handleGlobalClick);
+        document.removeEventListener("touchstart", handleGlobalClick);
         window.removeEventListener("resize", checkMobile);
         document.removeEventListener("keydown", handleKeyDown);
         document.body.style.overflow = "auto";
     });
 });
 
+// Fonction pour gérer les clics globaux et masquer les boutons de suppression
+function handleGlobalClick(e) {
+    // Si on clique en dehors d'une image, masquer tous les boutons de suppression
+    const imageContainers = document.querySelectorAll(
+        ".image-container-mobile"
+    );
+    let clickedOutside = true;
+
+    imageContainers.forEach((container) => {
+        if (container.contains(e.target)) {
+            clickedOutside = false;
+        }
+    });
+
+    if (clickedOutside) {
+        hideAllDeleteButtons();
+    }
+}
+
 // Supprimer l'écouteur d'événement lors du démontage du composant
 onUnmounted(() => {
     document.removeEventListener("click", closeServiceSelectorOnClickOutside);
+    document.removeEventListener("click", handleGlobalClick);
+    document.removeEventListener("touchstart", handleGlobalClick);
     window.removeEventListener("resize", checkMobile);
     document.body.style.overflow = "auto";
 });
@@ -194,6 +219,61 @@ onUnmounted(() => {
 
 // Variable pour la nouvelle note
 const newNote = ref("");
+
+// État pour gérer l'affichage des boutons de suppression sur mobile
+const showDeleteButtons = ref({});
+
+// Fonction pour gérer l'appui long sur mobile pour les images
+let longPressTimer = null;
+let touchStartTime = 0;
+let hasMoved = false;
+
+const startLongPress = (imageId, event) => {
+    // Ne pas interférer avec le glissement de Splide
+    touchStartTime = Date.now();
+    hasMoved = false;
+
+    // Annuler le timer précédent s'il existe
+    if (longPressTimer) {
+        clearTimeout(longPressTimer);
+    }
+
+    longPressTimer = setTimeout(() => {
+        // Seulement si l'utilisateur n'a pas bougé le doigt
+        if (!hasMoved) {
+            showDeleteButtons.value = {
+                ...showDeleteButtons.value,
+                [imageId]: true,
+            };
+            longPressTimer = null;
+
+            // Auto-masquer le bouton après 3 secondes d'inactivité
+            setTimeout(() => {
+                hideDeleteButton(imageId);
+            }, 3000);
+        }
+    }, 500); // 500ms pour déclencher l'appui long
+};
+
+const cancelLongPress = () => {
+    if (longPressTimer) {
+        clearTimeout(longPressTimer);
+        longPressTimer = null;
+    }
+};
+
+const handleTouchMove = () => {
+    hasMoved = true;
+    cancelLongPress();
+};
+
+const hideDeleteButton = (imageId) => {
+    showDeleteButtons.value = { ...showDeleteButtons.value, [imageId]: false };
+};
+
+const hideAllDeleteButtons = () => {
+    showDeleteButtons.value = {};
+};
 
 // Configuration de l'éditeur TipTap
 const editor = useEditor({
@@ -1310,11 +1390,21 @@ function compiledMarkdown(text) {
                                     <div
                                         v-for="image in page"
                                         :key="image.id"
-                                        class="relative aspect-square group"
-                                        @click="openImageModal(image)"
+                                        class="relative aspect-square group image-container-mobile"
+                                        @touchstart.passive="
+                                            startLongPress(image.id, $event)
+                                        "
+                                        @touchmove.passive="handleTouchMove"
+                                        @touchend.passive="cancelLongPress"
+                                        @touchcancel.passive="cancelLongPress"
+                                        @click="
+                                            !showDeleteButtons[image.id] &&
+                                                openImageModal(image)
+                                        "
                                     >
-                                        <!-- Bouton de suppression pour mobile -->
+                                        <!-- Bouton de suppression pour mobile - affiché seulement lors d'appui long -->
                                         <div
+                                            v-if="showDeleteButtons[image.id]"
                                             class="absolute top-1 right-1 z-10"
                                         >
                                             <button
@@ -1335,11 +1425,18 @@ function compiledMarkdown(text) {
                                         <img
                                             :src="`/storage/${image.url_image}`"
                                             :alt="`Intervention ${intervention.id}`"
-                                            class="w-full h-full object-cover rounded-lg cursor-pointer transition-transform active:scale-95"
+                                            class="w-full h-full object-cover rounded-lg cursor-pointer transition-transform"
+                                            :class="{
+                                                'active:scale-95':
+                                                    !showDeleteButtons[
+                                                        image.id
+                                                    ],
+                                            }"
                                         />
 
-                                        <!-- Overlay pour indiquer que c'est cliquable -->
+                                        <!-- Overlay pour indiquer que c'est cliquable - seulement si pas en mode suppression -->
                                         <div
+                                            v-if="!showDeleteButtons[image.id]"
                                             class="absolute inset-0 bg-black bg-opacity-0 active:bg-opacity-20 transition-all rounded-lg flex items-center justify-center"
                                         >
                                             <svg
