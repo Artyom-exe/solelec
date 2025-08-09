@@ -20,34 +20,40 @@ const showNotification = inject("showNotification");
 const { intervention, services } = defineProps(["intervention", "services"]);
 
 // Variable pour stocker les IDs des services sélectionnés
-const selectedServices = ref(intervention.devis?.services?.map(service => service.id) || []);
+const selectedServices = ref(
+    intervention.devis?.services?.map((service) => service.id) || []
+);
 
 // Variable pour contrôler l'affichage du sélecteur de services
 const showServiceSelector = ref(false);
 
 // Ajouter un écouteur d'événement pour fermer le sélecteur de services lors d'un clic en dehors
 onMounted(() => {
-    document.addEventListener('click', closeServiceSelectorOnClickOutside);
+    document.addEventListener("click", closeServiceSelectorOnClickOutside);
 });
 
 // Supprimer l'écouteur d'événement lors du démontage du composant
 onUnmounted(() => {
-    document.removeEventListener('click', closeServiceSelectorOnClickOutside);
+    document.removeEventListener("click", closeServiceSelectorOnClickOutside);
 });
 
 // Fonction pour fermer le sélecteur de services quand on clique en dehors
 function closeServiceSelectorOnClickOutside(e) {
     if (showServiceSelector.value) {
         // Vérifier si le clic est sur le bouton de service ou sur un badge de service
-        const serviceBtn = document.getElementById('service-selector-btn');
-        const serviceContainer = document.getElementById('service-selector-container');
-        
+        const serviceBtn = document.getElementById("service-selector-btn");
+        const serviceContainer = document.getElementById(
+            "service-selector-container"
+        );
+
         // Ne pas fermer si le clic est sur le bouton ou dans le conteneur de services
-        if ((serviceBtn && serviceBtn.contains(e.target)) || 
-            (serviceContainer && serviceContainer.contains(e.target))) {
+        if (
+            (serviceBtn && serviceBtn.contains(e.target)) ||
+            (serviceContainer && serviceContainer.contains(e.target))
+        ) {
             return;
         }
-        
+
         // Fermer le sélecteur dans tous les autres cas
         showServiceSelector.value = false;
     }
@@ -56,7 +62,7 @@ function closeServiceSelectorOnClickOutside(e) {
 // Fonction pour basculer la sélection d'un service
 function toggleService(serviceId) {
     const index = selectedServices.value.indexOf(serviceId);
-    
+
     if (index === -1) {
         // Si le service n'est pas déjà sélectionné, l'ajouter
         selectedServices.value.push(serviceId);
@@ -71,7 +77,10 @@ function toggleService(serviceId) {
             updateInterventionServices();
         } else {
             // Afficher une notification si l'utilisateur tente de désélectionner le dernier service
-            showNotification("Au moins un service doit être sélectionné", "error");
+            showNotification(
+                "Au moins un service doit être sélectionné",
+                "error"
+            );
         }
     }
 }
@@ -79,7 +88,9 @@ function toggleService(serviceId) {
 // Fonction pour mettre à jour les services de l'intervention
 function updateInterventionServices() {
     router.put(
-        route("interventions.services.update", { intervention: intervention.id }),
+        route("interventions.services.update", {
+            intervention: intervention.id,
+        }),
         { services: selectedServices.value },
         {
             preserveScroll: true,
@@ -88,7 +99,10 @@ function updateInterventionServices() {
             // et seront affichées automatiquement par le système de notification existant
             onError: (errors) => {
                 console.error(errors);
-                showNotification("Erreur lors de la mise à jour des services", "error");
+                showNotification(
+                    "Erreur lors de la mise à jour des services",
+                    "error"
+                );
             },
         }
     );
@@ -381,7 +395,8 @@ function formatDateForApi(date) {
     if (!date) return null;
 
     // Si c'est déjà une chaîne de caractères au format YYYY-MM-DD, la retourner telle quelle
-    if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) return date;
+    if (typeof date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(date))
+        return date;
 
     try {
         // Sinon, formater la date au format YYYY-MM-DD
@@ -389,16 +404,16 @@ function formatDateForApi(date) {
 
         // Vérifier si la date est valide
         if (isNaN(d.getTime())) {
-            console.error('Date invalide:', date);
+            console.error("Date invalide:", date);
             return null;
         }
 
         const year = d.getFullYear();
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
         return `${year}-${month}-${day}`;
     } catch (error) {
-        console.error('Erreur lors du formatage de la date:', error);
+        console.error("Erreur lors du formatage de la date:", error);
         return null;
     }
 }
@@ -406,7 +421,9 @@ function formatDateForApi(date) {
 // Variables pour le calendrier personnalisé
 const showCustomCalendar = ref(false);
 const currentDate = ref(new Date());
-const selectedDate = ref(intervention.date ? new Date(intervention.date) : null);
+const selectedDate = ref(
+    intervention.date ? new Date(intervention.date) : null
+);
 const tempSelectedDate = ref(null);
 
 // Calcul des propriétés du calendrier
@@ -419,15 +436,29 @@ const daysInMonth = computed(() => {
 
 // Calcul du premier jour du mois (0 = Dimanche, 1 = Lundi, etc.)
 const firstDayOfMonth = computed(() => {
-    const firstDay = new Date(currentYear.value, currentMonth.value, 1).getDay();
+    const firstDay = new Date(
+        currentYear.value,
+        currentMonth.value,
+        1
+    ).getDay();
     // Convertir de 0-6 (Dim-Sam) à 1-7 (Lun-Dim)
     return firstDay === 0 ? 6 : firstDay - 1;
 });
 
 // Noms des mois en français
 const monthNames = [
-    'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
-    'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
+    "Janvier",
+    "Février",
+    "Mars",
+    "Avril",
+    "Mai",
+    "Juin",
+    "Juillet",
+    "Août",
+    "Septembre",
+    "Octobre",
+    "Novembre",
+    "Décembre",
 ];
 
 const currentMonthName = computed(() => monthNames[currentMonth.value]);
@@ -448,16 +479,18 @@ function openCustomCalendar() {
 
     // Ajouter un écouteur de clic pour fermer le calendrier quand on clique en dehors
     setTimeout(() => {
-        document.addEventListener('click', closeDatePickerOnClickOutside);
+        document.addEventListener("click", closeDatePickerOnClickOutside);
     }, 0);
 }
 
 // Fonction pour fermer le datepicker quand on clique en dehors
 function closeDatePickerOnClickOutside(e) {
-    const datepicker = document.querySelector('.date-picker-button')?.parentNode;
+    const datepicker = document.querySelector(
+        ".date-picker-button"
+    )?.parentNode;
     if (datepicker && !datepicker.contains(e.target)) {
         showCustomCalendar.value = false;
-        document.removeEventListener('click', closeDatePickerOnClickOutside);
+        document.removeEventListener("click", closeDatePickerOnClickOutside);
     }
 }
 
@@ -473,7 +506,11 @@ function nextMonth() {
 
 // Fonction pour sélectionner une date
 function selectDate(day) {
-    tempSelectedDate.value = new Date(currentYear.value, currentMonth.value, day);
+    tempSelectedDate.value = new Date(
+        currentYear.value,
+        currentMonth.value,
+        day
+    );
 }
 
 // Fonction pour vérifier si une date est sélectionnée
@@ -481,15 +518,17 @@ function isSelectedDate(day) {
     if (!tempSelectedDate.value) return false;
 
     const date = new Date(currentYear.value, currentMonth.value, day);
-    return date.getDate() === tempSelectedDate.value.getDate() &&
-           date.getMonth() === tempSelectedDate.value.getMonth() &&
-           date.getFullYear() === tempSelectedDate.value.getFullYear();
+    return (
+        date.getDate() === tempSelectedDate.value.getDate() &&
+        date.getMonth() === tempSelectedDate.value.getMonth() &&
+        date.getFullYear() === tempSelectedDate.value.getFullYear()
+    );
 }
 
 // Fonction pour annuler la sélection de date
 function cancelDateSelection() {
     showCustomCalendar.value = false;
-    document.removeEventListener('click', closeDatePickerOnClickOutside);
+    document.removeEventListener("click", closeDatePickerOnClickOutside);
 }
 
 // Fonction pour confirmer la sélection de date
@@ -499,7 +538,7 @@ function confirmDateSelection() {
         updateInterventionDate(selectedDate.value);
     }
     showCustomCalendar.value = false;
-    document.removeEventListener('click', closeDatePickerOnClickOutside);
+    document.removeEventListener("click", closeDatePickerOnClickOutside);
 }
 
 // Fonction pour mettre à jour la date d'intervention
@@ -512,11 +551,11 @@ function updateInterventionDate(date) {
 
     // Formater la date au format YYYY-MM-DD
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
     const formattedDate = `${year}-${month}-${day}`;
 
-    console.log('Date formatée envoyée à l\'API:', formattedDate);
+    console.log("Date formatée envoyée à l'API:", formattedDate);
 
     // Sauvegarder l'ancienne date pour pouvoir revenir en arrière si nécessaire
     const oldDate = intervention.date;
@@ -528,7 +567,7 @@ function updateInterventionDate(date) {
     router.put(
         route("interventions.updateDate", { intervention: intervention.id }),
         {
-            date: formattedDate
+            date: formattedDate,
         },
         {
             preserveScroll: true,
@@ -541,19 +580,22 @@ function updateInterventionDate(date) {
                 }
             },
             onError: (errors) => {
-                console.error('Erreurs:', errors);
-                showNotification("Erreur lors de la mise à jour de la date", "error");
+                console.error("Erreurs:", errors);
+                showNotification(
+                    "Erreur lors de la mise à jour de la date",
+                    "error"
+                );
 
                 // Restaurer l'ancienne date en cas d'erreur
                 intervention.date = oldDate;
-            }
+            },
         }
     );
 }
 
 function compiledMarkdown(text) {
     if (!text) return "";
-    
+
     // Configuration de marked pour un meilleur rendu
     marked.setOptions({
         gfm: true, // GitHub Flavored Markdown
@@ -561,23 +603,26 @@ function compiledMarkdown(text) {
         sanitize: false, // Désactivé car marked gère cela automatiquement dans les versions récentes
         smartLists: true, // Listes plus intelligentes
         smartypants: true, // Guillemets typographiques et tirets
-        xhtml: false // Ne pas fermer les balises vides comme XHTML
+        xhtml: false, // Ne pas fermer les balises vides comme XHTML
     });
-    
+
     return marked(text);
 }
-
 </script>
 
 <template>
     <AdminLayout>
         <!-- En-tête noir avec les informations principales -->
-        <header class="bg-[#2D2D2D] text-white py-28 px-16 mt-[56px]">
-            <div class="container flex items-start gap-20 self-stretch">
+        <header
+            class="bg-[#2D2D2D] text-white md:py-28 py-16 md:px-16 px-5 md:mt-[56px] mt-[64px]"
+        >
+            <div
+                class="container flex md:flex-row flex-col items-start md:gap-20 gap-12 self-stretch"
+            >
                 <!-- Côté gauche: Titre et statut -->
                 <div class="flex flex-col items-start gap-6 flex-1">
                     <h1
-                        class="text-[3.5rem] font-medium font-poppins leading-[120%] tracking-[-0.56px]"
+                        class="md:text-[3.5rem] text-[2.5rem] font-medium font-poppins leading-[120%] md:tracking-[-0.56px] tracking-[-0.4px]"
                     >
                         Intervention #{{ intervention.id }}
                     </h1>
@@ -586,28 +631,42 @@ function compiledMarkdown(text) {
                     >
                         <!-- Bouton principal pour les services -->
                         <div class="relative service-group">
-                            <button 
+                            <button
                                 id="service-selector-btn"
                                 class="flex py-1 px-[10px] items-start rounded-[4px] border border-white/5 bg-white/5 text-[#FF8C42] font-inter font-semibold text-sm cursor-pointer"
-                                @click.stop="showServiceSelector = !showServiceSelector"
+                                @click.stop="
+                                    showServiceSelector = !showServiceSelector
+                                "
                             >
-                                {{ intervention.devis?.services && intervention.devis.services.length > 0
-                                    ? intervention.devis.services[0].title
-                                    : "Aucun service" }}
+                                {{
+                                    intervention.devis?.services &&
+                                    intervention.devis.services.length > 0
+                                        ? intervention.devis.services[0].title
+                                        : "Aucun service"
+                                }}
                                 <span
-                                    v-if="intervention.devis?.services && intervention.devis.services.length > 1"
+                                    v-if="
+                                        intervention.devis?.services &&
+                                        intervention.devis.services.length > 1
+                                    "
                                     class="ml-1"
                                 >
-                                    +{{ intervention.devis.services.length - 1 }}
+                                    +{{
+                                        intervention.devis.services.length - 1
+                                    }}
                                 </span>
                             </button>
                             <!-- Popup qui apparaît au survol -->
                             <div
-                                v-if="intervention.devis?.services && intervention.devis.services.length > 1"
+                                v-if="
+                                    intervention.devis?.services &&
+                                    intervention.devis.services.length > 1
+                                "
                                 class="absolute z-10 top-full right-0 mt-1 bg-[#1A1A1A] border border-white/10 rounded-md p-2 shadow-lg opacity-0 invisible service-popup transition-all duration-200 min-w-[150px]"
                             >
                                 <div
-                                    v-for="service in intervention.devis.services"
+                                    v-for="service in intervention.devis
+                                        .services"
                                     :key="service.id"
                                     class="py-1 px-2 text-[#FF8C42] font-inter font-semibold text-sm whitespace-nowrap"
                                 >
@@ -616,13 +675,19 @@ function compiledMarkdown(text) {
                             </div>
                         </div>
                         <!-- Liste des services qui apparaît sous les badges principaux -->
-                        <div v-if="showServiceSelector" id="service-selector-container" class="w-full mt-2 flex flex-wrap gap-2" @click.stop>
+                        <div
+                            v-if="showServiceSelector"
+                            id="service-selector-container"
+                            class="w-full mt-2 flex flex-wrap gap-2"
+                            @click.stop
+                        >
                             <button
                                 v-for="service in services"
                                 :key="service.id"
                                 @click="toggleService(service.id)"
                                 :class="{
-                                    'bg-[#FF8C42] text-white': selectedServices.includes(service.id),
+                                    'bg-[#FF8C42] text-white':
+                                        selectedServices.includes(service.id),
                                 }"
                                 class="px-3 py-1 text-sm rounded-md border border-white/20 text-white hover:bg-[#FF8C42] hover:text-white transition-colors duration-300"
                             >
@@ -673,34 +738,94 @@ function compiledMarkdown(text) {
                                     stroke-linejoin="round"
                                     class="mr-1"
                                 >
-                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <rect
+                                        x="3"
+                                        y="4"
+                                        width="18"
+                                        height="18"
+                                        rx="2"
+                                        ry="2"
+                                    ></rect>
                                     <line x1="16" y1="2" x2="16" y2="6"></line>
                                     <line x1="8" y1="2" x2="8" y2="6"></line>
                                     <line x1="3" y1="10" x2="21" y2="10"></line>
                                 </svg>
-                                {{ intervention.date ? formatDate(intervention.date) : 'Planifier' }}
+                                {{
+                                    intervention.date
+                                        ? formatDate(intervention.date)
+                                        : "Planifier"
+                                }}
                             </button>
 
                             <!-- Calendrier simple -->
-                            <div v-if="showCustomCalendar" class="absolute top-full left-0 z-50 mt-1 bg-[#2D2D2D] border border-white/10 rounded-md p-4 shadow-lg">
+                            <div
+                                v-if="showCustomCalendar"
+                                class="absolute top-full left-0 z-50 mt-1 bg-[#2D2D2D] border border-white/10 rounded-md p-4 shadow-lg"
+                            >
                                 <!-- En-tête du calendrier avec mois et année -->
-                                <div class="flex justify-between items-center mb-2">
-                                    <button @click="previousMonth" class="text-white hover:text-[#FF8C42]">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="15 18 9 12 15 6"></polyline>
+                                <div
+                                    class="flex justify-between items-center mb-2"
+                                >
+                                    <button
+                                        @click="previousMonth"
+                                        class="text-white hover:text-[#FF8C42]"
+                                    >
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="16"
+                                            height="16"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            stroke-width="2"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                        >
+                                            <polyline
+                                                points="15 18 9 12 15 6"
+                                            ></polyline>
                                         </svg>
                                     </button>
-                                    <div class="text-white font-medium">{{ currentMonthName }} {{ currentYear }}</div>
-                                    <button @click="nextMonth" class="text-white hover:text-[#FF8C42]">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="9 18 15 12 9 6"></polyline>
+                                    <div class="text-white font-medium">
+                                        {{ currentMonthName }} {{ currentYear }}
+                                    </div>
+                                    <button
+                                        @click="nextMonth"
+                                        class="text-white hover:text-[#FF8C42]"
+                                    >
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="16"
+                                            height="16"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            stroke-width="2"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                        >
+                                            <polyline
+                                                points="9 18 15 12 9 6"
+                                            ></polyline>
                                         </svg>
                                     </button>
                                 </div>
 
                                 <!-- Jours de la semaine -->
                                 <div class="grid grid-cols-7 gap-1 mb-1">
-                                    <div v-for="day in ['Lu', 'Ma', 'Me', 'Je', 'Ve', 'Sa', 'Di']" :key="day" class="text-center text-white/70 text-xs">
+                                    <div
+                                        v-for="day in [
+                                            'Lu',
+                                            'Ma',
+                                            'Me',
+                                            'Je',
+                                            'Ve',
+                                            'Sa',
+                                            'Di',
+                                        ]"
+                                        :key="day"
+                                        class="text-center text-white/70 text-xs"
+                                    >
                                         {{ day }}
                                     </div>
                                 </div>
@@ -708,7 +833,11 @@ function compiledMarkdown(text) {
                                 <!-- Jours du mois -->
                                 <div class="grid grid-cols-7 gap-1">
                                     <!-- Espaces vides pour l'alignement -->
-                                    <div v-for="n in firstDayOfMonth" :key="'empty-'+n" class="h-7"></div>
+                                    <div
+                                        v-for="n in firstDayOfMonth"
+                                        :key="'empty-' + n"
+                                        class="h-7"
+                                    ></div>
 
                                     <!-- Jours du mois -->
                                     <button
@@ -717,7 +846,9 @@ function compiledMarkdown(text) {
                                         @click="selectDate(day)"
                                         :class="[
                                             'h-7 w-7 rounded-full flex items-center justify-center text-sm transition-colors',
-                                            isSelectedDate(day) ? 'bg-[#FF8C42] text-white' : 'text-white hover:bg-white/10'
+                                            isSelectedDate(day)
+                                                ? 'bg-[#FF8C42] text-white'
+                                                : 'text-white hover:bg-white/10',
                                         ]"
                                     >
                                         {{ day }}
@@ -745,8 +876,10 @@ function compiledMarkdown(text) {
                 </div>
 
                 <!-- Côté droit -->
-                <div class="flex min-w-[464px] flex-col items-start gap-8">
-                    <div class="flex w-full gap-8">
+                <div
+                    class="flex md:min-w-[464px] w-full flex-col items-start md:gap-8 gap-6"
+                >
+                    <div class="flex w-full md:gap-8 gap-6">
                         <div class="flex flex-col gap-2 items-start w-1/2">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -760,7 +893,8 @@ function compiledMarkdown(text) {
                                     fill="white"
                                 />
                             </svg>
-                            <span class="font-inter text-base font-normal"
+                            <span
+                                class="font-inter md:text-base text-sm font-normal"
                                 >{{ intervention.client.name }}
                                 {{ intervention.client.lastname }}</span
                             >
@@ -780,7 +914,9 @@ function compiledMarkdown(text) {
                                     fill="white"
                                 />
                             </svg>
-                            <span class="font-inter text-base font-normal">
+                            <span
+                                class="font-inter md:text-base text-sm font-normal"
+                            >
                                 <span
                                     :class="{
                                         'text-gray-400':
@@ -812,9 +948,9 @@ function compiledMarkdown(text) {
                             >
                         </div>
                     </div>
-                    <div class="flex items-start gap-8 w-full">
+                    <div class="flex items-start md:gap-8 gap-6 w-full">
                         <div
-                            class="font-inter w-1/2 flex-col items-start text-base font-normal flex gap-2"
+                            class="font-inter w-1/2 flex-col items-start md:text-base text-sm font-normal flex gap-2"
                         >
                             <a
                                 :href="
@@ -848,7 +984,7 @@ function compiledMarkdown(text) {
                             </a>
                         </div>
                         <div
-                            class="font-inter w-1/2 flex-col items-start text-base font-normal flex gap-2"
+                            class="font-inter w-1/2 flex-col items-start md:text-base text-sm font-normal flex gap-2"
                         >
                             <a
                                 :href="
@@ -882,9 +1018,9 @@ function compiledMarkdown(text) {
                             </a>
                         </div>
                     </div>
-                    <div class="flex items-start gap-8 w-full">
+                    <div class="flex items-start md:gap-8 gap-6 w-full">
                         <div
-                            class="font-inter flex-col items-start text-base font-normal flex gap-2 w-full"
+                            class="font-inter flex-col items-start md:text-base text-sm font-normal flex gap-2 w-full"
                         >
                             <a
                                 :href="
@@ -1095,9 +1231,7 @@ function compiledMarkdown(text) {
 
             <!-- Notes -->
             <section class="w-full py-28 px-16 flex flex-col gap-20">
-                <div
-                    class="w-full flex-col items-start gap-4 text-[#0D0703]"
-                >
+                <div class="w-full flex-col items-start gap-4 text-[#0D0703]">
                     <h2 class="text-left font-inter text-base font-semibold">
                         Notes
                     </h2>
@@ -1112,12 +1246,19 @@ function compiledMarkdown(text) {
                         ></div>
                     </div>
                 </div>
-                <div style="width: 100%; max-width: 100%; display: block;">
+                <div style="width: 100%; max-width: 100%; display: block">
                     <!-- Barre d'outils TipTap -->
-                    <div style="width: 100%; max-width: 100%; display: block; position: relative;">
+                    <div
+                        style="
+                            width: 100%;
+                            max-width: 100%;
+                            display: block;
+                            position: relative;
+                        "
+                    >
                         <div
                             class="toolbar bg-[#F2F2F2] border border-white/20 border-b-0 rounded-t-lg p-2 flex gap-2 relative"
-                            style="width: 100%; max-width: 100%; display: block;"
+                            style="width: 100%; max-width: 100%; display: block"
                         >
                             <button
                                 @click="
@@ -1269,13 +1410,25 @@ function compiledMarkdown(text) {
 
                         <!-- Conteneur de l'éditeur TipTap -->
                         <div
-                            style="width: 100%; max-width: 100%; display: block; height: 100%; cursor: text;"
+                            style="
+                                width: 100%;
+                                max-width: 100%;
+                                display: block;
+                                height: 100%;
+                                cursor: text;
+                            "
                             @click="editor?.commands.focus()"
                         >
                             <EditorContent
                                 :editor="editor"
                                 class="px-8 pb-8 pt-3 rounded-b-lg border border-white/20 bg-[#F2F2F2] font-inter text-base font-normal min-h-[120px] overflow-auto"
-                                style="width: 100%; max-width: 100%; display: block; box-sizing: border-box; height: 100%;"
+                                style="
+                                    width: 100%;
+                                    max-width: 100%;
+                                    display: block;
+                                    box-sizing: border-box;
+                                    height: 100%;
+                                "
                             />
                         </div>
                         <div class="absolute bottom-2 right-4">
@@ -1311,7 +1464,7 @@ function compiledMarkdown(text) {
                             v-for="note in intervention.notes"
                             :key="note.id"
                             class="flex p-8 flex-col items-start gap-6 rounded-lg border border-white/20 bg-[#F2F2F2] font-inter text-base font-normal text-[#0D0703] relative group w-full"
-                            style="width: 100%; max-width: 100%;"
+                            style="width: 100%; max-width: 100%"
                         >
                             <div
                                 class="absolute top-[-0.5rem] right-[-0.5rem] opacity-0 delete-button transition-opacity flex gap-2"
@@ -1330,7 +1483,13 @@ function compiledMarkdown(text) {
                             <div
                                 class="text-gray-700 w-full overflow-hidden break-words prose prose-sm"
                                 v-html="compiledMarkdown(note.content)"
-                                style="word-wrap: break-word; overflow-wrap: break-word; white-space: normal; width: 100%; max-width: 100%;"
+                                style="
+                                    word-wrap: break-word;
+                                    overflow-wrap: break-word;
+                                    white-space: normal;
+                                    width: 100%;
+                                    max-width: 100%;
+                                "
                             ></div>
                             <div class="flex items-center gap-2">
                                 <svg
@@ -1453,7 +1612,8 @@ function compiledMarkdown(text) {
 }
 
 /* Empêcher le défilement horizontal tout en permettant le dépassement des éléments */
-body, html {
+body,
+html {
     overflow-x: hidden;
     max-width: 100%;
 }
@@ -1485,7 +1645,7 @@ main {
 :deep(.ProseMirror) {
     min-height: 150px;
     padding: 0.75rem;
-    color: #0D0703;
+    color: #0d0703;
     outline: none !important;
     overflow-y: auto;
     width: 100% !important;
@@ -1523,8 +1683,8 @@ main {
     margin-right: 0.5rem;
     margin-bottom: 0.5rem;
     background-color: rgba(255, 140, 66, 0.1);
-    color: #FF8C42;
-    border: 1px solid #FF8C42;
+    color: #ff8c42;
+    border: 1px solid #ff8c42;
 }
 
 /* Styles pour le contenu Markdown */
@@ -1553,7 +1713,7 @@ main {
 }
 
 .markdown-content a {
-    color: #FF8C42;
+    color: #ff8c42;
     text-decoration: underline;
 }
 
@@ -1581,7 +1741,7 @@ main {
 }
 
 .markdown-content blockquote {
-    border-left: 3px solid #FF8C42;
+    border-left: 3px solid #ff8c42;
     padding-left: 1rem;
     margin-left: 0;
     margin-bottom: 1rem;
