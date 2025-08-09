@@ -1559,19 +1559,24 @@ function compiledMarkdown(text) {
             </section>
 
             <!-- Notes -->
-            <section class="w-full py-28 px-16 flex flex-col gap-20">
-                <div class="w-full flex-col items-start gap-4 text-[#0D0703]">
+            <section
+                class="w-full md:py-28 py-16 md:px-16 px-5 flex flex-col md:gap-20 gap-12"
+            >
+                <div
+                    class="w-full flex-col items-start md:gap-4 gap-3 text-[#0D0703]"
+                >
                     <h2 class="text-left font-inter text-base font-semibold">
                         Notes
                     </h2>
+
                     <div class="relative flex flex-col gap-6">
                         <h3
-                            class="font-poppins text-5xl text-left font-medium leading-[57.6px] tracking-[-0.48px] mb-6"
+                            class="font-poppins md:text-5xl text-4xl text-left font-medium md:leading-[57.6px] leading-[43.2px] tracking-[-0.36px] md:tracking-[-0.48px] md:mb-6 mb-4"
                         >
                             Mes notes
                         </h3>
                         <div
-                            class="absolute bottom-0 left-[5%] border-2 border-[#FF8C42] w-full max-w-[370px] min-w-[200px]"
+                            class="absolute bottom-0 md:left-[5%] left-[-6%] border-2 border-[#FF8C42] md:w-[30%] w-[65%]"
                         ></div>
                     </div>
                 </div>
@@ -1586,7 +1591,7 @@ function compiledMarkdown(text) {
                         "
                     >
                         <div
-                            class="toolbar bg-[#F2F2F2] border border-white/20 border-b-0 rounded-t-lg p-2 flex gap-2 relative"
+                            class="toolbar bg-[#F2F2F2] border border-white/20 border-b-0 rounded-t-lg pt-2 pl-6 flex gap-2 relative"
                             style="width: 100%; max-width: 100%; display: block"
                         >
                             <button
@@ -1750,7 +1755,7 @@ function compiledMarkdown(text) {
                         >
                             <EditorContent
                                 :editor="editor"
-                                class="px-8 pb-8 pt-3 rounded-b-lg border border-white/20 bg-[#F2F2F2] font-inter text-base font-normal min-h-[120px] overflow-auto"
+                                class="px-6 pb-6 pt-3 rounded-b-lg border border-white/20 bg-[#F2F2F2] font-inter text-base font-normal min-h-[120px] overflow-auto"
                                 style="
                                     width: 100%;
                                     max-width: 100%;
@@ -1787,12 +1792,12 @@ function compiledMarkdown(text) {
                         v-if="
                             intervention.notes && intervention.notes.length > 0
                         "
-                        class="w-full flex flex-col gap-8 mt-8"
+                        class="w-full flex flex-col md:gap-8 gap-6 mt-8"
                     >
                         <div
                             v-for="note in intervention.notes"
                             :key="note.id"
-                            class="flex p-8 flex-col items-start gap-6 rounded-lg border border-white/20 bg-[#F2F2F2] font-inter text-base font-normal text-[#0D0703] relative group w-full"
+                            class="flex p-6 flex-col items-start gap-6 rounded-lg border border-white/20 bg-[#F2F2F2] font-inter text-base font-normal text-[#0D0703] relative group w-full"
                             style="width: 100%; max-width: 100%"
                         >
                             <div
