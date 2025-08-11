@@ -54,6 +54,23 @@ const showNotificationHandler = (event) => {
     }, 5000);
 };
 
+// Fonction pour afficher les notifications depuis les composants enfants
+const showNotification = (message, type = "success") => {
+    notification.value = {
+        show: true,
+        message: message,
+        type: type,
+    };
+
+    // Cacher la notification après 5 secondes
+    setTimeout(() => {
+        notification.value.show = false;
+    }, 5000);
+};
+
+// Fournir la fonction aux composants enfants
+provide("showNotification", showNotification);
+
 const hideNotificationHandler = () => {
     notification.value.show = false;
 };

@@ -67,7 +67,12 @@
                                 id="email"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF8C42] focus:border-transparent transition-colors"
                                 :class="{
-                                    'border-red-500': profileForm.errors.email,
+                                    'border-red-500':
+                                        profileForm.errors.email ||
+                                        !isEmailValid,
+                                    'border-green-500':
+                                        isEmailValid &&
+                                        profileForm.email !== '',
                                 }"
                             />
                             <div
@@ -75,6 +80,14 @@
                                 class="mt-1 text-sm text-red-600"
                             >
                                 {{ profileForm.errors.email }}
+                            </div>
+                            <div
+                                v-else-if="
+                                    !isEmailValid && profileForm.email !== ''
+                                "
+                                class="mt-1 text-sm text-red-600"
+                            >
+                                L'adresse email doit être un email valide
                             </div>
                         </div>
 
@@ -175,7 +188,12 @@
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF8C42] focus:border-transparent transition-colors"
                                 :class="{
                                     'border-red-500':
-                                        passwordForm.errors.password,
+                                        passwordForm.errors.password ||
+                                        (!isPasswordValid &&
+                                            passwordForm.password !== ''),
+                                    'border-green-500':
+                                        isPasswordValid &&
+                                        passwordForm.password !== '',
                                 }"
                             />
                             <div
@@ -183,6 +201,16 @@
                                 class="mt-1 text-sm text-red-600"
                             >
                                 {{ passwordForm.errors.password }}
+                            </div>
+                            <div
+                                v-else-if="
+                                    !isPasswordValid &&
+                                    passwordForm.password !== ''
+                                "
+                                class="mt-1 text-sm text-red-600"
+                            >
+                                Le mot de passe doit contenir au moins 8
+                                caractères
                             </div>
                         </div>
 
@@ -198,7 +226,27 @@
                                 type="password"
                                 id="password_confirmation"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF8C42] focus:border-transparent transition-colors"
+                                :class="{
+                                    'border-red-500':
+                                        !doPasswordsMatch &&
+                                        passwordForm.password_confirmation !==
+                                            '',
+                                    'border-green-500':
+                                        doPasswordsMatch &&
+                                        passwordForm.password_confirmation !==
+                                            '',
+                                }"
                             />
+                            <div
+                                v-if="
+                                    !doPasswordsMatch &&
+                                    passwordForm.password_confirmation !== ''
+                                "
+                                class="mt-1 text-sm text-red-600"
+                            >
+                                La confirmation du mot de passe ne correspond
+                                pas
+                            </div>
                         </div>
 
                         <div class="flex justify-end">
@@ -240,14 +288,6 @@
                     </form>
                 </div>
             </div>
-
-            <!-- Messages de succès -->
-            <div
-                v-if="$page.props.flash.success"
-                class="fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg shadow-lg"
-            >
-                {{ $page.props.flash.success }}
-            </div>
         </div>
     </AdminLayout>
 </template>
@@ -256,11 +296,52 @@
 import { useForm } from "@inertiajs/vue3";
 import AdminLayout from "@/Layouts/AdminLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
+import { ref, inject, watch, computed } from "vue";
+import { usePage } from "@inertiajs/vue3";
+
+// Injection des fonctions de notification (comme dans Clients/Index.vue)
+const showNotification = inject("showNotification");
+const page = usePage();
 
 // Props
 const props = defineProps({
     user: Object,
+    errors: Object,
+    flash: Object,
 });
+
+// Surveiller les changements dans les propriétés flash pour afficher les notifications
+watch(
+    () => page.props.flash,
+    (newFlash) => {
+        if (newFlash?.success) {
+            showNotification(newFlash.success, "success");
+        }
+        if (newFlash?.error) {
+            showNotification(newFlash.error, "error");
+        }
+    },
+    { deep: true, immediate: true }
+);
+
+// Alternative : surveiller directement les propriétés
+watch(
+    () => page.props.success,
+    (success) => {
+        if (success) {
+            showNotification(success, "success");
+        }
+    }
+);
+
+watch(
+    () => page.props.error,
+    (error) => {
+        if (error) {
+            showNotification(error, "error");
+        }
+    }
+);
 
 // Formulaire pour le profil
 const profileForm = useForm({
@@ -275,21 +356,77 @@ const passwordForm = useForm({
     password_confirmation: "",
 });
 
+// Validation en temps réel
+const isEmailValid = computed(() => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(profileForm.email) || profileForm.email === "";
+});
+
+const isPasswordValid = computed(() => {
+    return passwordForm.password.length >= 8 || passwordForm.password === "";
+});
+
+const doPasswordsMatch = computed(() => {
+    return (
+        passwordForm.password === passwordForm.password_confirmation ||
+        passwordForm.password_confirmation === ""
+    );
+});
+
 // Méthodes
 const updateProfile = () => {
+    // Validation côté client pour l'email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(profileForm.email)) {
+        showNotification("L'adresse email doit être un email valide.", "error");
+        return;
+    }
+
     profileForm.put(route("profile.admin.update"), {
         preserveScroll: true,
         onSuccess: () => {
-            // Le message de succès sera affiché via flash
+            // Le message de succès sera affiché via le système de notifications
+        },
+        onError: (errors) => {
+            // Afficher les erreurs via les notifications
+            const firstError = Object.values(errors)[0];
+            if (firstError) {
+                showNotification(firstError, "error");
+            }
         },
     });
 };
 
 const updatePassword = () => {
+    // Validation côté client pour les mots de passe
+    if (passwordForm.password !== passwordForm.password_confirmation) {
+        showNotification(
+            "La confirmation du mot de passe ne correspond pas.",
+            "error"
+        );
+        return;
+    }
+
+    if (passwordForm.password.length < 8) {
+        showNotification(
+            "Le mot de passe doit contenir au moins 8 caractères.",
+            "error"
+        );
+        return;
+    }
+
     passwordForm.put(route("profile.admin.password"), {
         preserveScroll: true,
         onSuccess: () => {
             passwordForm.reset();
+            // Le message de succès sera affiché via le système de notifications
+        },
+        onError: (errors) => {
+            // Afficher les erreurs via les notifications
+            const firstError = Object.values(errors)[0];
+            if (firstError) {
+                showNotification(firstError, "error");
+            }
         },
     });
 };
