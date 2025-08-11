@@ -49,6 +49,11 @@ Route::middleware([
 ])->prefix('admin')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
+    // Route pour le profil admin
+    Route::get('/profile', [App\Http\Controllers\AdminProfileController::class, 'show'])->name('profile.admin');
+    Route::put('/profile', [App\Http\Controllers\AdminProfileController::class, 'updateProfile'])->name('profile.admin.update');
+    Route::put('/profile/password', [App\Http\Controllers\AdminProfileController::class, 'updatePassword'])->name('profile.admin.password');
+
     // Routes pour les clients
     Route::get('/clients', [ClientController::class, 'index'])->name('clients');
     Route::post('/clients', [ClientController::class, 'store'])->name('clients.store');
