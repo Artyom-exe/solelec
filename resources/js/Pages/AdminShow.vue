@@ -79,10 +79,10 @@
                         </div>
 
                         <div class="flex justify-end">
-                            <button
+                            <PrimaryButton
                                 type="submit"
                                 :disabled="profileForm.processing"
-                                class="bg-[#FF8C42] text-white px-6 py-2 rounded-lg hover:bg-[#e6793a] focus:ring-2 focus:ring-[#FF8C42] focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                class="!w-auto"
                             >
                                 <span
                                     v-if="profileForm.processing"
@@ -112,7 +112,7 @@
                                 <span v-else
                                     >Enregistrer les modifications</span
                                 >
-                            </button>
+                            </PrimaryButton>
                         </div>
                     </form>
                 </div>
@@ -202,10 +202,10 @@
                         </div>
 
                         <div class="flex justify-end">
-                            <button
+                            <PrimaryButton
                                 type="submit"
                                 :disabled="passwordForm.processing"
-                                class="bg-[#FF8C42] text-white px-6 py-2 rounded-lg hover:bg-[#e6793a] focus:ring-2 focus:ring-[#FF8C42] focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                class="!w-auto"
                             >
                                 <span
                                     v-if="passwordForm.processing"
@@ -235,7 +235,7 @@
                                 <span v-else
                                     >Mettre à jour le mot de passe</span
                                 >
-                            </button>
+                            </PrimaryButton>
                         </div>
                     </form>
                 </div>
@@ -255,6 +255,7 @@
 <script setup>
 import { useForm } from "@inertiajs/vue3";
 import AdminLayout from "@/Layouts/AdminLayout.vue";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
 
 // Props
 const props = defineProps({
