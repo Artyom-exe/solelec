@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount, inject } from "vue";
+import { ref, onMounted, onBeforeUnmount, inject, computed } from "vue";
 import { Link } from "@inertiajs/vue3";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import logo from "./logo.vue";
@@ -15,6 +15,28 @@ const props = defineProps({
 
 const mobileMenuOpen = ref(false);
 const aboutDropdownOpen = ref(false);
+const currentSection = ref("");
+
+// Calculer si un item est actif
+const isItemActive = (item) => {
+    if (item.anchor) {
+        // Pour les liens avec ancre
+        const sectionName = item.anchor.substring(1);
+
+        // Pour tous les liens avec ancre, vérifier qu'on est sur la bonne route ET dans la bonne section
+        if (
+            route().current(item.route) &&
+            currentSection.value === sectionName
+        ) {
+            return true;
+        }
+
+        return false;
+    } else {
+        // Pour les liens normaux, vérifier seulement la route
+        return route().current(item.route);
+    }
+};
 
 // Pour fermer le dropdown si on clique ailleurs
 const closeDropdowns = (event) => {
@@ -23,8 +45,79 @@ const closeDropdowns = (event) => {
     }
 };
 
+// Observer les sections visibles pour mettre à jour l'état actif
+const observeSections = () => {
+    const sections = document.querySelectorAll("section[id], div[id]");
+    const observer = new IntersectionObserver(
+        (entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting && entry.intersectionRatio > 0.3) {
+                    currentSection.value = entry.target.id;
+                }
+            });
+        },
+        {
+            threshold: [0.1, 0.3, 0.5, 0.7],
+            rootMargin: "-80px 0px -80px 0px",
+        }
+    );
+
+    sections.forEach((section) => {
+        observer.observe(section);
+    });
+    return observer;
+};
+
 onMounted(() => {
     document.addEventListener("click", closeDropdowns);
+    // Démarrer l'observation des sections après un délai pour s'assurer que le DOM est prêt
+    setTimeout(() => {
+        observeSections();
+    }, 500);
+
+    // Ajouter un listener pour détecter les changements de scroll manuellement comme backup
+    const handleScroll = () => {
+        // Pour la page d'accueil - zones
+        if (route().current("accueil")) {
+            const zonesSection = document.getElementById("zones");
+            if (zonesSection) {
+                const rect = zonesSection.getBoundingClientRect();
+                const isVisible = rect.top <= 100 && rect.bottom >= 100;
+                if (isVisible) {
+                    currentSection.value = "zones";
+                }
+            }
+        }
+
+        // Pour la page services-portfolio - services et portfolio
+        if (route().current("services-portfolio")) {
+            const servicesSection = document.getElementById("services");
+            const portfolioSection = document.getElementById("portfolio");
+
+            if (servicesSection) {
+                const rect = servicesSection.getBoundingClientRect();
+                const isVisible = rect.top <= 100 && rect.bottom >= 100;
+                if (isVisible) {
+                    currentSection.value = "services";
+                }
+            }
+
+            if (portfolioSection) {
+                const rect = portfolioSection.getBoundingClientRect();
+                const isVisible = rect.top <= 100 && rect.bottom >= 100;
+                if (isVisible) {
+                    currentSection.value = "portfolio";
+                }
+            }
+        }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    // Cleanup dans onBeforeUnmount
+    onBeforeUnmount(() => {
+        window.removeEventListener("scroll", handleScroll);
+    });
 });
 
 onBeforeUnmount(() => {
@@ -76,11 +169,12 @@ const emit = defineEmits(["scrollToSection"]);
                         <Link
                             v-if="!item.anchor"
                             :href="route(item.route)"
-                            class="font-inter text-white text-base hover:text-[#FF8C42] transition-colors duration-200"
+                            class="font-inter text-base transition-colors duration-200"
                             :class="{
-                                'text-[#FF8C42] font-medium': route().current(
-                                    item.route
-                                ),
+                                'text-[#FF8C42] font-medium':
+                                    isItemActive(item),
+                                'text-white hover:text-[#FF8C42]':
+                                    !isItemActive(item),
                             }"
                         >
                             {{ item.name }}
@@ -97,11 +191,12 @@ const emit = defineEmits(["scrollToSection"]);
                                     item.path
                                 )
                             "
-                            class="font-inter text-white text-base hover:text-[#FF8C42] transition-colors duration-200"
+                            class="font-inter text-base transition-colors duration-200"
                             :class="{
-                                'text-[#FF8C42] font-medium': route().current(
-                                    item.route
-                                ),
+                                'text-[#FF8C42] font-medium':
+                                    isItemActive(item),
+                                'text-white hover:text-[#FF8C42]':
+                                    !isItemActive(item),
                             }"
                         >
                             {{ item.name }}
@@ -112,7 +207,17 @@ const emit = defineEmits(["scrollToSection"]);
                     <div class="relative about-dropdown">
                         <button
                             @click="toggleAboutDropdown"
-                            class="font-inter text-white hover:text-[#FF8C42] transition-colors duration-200 flex items-center"
+                            class="font-inter transition-colors duration-200 flex items-center"
+                            :class="{
+                                'text-[#FF8C42] font-medium':
+                                    aboutSubItems.some((subItem) =>
+                                        isItemActive(subItem)
+                                    ),
+                                'text-white hover:text-[#FF8C42]':
+                                    !aboutSubItems.some((subItem) =>
+                                        isItemActive(subItem)
+                                    ),
+                            }"
                         >
                             À propos
                             <svg
@@ -145,7 +250,13 @@ const emit = defineEmits(["scrollToSection"]);
                                     );
                                     aboutDropdownOpen = false;
                                 "
-                                class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-[#FF8C42]"
+                                class="block px-4 py-2 transition-colors duration-200"
+                                :class="{
+                                    'text-[#FF8C42] bg-gray-50 font-medium':
+                                        isItemActive(item),
+                                    'text-gray-700 hover:bg-gray-100 hover:text-[#FF8C42]':
+                                        !isItemActive(item),
+                                }"
                             >
                                 {{ item.name }}
                             </a>
@@ -164,7 +275,7 @@ const emit = defineEmits(["scrollToSection"]);
                     <button
                         @click="toggleMobileMenu"
                         class="hamburger-icon cross-animation z-[100] my-auto"
-                        :class="{ 'open': mobileMenuOpen }"
+                        :class="{ open: mobileMenuOpen }"
                         aria-label="Menu"
                     >
                         <span></span>
@@ -187,59 +298,78 @@ const emit = defineEmits(["scrollToSection"]);
                 class="md:hidden fixed top-[64px] left-0 right-0 bottom-0 bg-white shadow-lg py-4 px-6 overflow-y-auto z-50"
             >
                 <div class="flex flex-col space-y-6 mt-4">
-                <!-- Animation des éléments du menu -->
-                <Link
-                    v-for="(item, index) in navItems"
-                    :key="item.name"
-                    :href="route(item.route)"
-                    class="font-inter text-gray-700 py-2 hover:text-[#FF8C42] text-lg border-b border-gray-100 pb-3 transition-all duration-300 transform"
-                    :style="{ 'animation-delay': index * 100 + 'ms', 'animation': 'fadeInDown 0.5s ease forwards' }"
-                    :class="{
-                        'text-[#FF8C42] font-medium': route().current(item.route)
-                    }"
-                    @click="toggleMobileMenu"
-                >
-                    {{ item.name }}
-                </Link>
+                    <!-- Animation des éléments du menu -->
+                    <Link
+                        v-for="(item, index) in navItems"
+                        :key="item.name"
+                        :href="route(item.route)"
+                        class="font-inter py-2 text-lg border-b border-gray-100 pb-3 transition-all duration-300 transform"
+                        :style="{
+                            'animation-delay': index * 100 + 'ms',
+                            animation: 'fadeInDown 0.5s ease forwards',
+                        }"
+                        :class="{
+                            'text-[#FF8C42] font-medium': isItemActive(item),
+                            'text-gray-700 hover:text-[#FF8C42]':
+                                !isItemActive(item),
+                        }"
+                        @click="toggleMobileMenu"
+                    >
+                        {{ item.name }}
+                    </Link>
 
-                <!-- À propos et sous-éléments -->
-                <div
-                    class="py-2 border-b border-gray-100 pb-3 transition-all duration-300 transform"
-                    style="animation: fadeInDown 0.5s ease forwards; animation-delay: 300ms;"
-                >
-                    <div class="font-inter text-gray-700 font-medium text-lg">
-                        À propos
-                    </div>
-                    <div class="pl-4 mt-2 space-y-2">
-                        <a
-                            v-for="item in aboutSubItems"
-                            :key="item.name"
-                            href="#"
-                            @click.prevent="
-                                navigateToSection(
-                                    item.anchor.substring(1),
-                                    item.route,
-                                    item.path
-                                );
-                                toggleMobileMenu();
-                            "
-                            class="block py-2 text-gray-600 hover:text-[#FF8C42] transition-all duration-200 transform hover:translate-x-1"
+                    <!-- À propos et sous-éléments -->
+                    <div
+                        class="py-2 border-b border-gray-100 pb-3 transition-all duration-300 transform"
+                        style="
+                            animation: fadeInDown 0.5s ease forwards;
+                            animation-delay: 300ms;
+                        "
+                    >
+                        <div
+                            class="font-inter text-gray-700 font-medium text-lg"
                         >
-                            {{ item.name }}
-                        </a>
+                            À propos
+                        </div>
+                        <div class="pl-4 mt-2 space-y-2">
+                            <a
+                                v-for="item in aboutSubItems"
+                                :key="item.name"
+                                href="#"
+                                @click.prevent="
+                                    navigateToSection(
+                                        item.anchor.substring(1),
+                                        item.route,
+                                        item.path
+                                    );
+                                    toggleMobileMenu();
+                                "
+                                class="block py-2 transition-all duration-200 transform hover:translate-x-1"
+                                :class="{
+                                    'text-[#FF8C42] font-medium':
+                                        isItemActive(item),
+                                    'text-gray-600 hover:text-[#FF8C42]':
+                                        !isItemActive(item),
+                                }"
+                            >
+                                {{ item.name }}
+                            </a>
+                        </div>
                     </div>
-                </div>
 
-                <PrimaryButton
-                    class="w-full justify-center mt-4 py-3 text-lg transition-all duration-300 transform"
-                    style="animation: fadeInDown 0.5s ease forwards; animation-delay: 500ms;"
-                    @click="
-                        openDevisModal();
-                        toggleMobileMenu();
-                    "
-                >
-                    Demander un devis
-                </PrimaryButton>
+                    <PrimaryButton
+                        class="w-full justify-center mt-4 py-3 text-lg transition-all duration-300 transform"
+                        style="
+                            animation: fadeInDown 0.5s ease forwards;
+                            animation-delay: 500ms;
+                        "
+                        @click="
+                            openDevisModal();
+                            toggleMobileMenu();
+                        "
+                    >
+                        Demander un devis
+                    </PrimaryButton>
                 </div>
             </div>
         </transition>
@@ -283,7 +413,7 @@ const emit = defineEmits(["scrollToSection"]);
 .hamburger-icon span:before {
     border-radius: 3px;
     background-color: white;
-    content: '';
+    content: "";
     display: block;
     height: 3px;
     margin-top: -9px;
@@ -294,7 +424,7 @@ const emit = defineEmits(["scrollToSection"]);
 .hamburger-icon span:after {
     border-radius: 3px;
     background-color: white;
-    content: '';
+    content: "";
     display: block;
     height: 3px;
     margin-top: 9px;
@@ -330,7 +460,7 @@ const emit = defineEmits(["scrollToSection"]);
 
 .cross-animation.open span {
     transition-delay: 0.2s;
-    background-color: rgba(255,255,255,0);
+    background-color: rgba(255, 255, 255, 0);
 }
 
 .cross-animation.open span:before {
