@@ -56,9 +56,12 @@ const navItems = [
                     <template v-for="item in navItems" :key="item.name">
                         <Link
                             :href="route(item.route)"
-                            class="font-inter text-white text-base hover:text-[#FF8C42] transition-colors duration-200"
+                            class="font-inter text-white text-base transition-colors duration-200"
                             :class="{
                                 'text-[#FF8C42] font-medium': route().current(
+                                    item.route
+                                ),
+                                'hover:text-[#FF8C42]': !route().current(
                                     item.route
                                 ),
                             }"
@@ -248,7 +251,7 @@ const navItems = [
                             v-for="(item, index) in navItems"
                             :key="item.name"
                             :href="route(item.route)"
-                            class="flex items-center font-inter text-gray-700 py-2 hover:text-[#FF8C42] text-lg border-b border-gray-100 pb-3 transition-all duration-300 transform"
+                            class="flex items-center font-inter py-2 text-lg border-b border-gray-100 pb-3 transition-all duration-300 transform"
                             :style="{
                                 'animation-delay': index * 100 + 'ms',
                                 animation: 'fadeInDown 0.5s ease forwards',
@@ -257,6 +260,8 @@ const navItems = [
                                 'text-[#FF8C42] font-medium': route().current(
                                     item.route
                                 ),
+                                'text-gray-700 hover:text-[#FF8C42]':
+                                    !route().current(item.route),
                             }"
                             @click="toggleMobileMenu"
                         >
