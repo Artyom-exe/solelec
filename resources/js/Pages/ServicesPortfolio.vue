@@ -51,6 +51,36 @@ const scrollToSection = (sectionId) => {
     }
 };
 
+// Fonction helper pour centrer un service dans le conteneur avec défilement
+const centerServiceInContainer = (serviceElement) => {
+    if (serviceElement) {
+        const container = serviceElement.closest(".overflow-y-auto");
+        if (container) {
+            // Centrer l'élément dans le conteneur avec défilement
+            const containerHeight = container.clientHeight;
+            const elementHeight = serviceElement.clientHeight;
+            const elementOffsetTop = serviceElement.offsetTop;
+            const containerScrollHeight = container.scrollHeight;
+
+            // Calculer la position pour centrer l'élément
+            let scrollPosition =
+                elementOffsetTop - containerHeight / 2 + elementHeight / 2;
+
+            // S'assurer que le scroll ne dépasse pas la hauteur maximale du conteneur
+            const maxScrollPosition = containerScrollHeight - containerHeight;
+            scrollPosition = Math.min(scrollPosition, maxScrollPosition);
+
+            // S'assurer que le scroll ne soit pas négatif
+            scrollPosition = Math.max(scrollPosition, 0);
+
+            container.scrollTo({
+                top: scrollPosition,
+                behavior: "smooth",
+            });
+        }
+    }
+};
+
 // Fonction pour vérifier et sélectionner un service à partir du hash de l'URL ou des props
 const checkForServiceSelection = () => {
     // 1. Vérifier d'abord si un serviceId a été passé dans les props
@@ -75,30 +105,16 @@ const checkForServiceSelection = () => {
 
             // Faire défiler jusqu'au service spécifique dans le conteneur (desktop)
             setTimeout(() => {
-                const serviceElement = document.getElementById(
-                    "service-" + serviceId
-                );
-                if (serviceElement) {
-                    // Faire défiler le conteneur parent (avec la classe overflow-y-auto)
-                    const container =
-                        serviceElement.closest(".overflow-y-auto");
-                    if (container) {
-                        // Calcul précis de la position de défilement
-                        const containerTop =
-                            container.getBoundingClientRect().top;
-                        const elementTop =
-                            serviceElement.getBoundingClientRect().top;
-                        const scrollOffset = elementTop - containerTop - 20; // 20px de marge pour la lisibilité
+                // D'abord, faire défiler vers la section services
+                scrollToSection("services");
 
-                        container.scrollTop = scrollOffset;
-
-                        // Alternative: utiliser scrollIntoView pour un défilement plus naturel
-                        serviceElement.scrollIntoView({
-                            behavior: "smooth",
-                            block: "center",
-                        });
-                    }
-                }
+                // Ensuite, centrer le service dans son conteneur
+                setTimeout(() => {
+                    const serviceElement = document.getElementById(
+                        "service-" + serviceId
+                    );
+                    centerServiceInContainer(serviceElement);
+                }, 300);
             }, 500); // Augmentation du délai pour s'assurer que le DOM est prêt
         }
     }
@@ -124,18 +140,16 @@ const checkForServiceSelection = () => {
 
                 // Faire défiler vers le service (desktop)
                 setTimeout(() => {
-                    const serviceElement = document.getElementById(
-                        hash.substring(1)
-                    );
-                    if (serviceElement) {
-                        // Faire défiler le conteneur parent
-                        const container =
-                            serviceElement.closest(".overflow-y-auto");
-                        if (container) {
-                            container.scrollTop =
-                                serviceElement.offsetTop - container.offsetTop;
-                        }
-                    }
+                    // D'abord, faire défiler vers la section services
+                    scrollToSection("services");
+
+                    // Ensuite, centrer le service dans son conteneur
+                    setTimeout(() => {
+                        const serviceElement = document.getElementById(
+                            hash.substring(1)
+                        );
+                        centerServiceInContainer(serviceElement);
+                    }, 300);
                 }, 300);
             }
         }
@@ -167,27 +181,7 @@ const selectService = (index) => {
                 const serviceElement = document.getElementById(
                     "service-" + serviceId
                 );
-                if (serviceElement) {
-                    // Faire défiler le conteneur parent (avec la classe overflow-y-auto)
-                    const container =
-                        serviceElement.closest(".overflow-y-auto");
-                    if (container) {
-                        // Calcul précis de la position de défilement
-                        const containerTop =
-                            container.getBoundingClientRect().top;
-                        const elementTop =
-                            serviceElement.getBoundingClientRect().top;
-                        const scrollOffset = elementTop - containerTop - 20; // 20px de marge pour la lisibilité
-
-                        container.scrollTop += scrollOffset;
-
-                        // Alternative: utiliser scrollIntoView pour un défilement plus naturel
-                        serviceElement.scrollIntoView({
-                            behavior: "smooth",
-                            block: "center",
-                        });
-                    }
-                }
+                centerServiceInContainer(serviceElement);
             }, 100);
         }
     }
