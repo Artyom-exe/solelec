@@ -42,12 +42,34 @@ const scrollToSection = (sectionId) => {
         const offset = 72; // Hauteur du header + marge additionnelle
         const elementPosition =
             element.getBoundingClientRect().top + window.scrollY;
-        const offsetPosition = elementPosition - offset;
 
-        window.scrollTo({
-            top: offsetPosition,
-            behavior: "smooth",
-        });
+        // Pour la section services, centrer la vue au milieu de la section
+        if (sectionId === "services") {
+            const sectionHeight = element.offsetHeight;
+            const viewportHeight = window.innerHeight;
+
+            // Calculer la position pour centrer la section dans la viewport
+            const centerPosition =
+                elementPosition + sectionHeight / 2 - viewportHeight / 2;
+
+            // S'assurer qu'on ne dépasse pas le début de la section
+            const minPosition = elementPosition - offset;
+
+            // Position finale : au moins au début de la section, mais centrée si possible
+            const finalPosition = Math.max(minPosition, centerPosition);
+
+            window.scrollTo({
+                top: finalPosition,
+                behavior: "smooth",
+            });
+        } else {
+            // Pour les autres sections, comportement normal
+            const offsetPosition = elementPosition - offset;
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: "smooth",
+            });
+        }
     }
 };
 
