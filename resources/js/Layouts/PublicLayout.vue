@@ -42,8 +42,18 @@ onMounted(() => {
 
 const navItems = [
     { name: "Accueil", route: "accueil", path: "/" },
-    { name: "Services", anchor: "#services", route: "services-portfolio" },
-    { name: "Réalisations", anchor: "#portfolio", route: "services-portfolio" },
+    {
+        name: "Services",
+        anchor: "#services",
+        route: "services-portfolio",
+        path: "/services-portfolio",
+    },
+    {
+        name: "Réalisations",
+        anchor: "#portfolio",
+        route: "services-portfolio",
+        path: "/services-portfolio",
+    },
 ];
 
 const aboutSubItems = [
@@ -79,35 +89,89 @@ const hideNotification = () => {
     notification.value.show = false;
 };
 
-const navigateToSection = (sectionId, route) => {
+const navigateToSection = (sectionId, route, path) => {
     // Récupérer la route actuelle
     const currentRoute = window.location.pathname.substring(1) || "accueil";
 
     if (currentRoute === route) {
         // Si on est déjà sur la bonne page, on défile simplement vers la section
-        scrollToSection(sectionId);
+        scrollToSectionWithRetry(sectionId);
     } else {
         // Sinon, on navigue vers la page puis on défile
-        const url = route === "accueil" ? "/" : "/" + route;
+        let url;
+        if (route === "accueil") {
+            url = "/";
+        } else if (route === "services-portfolio") {
+            url = "/services-portfolio";
+        } else {
+            url = "/" + route;
+        }
 
         // Naviguer vers la page puis défiler
         router.visit(url, {
             preserveState: true,
             onSuccess: () => {
-                // Une fois la navigation terminée, on défile vers la section
-                setTimeout(() => {
-                    scrollToSection(sectionId);
-                }, 300); // Augmentation du délai pour s'assurer que tout est chargé
+                // Attendre que la page soit complètement rendue avant de scroller
+                scrollToSectionWithRetry(sectionId, true);
             },
         });
     }
 };
 
-// Fonction de défilement vers une section
-const scrollToSection = (sectionId) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
+// Fonction de défilement vers une section avec retry
+const scrollToSectionWithRetry = (sectionId, isAfterNavigation = false) => {
+    const maxRetries = 10;
+    let currentRetry = 0;
+
+    const attemptScroll = () => {
+        const element = document.getElementById(sectionId);
+        if (!element) {
+            // Si l'élément n'existe pas encore, réessayer
+            currentRetry++;
+            if (currentRetry < maxRetries) {
+                setTimeout(attemptScroll, 200);
+            }
+            return;
+        }
+
         const offset = 72; // Hauteur du header + marge additionnelle
+        const elementPosition =
+            element.getBoundingClientRect().top + window.scrollY;
+        const offsetPosition = elementPosition - offset;
+
+        // Scroller vers la position
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth",
+        });
+
+        // Si c'est après une navigation, vérifier que le scroll est correct après les animations
+        if (isAfterNavigation) {
+            setTimeout(() => {
+                verifyScrollPosition(sectionId, offset, 0);
+            }, 1000);
+        }
+    };
+
+    // Démarrer le premier essai avec un délai approprié
+    const initialDelay = isAfterNavigation ? 500 : 100;
+    setTimeout(attemptScroll, initialDelay);
+};
+
+// Fonction pour vérifier et corriger la position de scroll
+const verifyScrollPosition = (sectionId, offset, retryCount = 0) => {
+    if (retryCount > 5) return; // Limiter les tentatives
+
+    const element = document.getElementById(sectionId);
+    if (!element) return;
+
+    const elementRect = element.getBoundingClientRect();
+    const currentPosition = elementRect.top;
+    const targetPosition = offset;
+    const tolerance = 50; // Tolérance de 50px
+
+    // Si la position n'est pas correcte, recalculer et rescroller
+    if (Math.abs(currentPosition - targetPosition) > tolerance) {
         const elementPosition =
             element.getBoundingClientRect().top + window.scrollY;
         const offsetPosition = elementPosition - offset;
@@ -116,7 +180,17 @@ const scrollToSection = (sectionId) => {
             top: offsetPosition,
             behavior: "smooth",
         });
+
+        // Vérifier à nouveau après un délai
+        setTimeout(() => {
+            verifyScrollPosition(sectionId, offset, retryCount + 1);
+        }, 800);
     }
+};
+
+// Fonction de défilement vers une section (ancienne version pour compatibilité)
+const scrollToSection = (sectionId) => {
+    scrollToSectionWithRetry(sectionId);
 };
 
 // Exposer ces fonctions pour qu'elles soient accessibles par les composants enfants
