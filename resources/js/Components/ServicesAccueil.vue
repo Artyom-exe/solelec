@@ -5,8 +5,9 @@ import { router } from "@inertiajs/vue3";
 import LogoLoader from "@/Components/LogoLoader.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 
-// Propriété pour détecter si on est sur mobile (< 1280px = taille xl en Tailwind)
+// Propriété pour détecter si on est sur mobile/tactile
 const isMobile = ref(false);
+const isTouchDevice = ref(false);
 
 const props = defineProps({
     limit: {
@@ -78,15 +79,15 @@ const fetchServices = async () => {
 
 // Gestion des entrées/sorties de souris (desktop uniquement)
 const handleMouseEnter = (index) => {
-    // Sur desktop uniquement, activer le survol
-    if (!isMobile.value) {
+    // Sur desktop uniquement (pas tactile et écran large), activer le survol
+    if (!isMobile.value && !isTouchDevice.value) {
         activeIndex.value = index;
     }
 };
 
 const handleMouseLeave = () => {
-    // Sur desktop uniquement, revenir au premier service
-    if (!isMobile.value) {
+    // Sur desktop uniquement (pas tactile et écran large), revenir au premier service
+    if (!isMobile.value && !isTouchDevice.value) {
         activeIndex.value = 0;
     }
 };
@@ -109,11 +110,11 @@ const centerCardInView = (element) => {
 const toggleActive = (index, event) => {
     const previousIndex = activeIndex.value;
 
-    if (isMobile.value) {
-        // Sur mobile: activer seulement sans possibilité de désactiver
+    // Sur mobile/tablette (petits écrans) ou appareils tactiles : activer seulement sans possibilité de désactiver
+    if (isMobile.value || isTouchDevice.value) {
         activeIndex.value = index;
     } else {
-        // Sur desktop: fonctionnement normal toggle on/off
+        // Sur desktop non tactile : fonctionnement normal toggle on/off
         activeIndex.value = activeIndex.value === index ? 0 : index;
     }
 
@@ -130,19 +131,26 @@ const navigateToServiceDetail = (serviceId) => {
     });
 };
 
-// Fonction pour vérifier et mettre à jour l'état mobile
-const checkIfMobile = () => {
-    isMobile.value = window.innerWidth < 1280; // 1280px correspond à la classe 'xl:' de Tailwind
+// Fonction pour vérifier et mettre à jour l'état mobile et tactile
+const checkDeviceCapabilities = () => {
+    // Vérifier la taille d'écran (mobile = < 1280px)
+    isMobile.value = window.innerWidth < 1280;
+
+    // Vérifier si c'est un appareil tactile
+    isTouchDevice.value =
+        "ontouchstart" in window ||
+        navigator.maxTouchPoints > 0 ||
+        navigator.msMaxTouchPoints > 0;
 };
 
 // Configuration des écouteurs d'événements de redimensionnement
 onMounted(() => {
-    checkIfMobile();
-    window.addEventListener("resize", checkIfMobile);
+    checkDeviceCapabilities();
+    window.addEventListener("resize", checkDeviceCapabilities);
 });
 
 onBeforeUnmount(() => {
-    window.removeEventListener("resize", checkIfMobile);
+    window.removeEventListener("resize", checkDeviceCapabilities);
 });
 
 fetchServices();
@@ -177,10 +185,17 @@ fetchServices();
             }"
             @mouseenter="handleMouseEnter(index)"
             @mouseleave="handleMouseLeave"
-            @touchstart="isMobile ? toggleActive(index, $event) : false"
+            @click="
+                isMobile || isTouchDevice ? toggleActive(index, $event) : false
+            "
+            @touchstart="
+                isMobile || isTouchDevice ? toggleActive(index, $event) : false
+            "
             @keydown.enter.prevent="
                 activeIndex === index
                     ? navigateToServiceDetail(service.id)
+                    : isMobile || isTouchDevice
+                    ? toggleActive(index, $event)
                     : handleMouseEnter(index)
             "
             tabindex="0"
@@ -280,7 +295,7 @@ article:focus {
 }
 
 /* Supprimer l'effet de tap highlight sur mobile qui peut interférer avec nos styles */
-@media (max-width: 1279px) {
+@media (max-width: 1279px), (pointer: coarse) {
     article {
         -webkit-tap-highlight-color: transparent;
         touch-action: manipulation;
