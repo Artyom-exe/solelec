@@ -721,17 +721,19 @@ onMounted(() => {
             class="flex flex-col md:py-28 py-16 px-5 gap-12 md:px-16 md:gap-20 bg-[#F5F5F5] text-white"
         >
             <div class="flex flex-col gap-4 text-[#0D0703]" data-aos="fade-up">
-                <div class="relative flex flex-col gap-5 md:gap-6">
-                    <h2
-                        class="font-poppins md:text-5xl text-4xl text-left font-medium md:leading-[57.6px] leading-[43.2px] md:tracking-[-0.48px] tracking-[-0.36px]"
-                    >
-                        FAQs
-                    </h2>
-                    <div
-                        class="absolute right-[68px] top-[21.806px] md:left-36 md:top-7 border-2 border-[#FF8C42] w-[100%] max-w-[161px] md:max-w-[353px]"
-                        data-aos="slide-left"
-                        data-aos-duration="1000"
-                    ></div>
+                <div class="flex flex-col gap-5 md:gap-6">
+                    <div class="relative">
+                        <h2
+                            class="font-poppins md:text-5xl text-4xl text-left font-medium md:leading-[57.6px] leading-[43.2px] md:tracking-[-0.48px] tracking-[-0.36px]"
+                        >
+                            FAQs
+                        </h2>
+                        <div
+                            class="absolute border-2 border-[#FF8C42] md:w-[25%] w-[45%] bottom-1/2 top-1/2 md:left-[9rem] left-[6.5rem]"
+                            data-aos="slide-left"
+                            data-aos-duration="1000"
+                        ></div>
+                    </div>
                     <h4 class="font-inter md:text-lg text-base text-left">
                         Voici les réponses aux questions les plus fréquentes
                         concernant nos services.
@@ -846,7 +848,7 @@ onMounted(() => {
                                 Nous contacter
                             </h3>
                             <div
-                                class="absolute md:left-24 left-0 border-2 bottom-[-15px] border-[#FF8C42] w-[55%]"
+                                class="absolute md:left-24 left-0 border-2 md:bottom-[-15px] bottom-[-10px] border-[#FF8C42] w-[55%]"
                                 data-aos="slide-left"
                                 data-aos-duration="1000"
                             ></div>
@@ -1051,15 +1053,19 @@ onMounted(() => {
                 data-aos-duration="1000"
             >
                 <h2 class="font-inter text-base font-semibold">Zones</h2>
-                <div class="relative flex flex-col md:gap-6 gap-5">
-                    <h3 class="font-poppins md:text-5xl text-4xl font-medium">
-                        Interventions
-                    </h3>
-                    <div
-                        class="absolute md:bottom-[72px] md:ml-[340px] bottom-[80px] border-2 border-[#FF8C42] w-[100%] md:max-w-[353px] max-w-[161px]"
-                        data-aos="slide-left"
-                        data-aos-duration="1000"
-                    ></div>
+                <div class="flex flex-col md:gap-6 gap-5">
+                    <div class="relative">
+                        <h3
+                            class="font-poppins md:text-5xl text-4xl font-medium"
+                        >
+                            Interventions
+                        </h3>
+                        <div
+                            class="absolute border-2 md:left-[21rem] left-0 md:bottom-1/2 bottom-[-10px] md:top-1/2 border-[#FF8C42] md:w-[30%] w-[38%]"
+                            data-aos="slide-left"
+                            data-aos-duration="1000"
+                        ></div>
+                    </div>
                     <p class="font-inter md:text-lg text-base font-normal">
                         Nous intervenons dans
                         <strong>toute la Wallonie</strong> et à
