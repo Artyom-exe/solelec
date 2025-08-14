@@ -296,29 +296,43 @@ onMounted(() => {
             >
                 <!-- Partie gauche avec animations -->
                 <div
-                    class="flex flex-col items-start md:gap-4 gap-3 self-stretch"
+                    class="flex flex-col items-start md:gap-6 gap-4 self-stretch"
                     data-aos="fade-up"
                     data-aos-delay="300"
                 >
-                    <h3
-                        class="font-inter font-semibold text-base"
-                        data-aos="fade-right"
-                        data-aos-delay="400"
-                    >
-                        Services
-                    </h3>
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="w-8 h-[2px] bg-gradient-to-r from-transparent to-[#FF8C42]"
+                        ></div>
+                        <h3
+                            class="font-inter font-semibold text-sm uppercase tracking-[2px] text-[#FF8C42]"
+                            data-aos="fade-right"
+                            data-aos-delay="400"
+                        >
+                            Services
+                        </h3>
+                    </div>
                     <div
                         class="flex flex-col items-start md:gap-6 gap-5 self-stretch"
                     >
                         <h2
-                            class="font-poppins md:text-5xl text-4xl font-medium"
+                            class="font-poppins md:text-5xl text-4xl font-semibold relative z-10"
                             data-aos="fade-up"
                             data-aos-delay="500"
                         >
-                            Nos Services Électriques de Qualité
+                            Nos Services Électriques
+                            <span class="relative inline-block">
+                                de Qualité
+                                <div
+                                    class="absolute bottom-1 left-0 w-full h-3 bg-[#FF8C42] bg-opacity-30 -z-10"
+                                    data-aos="slide-right"
+                                    data-aos-duration="1200"
+                                    data-aos-delay="700"
+                                ></div>
+                            </span>
                         </h2>
                         <p
-                            class="font-inter md:text-lg text-base"
+                            class="font-inter md:text-lg text-base text-gray-300 max-w-2xl"
                             data-aos="fade-up"
                             data-aos-delay="600"
                         >
@@ -490,20 +504,43 @@ onMounted(() => {
             id="portfolio"
             class="flex md:py-28 py-16 md:px-16 px-5 flex-col items-center md:gap-20 gap-12"
         >
-            <div class="flex flex-col gap-4 text-[#0D0703]" data-aos="fade-up">
-                <div class="relative flex flex-col md:gap-6 gap-5">
+            <div
+                class="flex flex-col md:gap-6 gap-4 text-[#0D0703]"
+                data-aos="fade-up"
+            >
+                <div class="relative flex flex-col md:gap-6 gap-5 items-center">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="w-8 h-[2px] bg-gradient-to-r from-transparent to-[#FF8C42]"
+                        ></div>
+                        <span
+                            class="font-inter text-sm font-semibold uppercase tracking-[2px] text-[#FF8C42]"
+                        >
+                            Portfolio
+                        </span>
+                        <div
+                            class="w-8 h-[2px] bg-gradient-to-l from-transparent to-[#FF8C42]"
+                        ></div>
+                    </div>
                     <h2
-                        class="font-poppins md:text-5xl text-4xl text-center font-medium leading-[57.6px] tracking-[-0.48px]"
+                        class="font-poppins md:text-5xl text-4xl text-center font-semibold leading-[57.6px] tracking-[-0.48px] relative z-10"
                     >
-                        Nos réalisations
+                        Nos
+                        <span class="relative inline-block">
+                            réalisations
+                            <div
+                                class="absolute bottom-1 left-0 w-full h-3 bg-[#FF8C42] bg-opacity-20 -z-10"
+                                data-aos="slide-left"
+                                data-aos-duration="1200"
+                                data-aos-delay="300"
+                            ></div>
+                        </span>
                     </h2>
-                    <div
-                        class="absolute bottom-10 right-1/2 border-2 border-[#FF8C42] w-[40%] md:min-w-[353px] min-w-[187px]"
-                        data-aos="slide-right"
-                        data-aos-duration="1000"
-                    ></div>
-                    <h4 class="font-inter md:text-lg text-base text-center">
-                        Découvrez nos réalisations en électricité.
+                    <h4
+                        class="font-inter md:text-lg text-base text-center text-gray-600 max-w-2xl mx-auto"
+                    >
+                        Découvrez nos réalisations concrètes en électricité et
+                        énergies renouvelables.
                     </h4>
                 </div>
             </div>

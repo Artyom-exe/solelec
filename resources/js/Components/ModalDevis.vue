@@ -552,12 +552,27 @@ onMounted(() => {
                 class="flex flex-col gap-11 w-full max-w-3xl md:pt-16 pt-12 px-5 pb-5"
             >
                 <div v-if="servicesLoaded" class="self-start">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div
+                            class="w-8 h-[2px] bg-gradient-to-r from-transparent to-[#FF8C42]"
+                        ></div>
+                        <span
+                            class="font-inter text-sm font-semibold uppercase tracking-[2px] text-[#FF8C42]"
+                        >
+                            Étape 1
+                        </span>
+                    </div>
                     <h3
-                        class="text-3xl text-[#0D0703] font-poppins font-medium text-left"
+                        class="text-3xl text-[#0D0703] font-poppins font-semibold text-left relative z-10"
                     >
-                        Je désire
+                        Je
+                        <span class="relative inline-block">
+                            désire
+                            <div
+                                class="absolute bottom-1 left-0 w-full h-3 bg-[#FF8C42] bg-opacity-20 -z-10"
+                            ></div>
+                        </span>
                     </h3>
-                    <div class="h-[2px] w-24 bg-[#FF8C42] mt-2"></div>
                 </div>
 
                 <div
@@ -592,12 +607,27 @@ onMounted(() => {
                 class="flex flex-col gap-11 w-full justify-center max-w-3xl md:pt-16 pt-12 px-5 pb-5"
             >
                 <div class="self-start">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div
+                            class="w-8 h-[2px] bg-gradient-to-r from-transparent to-[#FF8C42]"
+                        ></div>
+                        <span
+                            class="font-inter text-sm font-semibold uppercase tracking-[2px] text-[#FF8C42]"
+                        >
+                            Étape 2
+                        </span>
+                    </div>
                     <h3
-                        class="text-[#ffff] text-3xl font-poppins font-medium text-left"
+                        class="text-[#ffff] text-3xl font-poppins font-semibold text-left relative z-10"
                     >
-                        Dites m'en plus
+                        Dites
+                        <span class="relative inline-block">
+                            m'en plus
+                            <div
+                                class="absolute bottom-1 left-0 w-full h-3 bg-[#FF8C42] bg-opacity-30 -z-10"
+                            ></div>
+                        </span>
                     </h3>
-                    <div class="h-[2px] w-24 bg-[#FF8C42] mt-2"></div>
                 </div>
 
                 <div class="flex flex-col gap-4">
@@ -807,12 +837,27 @@ onMounted(() => {
                 class="flex flex-col gap-11 w-full max-w-3xl justify-center md:pt-16 pt-64 px-5 pb-5 overflow-y-auto"
             >
                 <div class="self-start">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div
+                            class="w-8 h-[2px] bg-gradient-to-r from-transparent to-[#FF8C42]"
+                        ></div>
+                        <span
+                            class="font-inter text-sm font-semibold uppercase tracking-[2px] text-[#FF8C42]"
+                        >
+                            Étape 3
+                        </span>
+                    </div>
                     <h3
-                        class="text-3xl text-[#0D0703] font-poppins font-medium text-left"
+                        class="text-3xl text-[#0D0703] font-poppins font-semibold text-left relative z-10"
                     >
-                        Parlez-moi de vous
+                        Parlez-moi
+                        <span class="relative inline-block">
+                            de vous
+                            <div
+                                class="absolute bottom-1 left-0 w-full h-3 bg-[#FF8C42] bg-opacity-20 -z-10"
+                            ></div>
+                        </span>
                     </h3>
-                    <div class="h-[2px] w-24 bg-[#FF8C42] mt-2"></div>
                 </div>
 
                 <div class="md:grid md:grid-cols-2 flex flex-col gap-4">
