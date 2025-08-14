@@ -505,27 +505,46 @@ onMounted(() => {
             class="flex md:py-28 py-16 md:px-16 px-5 flex-col md:gap-20 gap-12 bg-[#FBFAF6]"
         >
             <div
-                class="flex flex-col md:gap-4 gap-3 text-[#0D0703]"
+                class="flex flex-col md:gap-6 gap-4 text-[#0D0703]"
                 data-aos="fade-up"
             >
-                <h2 class="text-center font-inter text-base font-semibold">
-                    services
-                </h2>
-                <div class="flex flex-col md:gap-6 gap-5">
-                    <div class="relative flex flex-col">
-                        <h3
-                            class="font-poppins md:text-5xl text-4xl text-center font-medium md:leading-[57.6px] leading-[43.2px] md:tracking-[-0.48px] tracking-[-0.36px]"
-                        >
-                            Nos Services Principaux
-                        </h3>
+                <div class="flex flex-col items-center md:gap-2 gap-1">
+                    <div class="flex items-center gap-3">
                         <div
-                            class="absolute right-1/2 translate-x-[6%] bottom-[-10px] border-2 border-[#FF8C42] w-[40%] max-w-[353px] min-w-[180px]"
-                            data-aos="slide-right"
-                            data-aos-duration="1000"
+                            class="w-8 h-[2px] bg-gradient-to-r from-transparent to-[#FF8C42]"
+                        ></div>
+                        <h2
+                            class="text-center font-inter text-sm font-semibold uppercase tracking-[2px] text-[#FF8C42]"
+                        >
+                            Services
+                        </h2>
+                        <div
+                            class="w-8 h-[2px] bg-gradient-to-l from-transparent to-[#FF8C42]"
                         ></div>
                     </div>
-                    <h4 class="font-inter md:text-lg text-base text-center">
-                        Des solutions adaptées à vos besoins énergétiques.
+                </div>
+                <div class="flex flex-col md:gap-6 gap-5">
+                    <div class="relative flex flex-col items-center">
+                        <h3
+                            class="font-poppins md:text-5xl text-4xl text-center font-semibold md:leading-[57.6px] leading-[43.2px] md:tracking-[-0.48px] tracking-[-0.36px] relative z-10"
+                        >
+                            Nos Services
+                            <span class="relative inline-block">
+                                Principaux
+                                <div
+                                    class="absolute bottom-1 left-0 w-full h-3 bg-[#FF8C42] bg-opacity-20 -z-10"
+                                    data-aos="slide-right"
+                                    data-aos-duration="1200"
+                                    data-aos-delay="300"
+                                ></div>
+                            </span>
+                        </h3>
+                    </div>
+                    <h4
+                        class="font-inter md:text-lg text-base text-center text-gray-600 max-w-2xl mx-auto"
+                    >
+                        Des solutions adaptées à vos besoins énergétiques avec
+                        une expertise reconnue.
                     </h4>
                 </div>
             </div>
@@ -586,28 +605,47 @@ onMounted(() => {
             class="flex md:py-28 py-16 md:px-16 px-5 flex-col items-center md:gap-20 gap-12 bg-[#F5F5F5] text-[#0D0703]"
         >
             <div
-                class="flex flex-col md:gap-4 gap-3 text-[#0D0703]"
+                class="flex flex-col md:gap-6 gap-4 text-[#0D0703]"
                 data-aos="fade-up"
                 dataaos-duration="800"
             >
-                <h2 class="text-center font-inter text-base font-semibold">
-                    portfolio
-                </h2>
-                <div class="flex flex-col md:gap-6 gap-4">
-                    <div class="relative flex flex-col">
-                        <h3
-                            class="font-poppins md:text-5xl text-4xl text-center font-medium md:leading-[57.6px] leading-[43.2px] md:tracking-[-0.48px] tracking-[-0.36px]"
-                        >
-                            Nos projets récents
-                        </h3>
+                <div class="flex flex-col items-center md:gap-2 gap-1">
+                    <div class="flex items-center gap-3">
                         <div
-                            class="absolute left-1/2 md:translate-x-[6%] translate-x-0 bottom-[-10px] border-2 border-[#FF8C42] md:w-[60%] w-[46%]"
-                            data-aos="slide-left"
-                            data-aos-duration="1000"
+                            class="w-8 h-[2px] bg-gradient-to-r from-transparent to-[#FF8C42]"
+                        ></div>
+                        <h2
+                            class="text-center font-inter text-sm font-semibold uppercase tracking-[2px] text-[#FF8C42]"
+                        >
+                            Portfolio
+                        </h2>
+                        <div
+                            class="w-8 h-[2px] bg-gradient-to-l from-transparent to-[#FF8C42]"
                         ></div>
                     </div>
-                    <h4 class="font-inter md:text-lg text-base text-center">
-                        Découvrez notre expertise à travers nos réalisations.
+                </div>
+                <div class="flex flex-col md:gap-6 gap-4">
+                    <div class="relative flex flex-col items-center">
+                        <h3
+                            class="font-poppins md:text-5xl text-4xl text-center font-semibold md:leading-[57.6px] leading-[43.2px] md:tracking-[-0.48px] tracking-[-0.36px] relative z-10"
+                        >
+                            Nos projets
+                            <span class="relative inline-block">
+                                récents
+                                <div
+                                    class="absolute bottom-1 left-0 w-full h-3 bg-[#FF8C42] bg-opacity-20 -z-10"
+                                    data-aos="slide-left"
+                                    data-aos-duration="1200"
+                                    data-aos-delay="300"
+                                ></div>
+                            </span>
+                        </h3>
+                    </div>
+                    <h4
+                        class="font-inter md:text-lg text-base text-center text-gray-600 max-w-2xl mx-auto"
+                    >
+                        Découvrez notre expertise à travers nos réalisations
+                        concrètes et innovantes.
                     </h4>
                 </div>
             </div>
@@ -675,25 +713,43 @@ onMounted(() => {
             class="flex md:py-28 py-16 md:px-16 px-5 flex-col items-center md:gap-20 gap-12 bg-[#2D2D2D] text-white"
         >
             <div
-                class="flex flex-col md:gap-4 gap-3"
+                class="flex flex-col md:gap-6 gap-4"
                 data-aos="fade-up"
                 dataaos-duration="800"
             >
                 <div class="relative flex flex-col md:gap-6 gap-4">
-                    <div class="relative flex flex-col">
+                    <div class="relative flex flex-col items-center">
                         <h3
-                            class="font-poppins md:text-5xl text-4xl text-center font-medium md:leading-[57.6px] leading-[43.2px] md:tracking-[-0.48px] tracking-[-0.36px]"
+                            class="font-poppins md:text-5xl text-4xl text-center font-semibold md:leading-[57.6px] leading-[43.2px] md:tracking-[-0.48px] tracking-[-0.36px] relative z-10"
                         >
-                            Témoignages clients
+                            <span class="relative inline-block">
+                                Témoignages
+                                <div
+                                    class="absolute bottom-1 left-0 w-full h-3 bg-[#FF8C42] bg-opacity-30 -z-10"
+                                    data-aos="slide-right"
+                                    data-aos-duration="1200"
+                                    data-aos-delay="300"
+                                ></div>
+                            </span>
+                            clients
                         </h3>
-                        <div
-                            class="absolute right-1/2 md:translate-x-[6%] translate-x-0 md:bottom-[-15px] bottom-[-10px] border-2 border-[#FF8C42] md:w-[90%] w-[48%]"
-                            data-aos="slide-right"
-                            data-aos-duration="1000"
-                        ></div>
+                        <div class="flex items-center gap-4 mt-4">
+                            <div
+                                class="w-12 h-[1px] bg-gradient-to-r from-transparent to-white"
+                            ></div>
+                            <div
+                                class="w-2 h-2 bg-[#FF8C42] rounded-full"
+                            ></div>
+                            <div
+                                class="w-12 h-[1px] bg-gradient-to-l from-transparent to-white"
+                            ></div>
+                        </div>
                     </div>
-                    <h4 class="font-inter md:text-lg text-base text-center">
-                        Nos clients partagent leur expérience avec Solelec.
+                    <h4
+                        class="font-inter md:text-lg text-base text-center text-gray-300 max-w-2xl mx-auto"
+                    >
+                        Nos clients partagent leur expérience et leur
+                        satisfaction avec Solelec.
                     </h4>
                 </div>
             </div>
@@ -720,23 +776,37 @@ onMounted(() => {
             id="faq"
             class="flex flex-col md:py-28 py-16 px-5 gap-12 md:px-16 md:gap-20 bg-[#F5F5F5] text-white"
         >
-            <div class="flex flex-col gap-4 text-[#0D0703]" data-aos="fade-up">
+            <div class="flex flex-col gap-6 text-[#0D0703]" data-aos="fade-up">
                 <div class="flex flex-col gap-5 md:gap-6">
-                    <div class="relative">
-                        <h2
-                            class="font-poppins md:text-5xl text-4xl text-left font-medium md:leading-[57.6px] leading-[43.2px] md:tracking-[-0.48px] tracking-[-0.36px]"
+                    <div class="relative flex flex-col">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-12 h-[2px] bg-[#FF8C42]"></div>
+                            <h2
+                                class="font-inter text-sm font-semibold uppercase tracking-[2px] text-[#FF8C42]"
+                            >
+                                Questions fréquentes
+                            </h2>
+                        </div>
+                        <h3
+                            class="font-poppins md:text-5xl text-4xl text-left font-semibold md:leading-[57.6px] leading-[43.2px] md:tracking-[-0.48px] tracking-[-0.36px] relative z-10"
                         >
-                            FAQs
-                        </h2>
-                        <div
-                            class="absolute border-2 border-[#FF8C42] md:w-[25%] w-[45%] bottom-1/2 top-1/2 md:left-[9rem] left-[6.5rem]"
-                            data-aos="slide-left"
-                            data-aos-duration="1000"
-                        ></div>
+                            <span class="relative inline-block">
+                                FAQ
+                                <div
+                                    class="absolute bottom-1 left-0 w-full h-3 bg-[#FF8C42] bg-opacity-20 -z-10"
+                                    data-aos="slide-right"
+                                    data-aos-duration="1200"
+                                    data-aos-delay="300"
+                                ></div>
+                            </span>
+                        </h3>
                     </div>
-                    <h4 class="font-inter md:text-lg text-base text-left">
-                        Voici les réponses aux questions les plus fréquentes
-                        concernant nos services.
+                    <h4
+                        class="font-inter md:text-lg text-base text-left text-gray-600 max-w-3xl"
+                    >
+                        Trouvez rapidement les réponses aux questions les plus
+                        fréquentes concernant nos services électriques et
+                        photovoltaïques.
                     </h4>
                 </div>
             </div>
@@ -834,27 +904,45 @@ onMounted(() => {
         >
             <div class="flex md:flex-row flex-col md:gap-20 gap-12">
                 <div
-                    class="flex flex-col md:gap-4 gap-3 flex-1"
+                    class="flex flex-col md:gap-6 gap-4 flex-1"
                     data-aos="fade-right"
                     data-aos-duration="1000"
                 >
-                    <h2 class="font-inter text-base font-semibold">Contact</h2>
+                    <div class="flex flex-col gap-4">
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="w-8 h-[2px] bg-gradient-to-r from-transparent to-[#FF8C42]"
+                            ></div>
+                            <h2
+                                class="font-inter text-sm font-semibold uppercase tracking-[2px] text-[#FF8C42]"
+                            >
+                                Contact
+                            </h2>
+                        </div>
+                    </div>
 
                     <div class="flex flex-col md:gap-6 gap-5 md:mb-4 mb-3">
                         <div class="relative">
                             <h3
-                                class="font-poppins md:text-5xl text-4xl font-medium"
+                                class="font-poppins md:text-5xl text-4xl font-semibold relative z-10"
                             >
-                                Nous contacter
+                                Nous
+                                <span class="relative inline-block">
+                                    contacter
+                                    <div
+                                        class="absolute bottom-1 left-0 w-full h-3 bg-[#FF8C42] bg-opacity-30 -z-10"
+                                        data-aos="slide-left"
+                                        data-aos-duration="1200"
+                                        data-aos-delay="300"
+                                    ></div>
+                                </span>
                             </h3>
-                            <div
-                                class="absolute md:left-24 left-0 border-2 md:bottom-[-15px] bottom-[-10px] border-[#FF8C42] w-[55%]"
-                                data-aos="slide-left"
-                                data-aos-duration="1000"
-                            ></div>
                         </div>
-                        <p class="font-inter md:text-lg text-base">
-                            Nous sommes là pour répondre à vos questions.
+                        <p
+                            class="font-inter md:text-lg text-base text-gray-300 max-w-lg"
+                        >
+                            Nous sommes là pour répondre à vos questions et
+                            discuter de votre projet énergétique.
                         </p>
                     </div>
                     <div
@@ -1048,25 +1136,41 @@ onMounted(() => {
             class="flex md:py-28 py-16 md:px-16 px-5 flex-col md:gap-20 gap-12 bg-[#F5F5F5] text-[#0D0703]"
         >
             <div
-                class="flex flex-col md:gap-8 gap-3 flex-1"
+                class="flex flex-col md:gap-8 gap-4 flex-1"
                 data-aos="fade-right"
                 data-aos-duration="1000"
             >
-                <h2 class="font-inter text-base font-semibold">Zones</h2>
+                <div class="flex flex-col gap-4">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="w-8 h-[2px] bg-gradient-to-r from-transparent to-[#FF8C42]"
+                        ></div>
+                        <h2
+                            class="font-inter text-sm font-semibold uppercase tracking-[2px] text-[#FF8C42]"
+                        >
+                            Zones d'intervention
+                        </h2>
+                    </div>
+                </div>
                 <div class="flex flex-col md:gap-6 gap-5">
                     <div class="relative">
                         <h3
-                            class="font-poppins md:text-5xl text-4xl font-medium"
+                            class="font-poppins md:text-5xl text-4xl font-semibold relative z-10"
                         >
-                            Interventions
+                            <span class="relative inline-block">
+                                Interventions
+                                <div
+                                    class="absolute bottom-1 left-0 w-full h-3 bg-[#FF8C42] bg-opacity-20 -z-10"
+                                    data-aos="slide-right"
+                                    data-aos-duration="1200"
+                                    data-aos-delay="300"
+                                ></div>
+                            </span>
                         </h3>
-                        <div
-                            class="absolute border-2 md:left-[21rem] left-0 md:bottom-1/2 bottom-[-10px] md:top-1/2 border-[#FF8C42] md:w-[30%] w-[38%]"
-                            data-aos="slide-left"
-                            data-aos-duration="1000"
-                        ></div>
                     </div>
-                    <p class="font-inter md:text-lg text-base font-normal">
+                    <p
+                        class="font-inter md:text-lg text-base font-normal text-gray-600 max-w-2xl"
+                    >
                         Nous intervenons dans
                         <strong>toute la Wallonie</strong> et à
                         <strong>Bruxelles</strong>. Voici quelques villes
