@@ -838,19 +838,19 @@ onMounted(() => {
                 >
                     <h2 class="font-inter text-base font-semibold">Contact</h2>
 
-                    <div
-                        class="relative flex flex-col md:gap-6 gap-5 md:mb-4 mb-3"
-                    >
-                        <h3
-                            class="font-poppins md:text-5xl text-4xl font-medium"
-                        >
-                            Nous contacter
-                        </h3>
-                        <div
-                            class="absolute md:bottom-[40px] bottom-[55.194px] md:ml-28 border-2 border-[#FF8C42] w-[100%] md:max-w-[353px] max-w-[161px]"
-                            data-aos="slide-left"
-                            data-aos-duration="1000"
-                        ></div>
+                    <div class="flex flex-col md:gap-6 gap-5 md:mb-4 mb-3">
+                        <div class="relative">
+                            <h3
+                                class="font-poppins md:text-5xl text-4xl font-medium"
+                            >
+                                Nous contacter
+                            </h3>
+                            <div
+                                class="absolute md:left-24 left-0 border-2 bottom-[-15px] border-[#FF8C42] w-[55%]"
+                                data-aos="slide-left"
+                                data-aos-duration="1000"
+                            ></div>
+                        </div>
                         <p class="font-inter md:text-lg text-base">
                             Nous sommes là pour répondre à vos questions.
                         </p>
