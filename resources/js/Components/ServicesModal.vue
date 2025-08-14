@@ -111,7 +111,7 @@ fetchServices();
 
     <section
         v-else
-        class="flex w-full flex-wrap justify-between gap-y-4"
+        class="flex w-full flex-wrap justify-between gap-y-4 p-1"
         aria-label="Liste des services pour sélection"
     >
         <article

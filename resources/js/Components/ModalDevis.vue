@@ -549,85 +549,194 @@ onMounted(() => {
         >
             <div
                 v-if="step === 1"
-                class="flex flex-col gap-11 w-full max-w-3xl md:pt-16 pt-12 px-5 pb-5"
+                class="flex flex-col gap-8 w-full max-w-3xl md:pt-16 pt-12 px-5 pb-5"
             >
-                <div v-if="servicesLoaded" class="self-start">
+                <!-- En-tête amélioré avec animation et design élégant -->
+                <div v-if="servicesLoaded" class="self-start space-y-6">
                     <div class="flex items-center gap-3 mb-4">
                         <div
-                            class="w-8 h-[2px] bg-gradient-to-r from-transparent to-[#FF8C42]"
+                            class="w-12 h-[2px] bg-gradient-to-r from-transparent via-[#FF8C42] to-[#FF8C42]"
                         ></div>
-                        <span
-                            class="font-inter text-sm font-semibold uppercase tracking-[2px] text-[#FF8C42]"
-                        >
-                            Étape 1
-                        </span>
-                    </div>
-                    <h3
-                        class="text-3xl text-[#0D0703] font-poppins font-semibold text-left relative z-10"
-                    >
-                        Je
-                        <span class="relative inline-block">
-                            désire
+                        <div class="flex items-center gap-2">
                             <div
-                                class="absolute bottom-1 left-0 w-full h-3 bg-[#FF8C42] bg-opacity-20 -z-10"
-                            ></div>
-                        </span>
-                    </h3>
+                                class="w-6 h-6 rounded-full bg-[#FF8C42] flex items-center justify-center"
+                            >
+                                <span class="text-white text-xs font-bold"
+                                    >1</span
+                                >
+                            </div>
+                            <span
+                                class="font-inter text-sm font-semibold uppercase tracking-[2px] text-[#FF8C42]"
+                            >
+                                Première étape
+                            </span>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <h3
+                            class="text-3xl text-[#0D0703] font-poppins font-semibold text-left relative z-10"
+                        >
+                            Je
+                            <span class="relative inline-block">
+                                désire
+                                <div
+                                    class="absolute bottom-1 left-0 w-full h-3 bg-[#FF8C42] bg-opacity-20 -z-10"
+                                ></div>
+                            </span>
+                        </h3>
+                        <p class="text-gray-600 font-inter text-base max-w-2xl">
+                            Sélectionnez les services qui correspondent à vos
+                            besoins. Vous pouvez choisir plusieurs options.
+                        </p>
+                    </div>
                 </div>
 
+                <!-- Message d'erreur stylisé -->
                 <div
                     v-if="
                         formStatus.errors.services &&
                         selectedServiceIds.length === 0
                     "
-                    class="text-sm text-red-500"
+                    class="flex items-center gap-3 p-4 bg-red-50 border-l-4 border-red-500 rounded-r-lg error-message"
                 >
-                    Veuillez sélectionner au moins un service
+                    <div class="flex-shrink-0">
+                        <svg
+                            class="w-5 h-5 text-red-500"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                        >
+                            <path
+                                fill-rule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                clip-rule="evenodd"
+                            />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-red-800">
+                            Veuillez sélectionner au moins un service
+                        </p>
+                        <p class="text-xs text-red-600 mt-1">
+                            Cette information nous aide à mieux préparer votre
+                            devis personnalisé.
+                        </p>
+                    </div>
                 </div>
 
-                <ServicesModal
-                    :selected-services="selectedServiceIds"
-                    height="200px"
-                    @service-selected="handleServiceSelection"
-                    @loading-complete="servicesLoaded = true"
-                    :class="{ 'border-red-500': formStatus.errors.services }"
-                />
+                <!-- Conteneur des services avec design amélioré -->
+                <div class="space-y-4">
+                    <ServicesModal
+                        :selected-services="selectedServiceIds"
+                        height="200px"
+                        @service-selected="handleServiceSelection"
+                        @loading-complete="servicesLoaded = true"
+                        :class="{
+                            'ring-2 ring-red-500 ring-opacity-50':
+                                formStatus.errors.services,
+                            'ring-2 ring-[#FF8C42] ring-opacity-20':
+                                selectedServiceIds.length > 0 &&
+                                !formStatus.errors.services,
+                        }"
+                        class="transition-all duration-300 rounded-lg overflow-hidden shadow-sm selection-card"
+                    />
+                </div>
+
+                <!-- Indicateur de sélection amélioré -->
                 <div
                     v-if="selectedServiceIds.length > 0"
-                    class="mt-2 text-sm text-gray-600"
+                    class="flex items-center justify-between p-4 bg-gradient-to-r from-[#FF8C42]/10 to-[#FF8C42]/5 border border-[#FF8C42]/20 rounded-lg success-indicator"
                 >
-                    {{ selectedServiceIds.length }} service{{
-                        selectedServiceIds.length > 1 ? "s" : ""
-                    }}
-                    sélectionné{{ selectedServiceIds.length > 1 ? "s" : "" }}
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="w-8 h-8 rounded-full bg-[#FF8C42] flex items-center justify-center"
+                        >
+                            <svg
+                                class="w-4 h-4 text-white"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M5 13l4 4L19 7"
+                                ></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-[#0D0703]">
+                                {{ selectedServiceIds.length }} service{{
+                                    selectedServiceIds.length > 1 ? "s" : ""
+                                }}
+                                sélectionné{{
+                                    selectedServiceIds.length > 1 ? "s" : ""
+                                }}
+                            </p>
+                            <p class="text-xs text-gray-600">
+                                Parfait ! Vous pouvez passer à l'étape suivante.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <div
+                            v-for="n in selectedServiceIds.length"
+                            :key="n"
+                            class="w-2 h-2 bg-[#FF8C42] rounded-full animate-pulse"
+                        ></div>
+                    </div>
+                </div>
+
+                <!-- Indicateur de progression -->
+                <div class="flex items-center justify-center mt-6">
+                    <div class="flex items-center gap-2 progress-indicator">
+                        <div class="w-8 h-1 bg-[#FF8C42] rounded-full"></div>
+                        <div class="w-8 h-1 bg-gray-300 rounded-full"></div>
+                        <div class="w-8 h-1 bg-gray-300 rounded-full"></div>
+                    </div>
                 </div>
             </div>
             <div
                 v-else-if="step === 2"
-                class="flex flex-col gap-11 w-full justify-center max-w-3xl md:pt-16 pt-12 px-5 pb-5"
+                class="flex flex-col gap-8 w-full justify-center max-w-3xl md:pt-16 pt-12 px-5 pb-5"
             >
-                <div class="self-start">
+                <div class="self-start space-y-6">
                     <div class="flex items-center gap-3 mb-4">
                         <div
-                            class="w-8 h-[2px] bg-gradient-to-r from-transparent to-[#FF8C42]"
+                            class="w-12 h-[2px] bg-gradient-to-r from-transparent via-[#FF8C42] to-[#FF8C42]"
                         ></div>
-                        <span
-                            class="font-inter text-sm font-semibold uppercase tracking-[2px] text-[#FF8C42]"
-                        >
-                            Étape 2
-                        </span>
-                    </div>
-                    <h3
-                        class="text-[#ffff] text-3xl font-poppins font-semibold text-left relative z-10"
-                    >
-                        Dites
-                        <span class="relative inline-block">
-                            m'en plus
+                        <div class="flex items-center gap-2">
                             <div
-                                class="absolute bottom-1 left-0 w-full h-3 bg-[#FF8C42] bg-opacity-30 -z-10"
-                            ></div>
-                        </span>
-                    </h3>
+                                class="w-6 h-6 rounded-full bg-[#FF8C42] flex items-center justify-center"
+                            >
+                                <span class="text-white text-xs font-bold"
+                                    >2</span
+                                >
+                            </div>
+                            <span
+                                class="font-inter text-sm font-semibold uppercase tracking-[2px] text-[#FF8C42]"
+                            >
+                                Deuxième étape
+                            </span>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <h3
+                            class="text-[#ffff] text-3xl font-poppins font-semibold text-left relative z-10"
+                        >
+                            Dites
+                            <span class="relative inline-block">
+                                m'en plus
+                                <div
+                                    class="absolute bottom-1 left-0 w-full h-3 bg-[#FF8C42] bg-opacity-30 -z-10"
+                                ></div>
+                            </span>
+                        </h3>
+                        <p class="text-gray-300 font-inter text-base max-w-2xl">
+                            Décrivez votre projet en détail et sélectionnez vos
+                            dates préférées si vous en avez.
+                        </p>
+                    </div>
                 </div>
 
                 <div class="flex flex-col gap-4">
@@ -830,34 +939,58 @@ onMounted(() => {
                         </span>
                     </div>
                 </div>
+
+                <!-- Indicateur de progression pour l'étape 2 -->
+                <div class="flex items-center justify-center mt-6">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-1 bg-[#FF8C42] rounded-full"></div>
+                        <div class="w-8 h-1 bg-[#FF8C42] rounded-full"></div>
+                        <div class="w-8 h-1 bg-gray-600 rounded-full"></div>
+                    </div>
+                </div>
             </div>
 
             <div
                 v-else-if="step === 3"
-                class="flex flex-col gap-11 w-full max-w-3xl justify-center md:pt-16 pt-64 px-5 pb-5 overflow-y-auto"
+                class="flex flex-col gap-8 w-full max-w-3xl md:pt-16 pt-12 px-5 pb-5"
             >
-                <div class="self-start">
+                <div class="self-start space-y-6">
                     <div class="flex items-center gap-3 mb-4">
                         <div
-                            class="w-8 h-[2px] bg-gradient-to-r from-transparent to-[#FF8C42]"
+                            class="w-12 h-[2px] bg-gradient-to-r from-transparent via-[#FF8C42] to-[#FF8C42]"
                         ></div>
-                        <span
-                            class="font-inter text-sm font-semibold uppercase tracking-[2px] text-[#FF8C42]"
-                        >
-                            Étape 3
-                        </span>
-                    </div>
-                    <h3
-                        class="text-3xl text-[#0D0703] font-poppins font-semibold text-left relative z-10"
-                    >
-                        Parlez-moi
-                        <span class="relative inline-block">
-                            de vous
+                        <div class="flex items-center gap-2">
                             <div
-                                class="absolute bottom-1 left-0 w-full h-3 bg-[#FF8C42] bg-opacity-20 -z-10"
-                            ></div>
-                        </span>
-                    </h3>
+                                class="w-6 h-6 rounded-full bg-[#FF8C42] flex items-center justify-center"
+                            >
+                                <span class="text-white text-xs font-bold"
+                                    >3</span
+                                >
+                            </div>
+                            <span
+                                class="font-inter text-sm font-semibold uppercase tracking-[2px] text-[#FF8C42]"
+                            >
+                                Dernière étape
+                            </span>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <h3
+                            class="text-3xl text-[#0D0703] font-poppins font-semibold text-left relative z-10"
+                        >
+                            Parlez-moi
+                            <span class="relative inline-block">
+                                de vous
+                                <div
+                                    class="absolute bottom-1 left-0 w-full h-3 bg-[#FF8C42] bg-opacity-20 -z-10"
+                                ></div>
+                            </span>
+                        </h3>
+                        <p class="text-gray-600 font-inter text-base max-w-2xl">
+                            Quelques informations sur vous pour finaliser votre
+                            demande de devis personnalisé.
+                        </p>
+                    </div>
                 </div>
 
                 <div class="md:grid md:grid-cols-2 flex flex-col gap-4">
@@ -946,6 +1079,15 @@ onMounted(() => {
                             rows="3"
                             class="border rounded-[6px] py-2 px-3 border-white/20 bg-[#0D07030D] w-full focus:outline-none focus:ring-2 focus:ring-orange-500 h-[100px] max-h-[100px]"
                         ></textarea>
+                    </div>
+                </div>
+
+                <!-- Indicateur de progression pour l'étape 3 -->
+                <div class="flex items-center justify-center mt-6">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-1 bg-[#FF8C42] rounded-full"></div>
+                        <div class="w-8 h-1 bg-[#FF8C42] rounded-full"></div>
+                        <div class="w-8 h-1 bg-[#FF8C42] rounded-full"></div>
                     </div>
                 </div>
             </div>
@@ -1203,5 +1345,67 @@ onMounted(() => {
 
 :deep(.dp__arrow_top) {
     border-color: transparent transparent #ff8c42 transparent !important;
+}
+
+/* Styles personnalisés pour les améliorations du modal */
+.animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Animation pour les éléments de progression */
+.progress-indicator {
+    transition: all 0.3s ease-in-out;
+}
+
+/* Animation pour les cartes de sélection */
+.selection-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.selection-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(255, 140, 66, 0.1);
+}
+
+/* Animation pour les messages d'erreur */
+.error-message {
+    animation: slideInLeft 0.3s ease-out;
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Animation pour les indicateurs de succès */
+.success-indicator {
+    animation: slideInUp 0.4s ease-out;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 </style>
