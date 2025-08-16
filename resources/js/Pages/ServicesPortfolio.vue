@@ -451,9 +451,7 @@ onMounted(() => {
                 </div>
                 <PrimaryButton
                     class="hidden md:flex"
-                    @click="openDevisModal"
-                    data-aos="fade-up"
-                    data-aos-delay="500"
+                    @click="openDevisModal?.()"
                 >
                     Devis
                 </PrimaryButton>
@@ -491,12 +489,7 @@ onMounted(() => {
                     <p class="text-gray-400">Chargement des services...</p>
                 </div>
             </div>
-            <PrimaryButton
-                class="md:hidden flex"
-                @click="openDevisModal"
-                data-aos="fade-up"
-                data-aos-delay="500"
-            >
+            <PrimaryButton class="md:hidden flex" @click="openDevisModal?.()">
                 Devis
             </PrimaryButton>
         </section>
