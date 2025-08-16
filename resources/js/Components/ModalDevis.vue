@@ -545,6 +545,7 @@ onMounted(() => {
             :class="{
                 'bg-[#FBFAF6]': step === 1 || step === 3,
                 'bg-[#2D2D2D]': step === 2,
+                'items-center': step === 1 && !servicesLoaded,
             }"
         >
             <div
@@ -688,7 +689,10 @@ onMounted(() => {
                 </div>
 
                 <!-- Indicateur de progression -->
-                <div class="flex items-center justify-center mt-6">
+                <div
+                    class="flex items-center justify-center mt-6"
+                    :class="{ 'opacity-0': !servicesLoaded }"
+                >
                     <div class="flex items-center gap-2 progress-indicator">
                         <div class="w-8 h-1 bg-[#FF8C42] rounded-full"></div>
                         <div class="w-8 h-1 bg-gray-300 rounded-full"></div>
@@ -1107,6 +1111,9 @@ onMounted(() => {
                     @click="nextStep"
                     variant="dark"
                     class="transition w-full sm:w-auto"
+                    :class="{
+                        'opacity-0 pointer-events-none': !servicesLoaded,
+                    }"
                 >
                     Suivant
                 </SecondaryButton>
