@@ -702,7 +702,7 @@ onMounted(() => {
             </div>
             <div
                 v-else-if="step === 2"
-                class="flex flex-col gap-8 w-full justify-center max-w-3xl md:pt-16 pt-12 px-5 pb-5"
+                class="flex flex-col gap-8 w-full max-w-3xl md:pt-16 pt-12 px-5 pb-5"
             >
                 <div class="self-start space-y-6">
                     <div class="flex items-center gap-3 mb-4">
