@@ -94,7 +94,7 @@ onUnmounted(() => {
         <div
             v-if="notification.show"
             :class="{
-                'fixed top-20 right-4 z-50 p-4 rounded-md shadow-lg max-w-sm animate-fade-in': true,
+                'fixed top-20 right-4 md:right-4 left-4 md:left-auto z-50 p-4 rounded-md shadow-lg max-w-sm md:max-w-sm w-auto md:w-auto animate-fade-in': true,
                 'bg-green-100 border-l-4 border-green-500 text-green-700':
                     notification.type === 'success',
                 'bg-red-100 border-l-4 border-red-500 text-red-700':
