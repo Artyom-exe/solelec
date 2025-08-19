@@ -84,7 +84,7 @@ defineProps({
             class="bg-white md:py-28 py-16 md:px-16 px-5 items-center flex flex-col md:gap-20 gap-12"
         >
             <div class="flex flex-col items-center gap-6">
-                <div class="flex items-center gap-3 mb-4">
+                <div class="flex items-center gap-3">
                     <div
                         class="w-12 h-[2px] bg-gradient-to-r from-transparent via-[#FF8C42] to-[#FF8C42]"
                     ></div>
@@ -95,7 +95,7 @@ defineProps({
                     </span>
                 </div>
                 <h2
-                    class="font-poppins md:text-5xl text-4xl text-center font-medium md:leading-[57.6px] md:tracking-[-0.48px] leading-[43.2px] tracking-[-0.36px] mb-6 relative z-10"
+                    class="font-poppins md:text-5xl text-4xl text-center font-medium md:leading-[57.6px] md:tracking-[-0.48px] leading-[43.2px] tracking-[-0.36px] relative z-10"
                 >
                     Activités
                     <span class="relative inline-block">

@@ -2,7 +2,7 @@
 import AdminLayout from "@/Layouts/AdminLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import { Link } from "@inertiajs/vue3";
-import { ref, onMounted, nextTick, inject, watch } from "vue";
+import { ref, onMounted, nextTick, inject, watch, computed } from "vue";
 import { router, usePage } from "@inertiajs/vue3";
 
 // Import des fonctions de validation
@@ -99,6 +99,9 @@ onMounted(() => {
 // État d'édition pour chaque client
 const editingClient = ref(null);
 const editForm = ref({});
+
+// État pour la recherche
+const searchQuery = ref("");
 
 // État pour la création d'un nouveau client
 const isCreatingClient = ref(false);
@@ -268,6 +271,28 @@ const deleteClient = (clientId) => {
         });
     }
 };
+
+// Computed property pour filtrer les clients selon la recherche
+const filteredClients = computed(() => {
+    if (!searchQuery.value.trim()) {
+        return props.clients || [];
+    }
+
+    const query = searchQuery.value.toLowerCase().trim();
+    return (props.clients || []).filter((client) => {
+        const fullName = `${client.name || ""} ${
+            client.lastname || ""
+        }`.toLowerCase();
+        const firstName = (client.name || "").toLowerCase();
+        const lastName = (client.lastname || "").toLowerCase();
+
+        return (
+            fullName.includes(query) ||
+            firstName.startsWith(query) ||
+            lastName.startsWith(query)
+        );
+    });
+});
 </script>
 <template>
     <AdminLayout>
@@ -306,6 +331,58 @@ const deleteClient = (clientId) => {
                     <PrimaryButton @click="startCreatingClient" class="h-max"
                         >Ajouter</PrimaryButton
                     >
+                </div>
+            </div>
+
+            <!-- Barre de recherche -->
+            <div class="w-full max-w-md">
+                <div class="relative">
+                    <div
+                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                    >
+                        <svg
+                            class="h-5 w-5 text-gray-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                            ></path>
+                        </svg>
+                    </div>
+                    <input
+                        v-model="searchQuery"
+                        type="text"
+                        placeholder="Rechercher un client (nom ou prénom)..."
+                        class="block w-full pl-10 pr-3 py-2 border border-white/20 rounded-md bg-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF8C42] focus:border-transparent"
+                    />
+                    <div
+                        v-if="searchQuery"
+                        class="absolute inset-y-0 right-0 pr-3 flex items-center"
+                    >
+                        <button
+                            @click="searchQuery = ''"
+                            class="text-gray-400 hover:text-white transition-colors"
+                        >
+                            <svg
+                                class="h-4 w-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12"
+                                ></path>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -609,7 +686,7 @@ const deleteClient = (clientId) => {
                     class="flex flex-wrap gap-6 md:gap-12 w-full"
                 >
                     <div
-                        v-for="client in clients"
+                        v-for="client in filteredClients"
                         :key="client.id"
                         class="client-card flex flex-col md:flex-row items-center gap-6 md:gap-8 w-full md:w-[calc(50%-1.5rem)] relative group"
                     >
@@ -1189,6 +1266,38 @@ const deleteClient = (clientId) => {
                         </transition>
                     </div>
                 </transition-group>
+
+                <!-- Message quand aucun client n'est trouvé -->
+                <div
+                    v-if="filteredClients.length === 0 && searchQuery.trim()"
+                    class="text-center py-8 text-white"
+                >
+                    <div class="flex flex-col items-center gap-4">
+                        <svg
+                            class="h-12 w-12 text-gray-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                            ></path>
+                        </svg>
+                        <div>
+                            <h3 class="text-lg font-medium text-white mb-1">
+                                Aucun client trouvé
+                            </h3>
+                            <p class="text-gray-400">
+                                Aucun client ne correspond à votre recherche "{{
+                                    searchQuery
+                                }}"
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
     </AdminLayout>

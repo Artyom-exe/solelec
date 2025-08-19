@@ -157,7 +157,7 @@ const renderMarkdown = (text) => {
 <template>
     <AdminLayout>
         <section
-            class="flex md:flex-row flex-col md:py-28 md:px-16 py-16 px-5 items-start gap-20 bg-[#2D2D2D] md:mt-14 mt-16 min-h-screen"
+            class="flex md:flex-row flex-col md:py-28 md:px-16 py-16 px-5 items-start md:gap-20 gap-12 bg-[#2D2D2D] md:mt-14 mt-16 min-h-screen"
         >
             <div class="flex flex-col items-start gap-4 text-white md:w-3/4">
                 <div class="flex items-center gap-3 mb-4">
