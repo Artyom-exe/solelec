@@ -915,7 +915,7 @@ function compiledMarkdown(text) {
                                     intervention.devis?.services &&
                                     intervention.devis.services.length > 1
                                 "
-                                class="absolute z-10 top-full right-0 mt-1 bg-[#1A1A1A] border border-white/10 rounded-md p-2 shadow-lg opacity-0 invisible service-popup transition-all duration-200 min-w-[150px]"
+                                class="absolute z-10 bottom-full right-0 mb-2 bg-[#1A1A1A] border border-white/10 rounded-md p-2 shadow-lg opacity-0 invisible service-popup transition-all duration-200 min-w-[150px]"
                             >
                                 <div
                                     v-for="service in intervention.devis
