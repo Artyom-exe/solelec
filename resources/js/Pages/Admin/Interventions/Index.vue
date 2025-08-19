@@ -939,6 +939,8 @@ const sortedInterventions = computed(() => {
                     ></div>
 
                     <div class="flex justify-between w-full"></div>
+
+                    <!-- Nom du client en haut -->
                     <div class="flex justify-between w-full">
                         <h4
                             class="text-white font-poppins md:text-2xl text-xl font-medium relative z-10"
@@ -951,7 +953,8 @@ const sortedInterventions = computed(() => {
                                 ></div>
                             </span>
                         </h4>
-                        <div class="relative service-group">
+                        <!-- Service sur desktop seulement -->
+                        <div class="relative service-group hidden md:block">
                             <div
                                 class="flex py-1 px-[10px] items-start rounded-[4px] border border-white/5 bg-white/5 text-[#FF8C42] font-inter font-semibold text-sm cursor-pointer w-auto"
                             >
@@ -992,35 +995,84 @@ const sortedInterventions = computed(() => {
                             </div>
                         </div>
                     </div>
-                    <div class="flex justify-between w-full">
-                        <p
-                            class="text-white font-inter font-light md:text-lg text-base"
-                        >
-                            Intervention #{{ intervention.id }}
-                        </p>
-                        <button
-                            class="flex py-1 px-[10px] items-start rounded border border-white/5 font-inter font-semibold text-sm transition-colors duration-300"
-                            :style="{
-                                color: statusColors[intervention.status],
-                            }"
-                            @mouseover="
-                                $event.target.style.backgroundColor =
-                                    statusColors[intervention.status];
-                                $event.target.style.color =
-                                    intervention.status === 'planifiée'
-                                        ? '#2D2D2D'
-                                        : 'white';
-                            "
-                            @mouseout="
-                                $event.target.style.backgroundColor =
-                                    'transparent';
-                                $event.target.style.color =
-                                    statusColors[intervention.status];
-                            "
-                            @click="updateStatus(intervention)"
-                        >
-                            {{ intervention.status }}
-                        </button>
+
+                    <!-- Tags (service, statut, ID) sur mobile - en colonne / sur desktop - en ligne -->
+                    <div
+                        class="flex md:justify-between md:flex-row flex-col md:gap-0 gap-4 w-full"
+                    >
+                        <!-- Service sur mobile seulement -->
+                        <div class="relative service-group md:hidden">
+                            <div
+                                class="flex py-1 px-[10px] items-start rounded-[4px] border border-white/5 bg-white/5 text-[#FF8C42] font-inter font-semibold text-sm cursor-pointer w-auto"
+                            >
+                                {{
+                                    intervention.devis?.services &&
+                                    intervention.devis.services.length > 0
+                                        ? intervention.devis.services[0].title
+                                        : "Aucun service"
+                                }}
+                                <span
+                                    v-if="
+                                        intervention.devis?.services &&
+                                        intervention.devis.services.length > 1
+                                    "
+                                    class="ml-1"
+                                >
+                                    +{{
+                                        intervention.devis.services.length - 1
+                                    }}
+                                </span>
+                            </div>
+                            <!-- Popup qui apparaît au survol -->
+                            <div
+                                v-if="
+                                    intervention.devis?.services &&
+                                    intervention.devis.services.length > 1
+                                "
+                                class="absolute z-10 top-full right-0 mt-1 bg-[#1A1A1A] border border-white/10 rounded-md p-2 shadow-lg opacity-0 invisible service-popup transition-all duration-200 min-w-[150px]"
+                            >
+                                <div
+                                    v-for="service in intervention.devis
+                                        .services"
+                                    :key="service.id"
+                                    class="py-1 px-2 text-[#FF8C42] font-inter font-semibold text-sm whitespace-nowrap"
+                                >
+                                    {{ service.title }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ligne avec ID intervention et statut -->
+                        <div class="flex justify-between w-full">
+                            <p
+                                class="text-white font-inter font-light md:text-lg text-base"
+                            >
+                                Intervention #{{ intervention.id }}
+                            </p>
+                            <button
+                                class="flex py-1 px-[10px] items-start rounded border border-white/5 font-inter font-semibold text-sm transition-colors duration-300"
+                                :style="{
+                                    color: statusColors[intervention.status],
+                                }"
+                                @mouseover="
+                                    $event.target.style.backgroundColor =
+                                        statusColors[intervention.status];
+                                    $event.target.style.color =
+                                        intervention.status === 'planifiée'
+                                            ? '#2D2D2D'
+                                            : 'white';
+                                "
+                                @mouseout="
+                                    $event.target.style.backgroundColor =
+                                        'transparent';
+                                    $event.target.style.color =
+                                        statusColors[intervention.status];
+                                "
+                                @click="updateStatus(intervention)"
+                            >
+                                {{ intervention.status }}
+                            </button>
+                        </div>
                     </div>
                     <div class="flex gap-3">
                         <svg
