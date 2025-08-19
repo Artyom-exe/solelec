@@ -136,7 +136,7 @@ const navItems = [
                         <div class="py-1">
                             <Link
                                 :href="route('profile.admin')"
-                                class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#FF8C42] transition-colors duration-200"
+                                class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#FF8C42] transition-colors duration-200"
                                 @click="profileMenuOpen = false"
                             >
                                 <svg
