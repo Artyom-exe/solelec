@@ -13,7 +13,7 @@ defineProps({
     <AdminLayout>
         <Head title="Dashboard" />
         <header
-            class="flex md:py-28 py-16 md:px-16 px-5 flex-col items-start gap-20 bg-[#2D2D2D] md:mt-[3.5rem] mt-16"
+            class="flex md:py-28 py-16 md:px-16 px-5 flex-col items-start gap-20 bg-[#2D2D2D] md:mt-[72px] mt-16"
         >
             <div
                 class="flex md:flex-row flex-col items-start md:gap-20 gap-5 self-stretch"

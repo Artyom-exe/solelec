@@ -867,7 +867,7 @@ function compiledMarkdown(text) {
     <AdminLayout>
         <!-- En-tête noir avec les informations principales -->
         <header
-            class="bg-[#2D2D2D] text-white md:py-28 py-16 md:px-16 px-5 md:mt-[56px] mt-[64px]"
+            class="bg-[#2D2D2D] text-white md:py-28 py-16 md:px-16 px-5 md:mt-[72px] mt-[64px]"
         >
             <div
                 class="container flex md:flex-row flex-col items-start md:gap-20 gap-12 self-stretch"

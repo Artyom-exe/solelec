@@ -377,7 +377,7 @@ const sortedInterventions = computed(() => {
 <template>
     <AdminLayout>
         <section
-            class="flex md:py-28 md:px-16 py-16 px-5 flex-col md:gap-20 gap-12 md:mt-14 mt-16 bg-[#2D2D2D] min-h-screen"
+            class="flex md:py-28 md:px-16 py-16 px-5 flex-col md:gap-20 gap-12 md:mt-[72px] mt-16 bg-[#2D2D2D] min-h-screen"
         >
             <div class="flex md:flex-row flex-col justify-between self-stretch">
                 <div
