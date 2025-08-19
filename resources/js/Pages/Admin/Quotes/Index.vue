@@ -270,7 +270,7 @@ const renderMarkdown = (text) => {
                     >
                         <!-- Actions d'édition/suppression qui apparaissent au survol sur desktop et après appui long sur mobile -->
                         <div
-                            class="absolute top-[-0.5rem] right-[-0.5rem] transition-opacity flex gap-2 z-20 mobile-action-container"
+                            class="absolute top-[-0.5rem] right-[-0.5rem] transition-opacity flex gap-2 z-40 mobile-action-container"
                             :class="
                                 showMobileActions[quote.id]
                                     ? 'opacity-100 md:opacity-0 md:group-hover:opacity-100'
@@ -282,7 +282,7 @@ const renderMarkdown = (text) => {
                             <button
                                 @click="deleteQuote(quote.id)"
                                 title="Supprimer"
-                                class="p-2 rounded-xl bg-red-600/20 hover:bg-red-600/30 border border-red-500/30 transition-all duration-200 active:scale-95 mobile-action-button"
+                                class="p-2 rounded-xl transition-all duration-200 active:scale-95 mobile-action-button"
                             >
                                 <img
                                     src="/assets/icons/clients/delete-icon.svg"
@@ -295,7 +295,7 @@ const renderMarkdown = (text) => {
                         <!-- Overlay de flou qui apparaît uniquement sur mobile -->
                         <div
                             v-if="showMobileActions[quote.id]"
-                            class="absolute inset-0 z-10 bg-black/20 backdrop-blur-sm md:hidden rounded-lg pointer-events-none"
+                            class="absolute inset-0 z-30 bg-black/20 backdrop-blur-sm md:hidden rounded-lg pointer-events-none"
                         ></div>
 
                         <div

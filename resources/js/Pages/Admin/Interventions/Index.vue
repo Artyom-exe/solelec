@@ -902,7 +902,7 @@ const sortedInterventions = computed(() => {
                 <div
                     v-for="intervention in sortedInterventions"
                     :key="intervention.id"
-                    class="flex md:p-8 p-6 flex-col items-start md:gap-6 gap-5 rounded-lg border border-white/20 bg-[#242424] h-auto relative group cursor-pointer md:cursor-default transition-all duration-300 hover-card"
+                    class="flex md:p-8 p-6 flex-col items-start md:gap-6 gap-5 rounded-lg border border-white/20 bg-[#242424] h-auto relative group cursor-pointer md:cursor-default transition-all duration-300 hover-card active:scale-[0.98] active:bg-gray-800/50"
                     @touchstart="startLongPress(intervention.id)"
                     @touchend="cancelLongPress"
                     @touchcancel="cancelLongPress"
@@ -910,7 +910,7 @@ const sortedInterventions = computed(() => {
                 >
                     <!-- Actions d'édition/suppression qui apparaissent au survol sur desktop et après appui long sur mobile -->
                     <div
-                        class="absolute top-[-0.5rem] right-[-0.5rem] transition-opacity flex gap-2 z-20 mobile-action-container"
+                        class="absolute top-[-0.5rem] right-[-0.5rem] transition-opacity flex gap-2 z-40 mobile-action-container"
                         :class="
                             showMobileActions[intervention.id]
                                 ? 'opacity-100 md:opacity-0 md:group-hover:opacity-100'
@@ -922,7 +922,7 @@ const sortedInterventions = computed(() => {
                         <button
                             @click="deleteIntervention(intervention.id)"
                             title="Supprimer"
-                            class="p-2 rounded-xl bg-red-600/20 hover:bg-red-600/30 border border-red-500/30 transition-all duration-200 active:scale-95 mobile-action-button"
+                            class="p-2 rounded-xl transition-all duration-200 active:scale-95 mobile-action-button"
                         >
                             <img
                                 src="/assets/icons/clients/delete-icon.svg"
@@ -935,7 +935,7 @@ const sortedInterventions = computed(() => {
                     <!-- Overlay de flou qui apparaît uniquement sur mobile -->
                     <div
                         v-if="showMobileActions[intervention.id]"
-                        class="absolute inset-0 z-10 bg-black/20 backdrop-blur-sm md:hidden rounded-lg pointer-events-none"
+                        class="absolute inset-0 z-30 bg-black/20 backdrop-blur-sm md:hidden rounded-lg pointer-events-none"
                     ></div>
 
                     <div class="flex justify-between w-full"></div>
