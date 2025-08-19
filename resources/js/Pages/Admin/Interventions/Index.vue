@@ -395,12 +395,12 @@ const sortedInterventions = computed(() => {
                     </div>
                     <div class="relative flex flex-col gap-6">
                         <h3
-                            class="font-poppins md:text-5xl text-4xl md:text-center font-medium md:leading-[57.6px] leading-[43.2px] tracking-[-0.36px] md:tracking-[-0.48px] mb-6"
+                            class="font-poppins md:text-5xl text-4xl font-medium md:leading-[57.6px] leading-[43.2px] tracking-[-0.36px] md:tracking-[-0.48px] mb-6 md:mb-0"
                         >
                             Liste de mes interventions
                         </h3>
                         <div
-                            class="absolute md:flex hidden bottom-0 right-[-20%] border-2 border-[#FF8C42] w-[80%]"
+                            class="md:flex hidden bottom-0 left-[58%] border-2 border-[#FF8C42] w-[57%]"
                         ></div>
                     </div>
                 </div>

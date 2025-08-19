@@ -170,7 +170,7 @@ const renderMarkdown = (text) => {
                         Mes demande de devis
                     </h3>
                     <div
-                        class="absolute bottom-0 right border-2 border-[#FF8C42] w-[70%] max-w-[353px] min-w-[200px]"
+                        class="absolute bottom-0 right border-2 border-[#FF8C42] w-[70%]"
                     ></div>
                 </div>
             </div>
