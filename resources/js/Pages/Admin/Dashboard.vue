@@ -18,11 +18,29 @@ defineProps({
             <div
                 class="flex md:flex-row flex-col items-start md:gap-20 gap-5 self-stretch"
             >
-                <h1
-                    class="text-white font-poppins text-[2rem] md:text-[2.5rem] font-medium md:leading-[3rem] leading-[2.4rem] md:w-1/2"
-                >
-                    Suivez l'évolution de vos devis et de vos interventions
-                </h1>
+                <div class="md:w-1/2">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div
+                            class="w-12 h-[2px] bg-gradient-to-r from-transparent via-[#FF8C42] to-[#FF8C42]"
+                        ></div>
+                        <span
+                            class="font-inter text-sm font-semibold uppercase tracking-[2px] text-[#FF8C42]"
+                        >
+                            Tableau de bord
+                        </span>
+                    </div>
+                    <h1
+                        class="text-white font-poppins text-[2rem] md:text-[2.5rem] font-medium md:leading-[3rem] leading-[2.4rem] relative z-10"
+                    >
+                        Suivez l'évolution de vos
+                        <span class="relative inline-block">
+                            devis et interventions
+                            <div
+                                class="absolute bottom-1 left-0 w-full h-3 bg-[#FF8C42] bg-opacity-20 -z-10"
+                            ></div>
+                        </span>
+                    </h1>
+                </div>
                 <div class="flex flex-col items-start gap-8 flex-1 md:w-1/2">
                     <p class="text-white font-inter md:text-lg text-base">
                         Découvrez les statistiques sur les devis en attente et
@@ -65,15 +83,28 @@ defineProps({
         <section
             class="bg-white md:py-28 py-16 md:px-16 px-5 items-center flex flex-col md:gap-20 gap-12"
         >
-            <div class="relative flex flex-col gap-6">
+            <div class="flex flex-col items-center gap-6">
+                <div class="flex items-center gap-3 mb-4">
+                    <div
+                        class="w-12 h-[2px] bg-gradient-to-r from-transparent via-[#FF8C42] to-[#FF8C42]"
+                    ></div>
+                    <span
+                        class="font-inter text-sm font-semibold uppercase tracking-[2px] text-[#FF8C42]"
+                    >
+                        Historique
+                    </span>
+                </div>
                 <h2
-                    class="font-poppins md:text-5xl text-4xl text-center font-medium md:leading-[57.6px] md:tracking-[-0.48px] leading-[43.2px] tracking-[-0.36px] mb-6"
+                    class="font-poppins md:text-5xl text-4xl text-center font-medium md:leading-[57.6px] md:tracking-[-0.48px] leading-[43.2px] tracking-[-0.36px] mb-6 relative z-10"
                 >
-                    Activités Récentes
+                    Activités
+                    <span class="relative inline-block">
+                        Récentes
+                        <div
+                            class="absolute bottom-1 left-0 w-full h-3 bg-[#FF8C42] bg-opacity-20 -z-10"
+                        ></div>
+                    </span>
                 </h2>
-                <div
-                    class="absolute md:bottom-0 bottom-2 right-1/2 border-2 border-[#FF8C42] w-[70%] max-w-[353px] md:min-w-[200px] min-w-[188px]"
-                ></div>
             </div>
             <div class="bg-white w-full">
                 <div

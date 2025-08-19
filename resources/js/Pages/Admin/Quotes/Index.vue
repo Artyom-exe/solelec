@@ -160,18 +160,28 @@ const renderMarkdown = (text) => {
             class="flex md:flex-row flex-col md:py-28 md:px-16 py-16 px-5 items-start gap-20 bg-[#2D2D2D] md:mt-14 mt-16 min-h-screen"
         >
             <div class="flex flex-col items-start gap-4 text-white md:w-3/4">
-                <h2 class="text-center font-inter text-base font-semibold">
-                    Devis
-                </h2>
+                <div class="flex items-center gap-3 mb-4">
+                    <div
+                        class="w-12 h-[2px] bg-gradient-to-r from-transparent via-[#FF8C42] to-[#FF8C42]"
+                    ></div>
+                    <span
+                        class="font-inter text-sm font-semibold uppercase tracking-[2px] text-[#FF8C42]"
+                    >
+                        Administration
+                    </span>
+                </div>
                 <div class="relative flex flex-col gap-6">
                     <h3
-                        class="font-poppins md:text-5xl text-4xl text-left font-medium md:leading-[57.6px] leading-[43.2px] tracking-[-0.36px] md:tracking-[-0.48px] mb-6"
+                        class="font-poppins md:text-5xl text-4xl text-left font-medium md:leading-[57.6px] leading-[43.2px] tracking-[-0.36px] md:tracking-[-0.48px] mb-6 relative z-10"
                     >
-                        Mes demande de devis
+                        Mes demande
+                        <span class="relative inline-block">
+                            de devis
+                            <div
+                                class="absolute bottom-1 left-0 w-full h-3 bg-[#FF8C42] bg-opacity-20 -z-10"
+                            ></div>
+                        </span>
                     </h3>
-                    <div
-                        class="absolute bottom-0 right border-2 border-[#FF8C42] w-[70%]"
-                    ></div>
                 </div>
             </div>
             <article class="flex flex-col items-start gap-12 w-full">
@@ -296,10 +306,15 @@ const renderMarkdown = (text) => {
                                     class="flex items-center gap-4 flex-1 flex-wrap"
                                 >
                                     <h4
-                                        class="font-poppins md:text-2xl text-xl font-medium tracking-[-0.24px]"
+                                        class="font-poppins md:text-2xl text-xl font-medium tracking-[-0.24px] relative z-10"
                                     >
-                                        {{ quote.client?.name }}
-                                        {{ quote.client?.lastname }}
+                                        <span class="relative inline-block">
+                                            {{ quote.client?.name }}
+                                            {{ quote.client?.lastname }}
+                                            <div
+                                                class="absolute bottom-0 left-0 w-full h-1 bg-[#FF8C42] bg-opacity-30 -z-10"
+                                            ></div>
+                                        </span>
                                     </h4>
                                     <!-- Affichage compact des services avec popup au survol -->
                                     <div

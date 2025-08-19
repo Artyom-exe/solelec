@@ -278,25 +278,28 @@ const deleteClient = (clientId) => {
                 <div
                     class="flex md:max-w-[768px] flex-col items-start gap-4 text-white"
                 >
-                    <div class="relative w-full">
-                        <h2
-                            class="md:text-center font-inter text-base font-semibold"
-                        >
-                            Clients
-                        </h2>
+                    <div class="flex items-center gap-3 mb-6">
                         <div
-                            class="flex md:hidden absolute bottom-1/2 top-1/2 left-16 border-2 border-[#FF8C42] w-[70%]"
+                            class="w-12 h-[2px] bg-gradient-to-r from-transparent via-[#FF8C42] to-[#FF8C42]"
                         ></div>
+                        <span
+                            class="font-inter text-sm font-semibold uppercase tracking-[2px] text-[#FF8C42]"
+                        >
+                            Gestion
+                        </span>
                     </div>
                     <div class="relative flex flex-col gap-6 w-full">
                         <h3
-                            class="font-poppins text-4xl md:text-5xl md:text-center font-medium md:leading-[57.6px] leading-[43.2px] tracking-[-0.36px] md:tracking-[-0.48px] mb-6"
+                            class="font-poppins text-4xl md:text-5xl md:text-center font-medium md:leading-[57.6px] leading-[43.2px] tracking-[-0.36px] md:tracking-[-0.48px] mb-6 relative z-10"
                         >
-                            Liste de mes clients
+                            Liste de mes
+                            <span class="relative inline-block">
+                                clients
+                                <div
+                                    class="absolute bottom-1 left-0 w-full h-3 bg-[#FF8C42] bg-opacity-20 -z-10"
+                                ></div>
+                            </span>
                         </h3>
-                        <div
-                            class="md:flex hidden absolute md:bottom-0 border-2 left-1/3 border-[#FF8C42] w-[80%]"
-                        ></div>
                     </div>
                 </div>
                 <div class="flex items-end">

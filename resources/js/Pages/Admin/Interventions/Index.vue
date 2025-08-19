@@ -383,25 +383,28 @@ const sortedInterventions = computed(() => {
                 <div
                     class="flex md:max-w-[768px] flex-col items-start md:gap-4 gap-3 text-white"
                 >
-                    <div class="relative w-full">
-                        <h2
-                            class="text-left font-inter text-base font-semibold"
-                        >
-                            Interventions
-                        </h2>
+                    <div class="flex items-center gap-3 mb-6">
                         <div
-                            class="absolute flex md:hidden border-2 border-[#FF8C42] bottom-1/2 top-1/2 left-28 w-[60%]"
+                            class="w-12 h-[2px] bg-gradient-to-r from-transparent via-[#FF8C42] to-[#FF8C42]"
                         ></div>
+                        <span
+                            class="font-inter text-sm font-semibold uppercase tracking-[2px] text-[#FF8C42]"
+                        >
+                            Suivi
+                        </span>
                     </div>
                     <div class="relative flex flex-col gap-6">
                         <h3
-                            class="font-poppins md:text-5xl text-4xl font-medium md:leading-[57.6px] leading-[43.2px] tracking-[-0.36px] md:tracking-[-0.48px] mb-6 md:mb-0"
+                            class="font-poppins md:text-5xl text-4xl font-medium md:leading-[57.6px] leading-[43.2px] tracking-[-0.36px] md:tracking-[-0.48px] mb-6 md:mb-0 relative z-10"
                         >
-                            Liste de mes interventions
+                            Liste de mes
+                            <span class="relative inline-block">
+                                interventions
+                                <div
+                                    class="absolute bottom-1 left-0 w-full h-3 bg-[#FF8C42] bg-opacity-20 -z-10"
+                                ></div>
+                            </span>
                         </h3>
-                        <div
-                            class="md:flex hidden bottom-0 left-[58%] border-2 border-[#FF8C42] w-[57%]"
-                        ></div>
                     </div>
                 </div>
                 <div class="flex items-end">
@@ -938,10 +941,15 @@ const sortedInterventions = computed(() => {
                     <div class="flex justify-between w-full"></div>
                     <div class="flex justify-between w-full">
                         <h4
-                            class="text-white font-poppins md:text-2xl text-xl font-medium"
+                            class="text-white font-poppins md:text-2xl text-xl font-medium relative z-10"
                         >
-                            {{ intervention.client?.name }}
-                            {{ intervention.client?.lastname }}
+                            <span class="relative inline-block">
+                                {{ intervention.client?.name }}
+                                {{ intervention.client?.lastname }}
+                                <div
+                                    class="absolute bottom-0 left-0 w-full h-1 bg-[#FF8C42] bg-opacity-30 -z-10"
+                                ></div>
+                            </span>
                         </h4>
                         <div class="relative service-group">
                             <div
