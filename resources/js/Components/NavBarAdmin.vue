@@ -56,14 +56,13 @@ const navItems = [
                     <template v-for="item in navItems" :key="item.name">
                         <Link
                             :href="route(item.route)"
-                            class="font-inter text-white text-base transition-colors duration-200"
+                            class="font-inter text-base transition-colors duration-200"
                             :class="{
                                 'text-[#FF8C42] font-medium': route().current(
                                     item.route
                                 ),
-                                'hover:text-[#FF8C42]': !route().current(
-                                    item.route
-                                ),
+                                'text-white hover:text-[#FF8C42]':
+                                    !route().current(item.route),
                             }"
                         >
                             {{ item.name }}
