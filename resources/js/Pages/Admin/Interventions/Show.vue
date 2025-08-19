@@ -1329,14 +1329,27 @@ function compiledMarkdown(text) {
                 class="flex content-center items-start md:gap-20 gap-12 md:py-28 py-16 md:px-16 px-5 flex-wrap"
             >
                 <div class="relative flex flex-col gap-6">
-                    <h2
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="w-12 h-[2px] bg-gradient-to-r from-transparent via-[#FF8C42] to-[#FF8C42]"
+                        ></div>
+                        <span
+                            class="font-inter text-sm font-semibold uppercase tracking-[2px] text-[#FF8C42]"
+                        >
+                            Suivi
+                        </span>
+                    </div>
+
+                    <h3
                         class="text-[#0D0703] font-poppins md:text-[2.5rem] text-[2rem] font-medium leading-[120%] tracking-[-.4px] mb-3"
                     >
-                        Détails de l'intervention
-                    </h2>
-                    <div
-                        class="absolute bottom-0 md:right-[-10%] right-[43%] border-2 border-[#FF8C42] md:w-[75%] w-[63%]"
-                    ></div>
+                        Détails de l'<span class="relative inline-block">
+                            intervention
+                            <div
+                                class="absolute bottom-1 left-0 w-full h-3 bg-[#FF8C42] bg-opacity-20 -z-10"
+                            ></div>
+                        </span>
+                    </h3>
                 </div>
                 <div
                     class="flex md:w-[672px] md:h-[304px] h-[400px] md:p-8 p-6 flex-col items-start gap-6 rounded-lg border border-white/20 bg-[#F2F2F2] overflow-y-auto hide-scrollbar"
@@ -1363,24 +1376,29 @@ function compiledMarkdown(text) {
                         class="flex flex-col md:max-w-[768px] items-start md:gap-4 gap-3 text-white"
                     >
                         <div class="relative w-full">
-                            <div
-                                class="absolute flex md:hidden bottom-1/2 left-[20%] border-2 border-[#FF8C42] w-[80%] top-1/2"
-                            ></div>
-                            <h2
-                                class="md:text-center font-inter text-base font-semibold"
-                            >
-                                Photos
-                            </h2>
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="w-12 h-[2px] bg-gradient-to-r from-transparent via-[#FF8C42] to-[#FF8C42]"
+                                ></div>
+                                <span
+                                    class="font-inter text-sm font-semibold uppercase tracking-[2px] text-[#FF8C42]"
+                                >
+                                    Documentation
+                                </span>
+                            </div>
                         </div>
                         <div class="relative flex flex-col md:gap-6 gap-0">
                             <h3
-                                class="font-poppins md:text-5xl text-4xl md:text-center font-medium md:leading-[57.6px] leading-[120%] md:tracking-[-0.48px] tracking-[-0.36px] mb-6"
+                                class="font-poppins md:text-5xl text-4xl md:text-center font-medium md:leading-[57.6px] leading-[120%] md:tracking-[-0.48px] tracking-[-0.36px] mb-6 relative z-10"
                             >
-                                Mes photos
+                                Mes
+                                <span class="relative inline-block">
+                                    photos
+                                    <div
+                                        class="absolute bottom-1 left-0 w-full h-3 bg-[#FF8C42] bg-opacity-50 -z-10"
+                                    ></div>
+                                </span>
                             </h3>
-                            <div
-                                class="absolute md:flex hidden bottom-0 left-[-25%] border-2 border-[#FF8C42] w-[130%]"
-                            ></div>
                         </div>
                     </div>
                     <div class="flex items-end">
@@ -1610,19 +1628,29 @@ function compiledMarkdown(text) {
                 <div
                     class="w-full flex-col items-start md:gap-4 gap-3 text-[#0D0703]"
                 >
-                    <h2 class="text-left font-inter text-base font-semibold">
-                        Notes
-                    </h2>
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="w-12 h-[2px] bg-gradient-to-r from-transparent via-[#FF8C42] to-[#FF8C42]"
+                        ></div>
+                        <span
+                            class="font-inter text-sm font-semibold uppercase tracking-[2px] text-[#FF8C42]"
+                        >
+                            Gestion
+                        </span>
+                    </div>
 
                     <div class="relative flex flex-col gap-6">
                         <h3
                             class="font-poppins md:text-5xl text-4xl text-left font-medium md:leading-[57.6px] leading-[43.2px] tracking-[-0.36px] md:tracking-[-0.48px] md:mb-6 mb-4"
                         >
-                            Mes notes
+                            Mes
+                            <span class="relative inline-block">
+                                notes
+                                <div
+                                    class="absolute bottom-1 left-0 w-full h-3 bg-[#FF8C42] bg-opacity-20 -z-10"
+                                ></div>
+                            </span>
                         </h3>
-                        <div
-                            class="absolute bottom-0 md:left-[5%] left-[-6%] border-2 border-[#FF8C42] md:w-[30%] w-[65%]"
-                        ></div>
                     </div>
                 </div>
                 <div style="width: 100%; max-width: 100%; display: block">
