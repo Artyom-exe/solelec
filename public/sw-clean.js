@@ -3,7 +3,7 @@ const urlsToCache = [
     "/admin",
     "/manifest.json",
     "/images/icons/icon-192x192.png",
-    "/images/icons/icon-512x512.png"
+    "/images/icons/icon-512x512.png",
 ];
 
 // Installation du Service Worker
@@ -34,7 +34,10 @@ self.addEventListener("activate", (event) => {
 
 // Intercepter les requêtes réseau
 self.addEventListener("fetch", (event) => {
-    if (event.request.method === "GET" && event.request.url.includes("/admin")) {
+    if (
+        event.request.method === "GET" &&
+        event.request.url.includes("/admin")
+    ) {
         event.respondWith(
             caches.match(event.request).then((response) => {
                 return response || fetch(event.request);
