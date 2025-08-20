@@ -1,6 +1,0 @@
-<!-- Icône SVG temporaire Solelec -->
-<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
-  <rect width="512" height="512" fill="#2D2D2D"/>
-  <text x="256" y="280" text-anchor="middle" fill="#FF8C42" font-family="Arial, sans-serif" font-size="100" font-weight="bold">S</text>
-  <text x="256" y="380" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="40">ADMIN</text>
-</svg>
