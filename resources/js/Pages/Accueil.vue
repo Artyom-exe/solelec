@@ -58,6 +58,67 @@ const props = defineProps({
 const openDevisModal = ref(() => {
     console.log("La fonction openDevisModal n'a pas encore été chargée");
 });
+
+// Fonction pour forcer la prévention du débordement horizontal
+const preventHorizontalOverflow = () => {
+    // Forcer les styles pour empêcher le débordement horizontal
+    document.documentElement.style.overflowX = "hidden";
+    document.body.style.overflowX = "hidden";
+
+    // Assurer que le contenu principal n'a pas de débordement
+    const mainContent = document.querySelector("main");
+    if (mainContent) {
+        mainContent.style.overflowX = "hidden";
+    }
+
+    // Assurer que le header n'a pas de débordement
+    const header = document.querySelector("#header");
+    if (header) {
+        header.style.overflowX = "hidden";
+    }
+};
+
+// Fonction wrapper pour l'ouverture du modal avec gestion du débordement
+const openModalWithOverflowFix = () => {
+    // Appeler la fonction d'ouverture du modal
+    if (typeof openDevisModal.value === "function") {
+        openDevisModal.value();
+
+        // Écouter la fermeture du modal pour réappliquer les styles
+        setTimeout(() => {
+            const modalObserver = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    // Vérifier si des modals ont été supprimés
+                    if (mutation.removedNodes.length > 0) {
+                        mutation.removedNodes.forEach((node) => {
+                            if (
+                                node.nodeType === Node.ELEMENT_NODE &&
+                                (node.classList?.contains("vfm") ||
+                                    node.querySelector?.(".vfm"))
+                            ) {
+                                // Un modal a été fermé, réappliquer les styles
+                                setTimeout(() => {
+                                    preventHorizontalOverflow();
+                                }, 100);
+                            }
+                        });
+                    }
+                });
+            });
+
+            // Observer les changements dans le DOM pour détecter la fermeture du modal
+            modalObserver.observe(document.body, {
+                childList: true,
+                subtree: true,
+            });
+
+            // Nettoyer l'observateur après 5 secondes (suffisant pour l'interaction modal)
+            setTimeout(() => {
+                modalObserver.disconnect();
+            }, 5000);
+        }, 100);
+    }
+};
 const portfolio = ref([]);
 const tags = ref([]);
 const randomPortfolio = ref([]);
@@ -302,9 +363,8 @@ onMounted(() => {
         disable: false,
     });
 
-    // Empêcher le débordement horizontal
-    document.documentElement.style.overflowX = "hidden";
-    document.body.style.overflowX = "hidden";
+    // Appliquer la prévention du débordement horizontal
+    preventHorizontalOverflow();
 
     fetchPortfolio();
     fetchTags();
@@ -325,10 +385,17 @@ onMounted(() => {
             anchorPlacement: "top-center",
             disable: false,
         });
+
+        // Réappliquer la prévention du débordement après redimensionnement
+        setTimeout(() => {
+            preventHorizontalOverflow();
+        }, 100);
     });
 
     setTimeout(() => {
         AOS.refresh();
+        // S'assurer que le débordement est toujours empêché après AOS
+        preventHorizontalOverflow();
     }, 200);
 });
 </script>
@@ -394,7 +461,7 @@ onMounted(() => {
                         data-aos-delay="450"
                         data-aos-anchor="#header"
                     >
-                        <PrimaryButton @click="openDevisModal"
+                        <PrimaryButton @click="openModalWithOverflowFix"
                             >Demander un devis</PrimaryButton
                         >
 
@@ -1203,5 +1270,41 @@ onMounted(() => {
 /* Empêcher les débordements pendant les animations AOS */
 :deep([data-aos]:not(.aos-animate)) {
     overflow: hidden;
+}
+
+/* Force la prévention du débordement horizontal sur tous les éléments principaux */
+:deep(html),
+:deep(body),
+:deep(#app),
+:deep(main) {
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+}
+
+/* Empêcher le débordement horizontal sur la navbar après fermeture du modal */
+:deep(.navbar),
+:deep(nav),
+:deep(header) {
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+}
+
+/* S'assurer que les modals n'affectent pas le débordement global */
+:deep(.vfm) {
+    overflow-x: hidden !important;
+}
+
+/* Prévention spécifique pour mobile */
+@media (max-width: 768px) {
+    :deep(html),
+    :deep(body) {
+        overflow-x: hidden !important;
+        max-width: 100vw !important;
+        position: relative !important;
+    }
+
+    :deep(*) {
+        max-width: 100% !important;
+    }
 }
 </style>
