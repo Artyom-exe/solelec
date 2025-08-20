@@ -13,6 +13,9 @@ const notification = ref({
     type: "success",
 });
 
+// PWA Installation - Méthode classique du navigateur
+const deferredPrompt = ref(null);
+
 // Surveiller les messages flash pour les afficher automatiquement
 watchEffect(() => {
     if (page.props.flash.success) {
@@ -80,16 +83,46 @@ onMounted(() => {
     window.addEventListener("show-notification", showNotificationHandler);
     window.addEventListener("hide-notification", hideNotificationHandler);
 
+    // Gestion globale des erreurs 419 (CSRF token expiré)
+    window.addEventListener("unhandledrejection", (event) => {
+        if (event.reason && event.reason.status === 419) {
+            showNotification(
+                "Session expirée. La page va être rechargée automatiquement.",
+                "error"
+            );
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
+        }
+    });
+
+    // Intercepter les erreurs Inertia
+    document.addEventListener("inertia:error", (event) => {
+        if (event.detail.status === 419) {
+            showNotification(
+                "Session expirée. Rechargement de la page...",
+                "error"
+            );
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
+        }
+    });
+    window.addEventListener("hide-notification", hideNotificationHandler);
+
     // Enregistrer le Service Worker pour PWA
-    if ("serviceWorker" in navigator) {
+    if (
+        "serviceWorker" in navigator &&
+        (window.location.protocol === "https:" ||
+            window.location.hostname === "localhost" ||
+            window.location.hostname === "127.0.0.1" ||
+            window.location.hostname.includes("laragon"))
+    ) {
         window.addEventListener("load", () => {
             navigator.serviceWorker
                 .register("/sw.js")
                 .then((registration) => {
-                    console.log(
-                        "Service Worker enregistré avec succès:",
-                        registration
-                    );
+                    // Service Worker enregistré avec succès
 
                     // Écouter les mises à jour
                     registration.addEventListener("updatefound", () => {
@@ -108,10 +141,7 @@ onMounted(() => {
                     });
                 })
                 .catch((error) => {
-                    console.log(
-                        "Échec de l'enregistrement du Service Worker:",
-                        error
-                    );
+                    // Échec de l'enregistrement du Service Worker
                 });
         });
 
@@ -123,25 +153,19 @@ onMounted(() => {
         });
     }
 
-    // Gestion de l'installation PWA
-    let deferredPrompt;
+    // Gestion basique de l'installation PWA (méthode classique)
     window.addEventListener("beforeinstallprompt", (e) => {
-        // Empêcher l'affichage automatique de la bannière d'installation
-        e.preventDefault();
-        // Stocker l'événement pour l'utiliser plus tard
-        deferredPrompt = e;
+        // Stocker l'événement pour référence (optionnel)
+        deferredPrompt.value = e;
 
-        // Afficher un bouton d'installation personnalisé ou une notification
-        showNotification(
-            "Cette application peut être installée sur votre appareil ! Consultez les options de votre navigateur.",
-            "success"
-        );
+        // Laisser le navigateur gérer l'affichage de l'installation
+        // Ne pas appeler e.preventDefault() pour laisser le comportement natif
     });
 
     // Détection d'installation réussie
     window.addEventListener("appinstalled", (evt) => {
         showNotification("Application installée avec succès !", "success");
-        deferredPrompt = null;
+        deferredPrompt.value = null;
     });
 });
 
@@ -165,10 +189,13 @@ onUnmounted(() => {
             <!-- Icônes pour différentes plateformes -->
             <link
                 rel="icon"
-                type="image/svg+xml"
-                href="/images/icons/temp-icon.svg"
+                type="image/png"
+                href="/images/icons/icon-192x192.png"
             />
-            <link rel="apple-touch-icon" href="/images/icons/temp-icon.svg" />
+            <link
+                rel="apple-touch-icon"
+                href="/images/icons/icon-192x192.png"
+            />
 
             <!-- Métadonnées Apple -->
             <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -182,7 +209,7 @@ onUnmounted(() => {
             <meta name="msapplication-TileColor" content="#FF8C42" />
             <meta
                 name="msapplication-TileImage"
-                content="/images/icons/temp-icon.svg"
+                content="/images/icons/icon-192x192.png"
             />
 
             <!-- Optimisations mobile -->
