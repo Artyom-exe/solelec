@@ -47,7 +47,12 @@ const navItems = [
     >
         <div class="flex justify-between items-center md:gap-8 self-stretch">
             <!-- Logo -->
-            <logo />
+            <Link
+                href="/admin"
+                class="hover:opacity-80 transition-opacity duration-200"
+            >
+                <logo />
+            </Link>
 
             <!-- Navigation principale (Desktop) - Centrée -->
             <div class="hidden md:flex items-center justify-center flex-1">
