@@ -352,7 +352,12 @@ const emit = defineEmits(["scrollToSection"]);
     >
         <div class="flex justify-between items-center md:gap-8 self-stretch">
             <!-- Logo -->
-            <logo />
+            <Link
+                href="/"
+                class="hover:opacity-80 transition-opacity duration-200"
+            >
+                <logo />
+            </Link>
 
             <!-- Navigation principale (Desktop) -->
             <div class="hidden md:flex items-center space-x-8">
