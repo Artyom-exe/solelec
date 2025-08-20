@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Générateur d'icônes PNG - Version Définitive</title>
+    </head>
+    <body>
+        <h2>Génération des icônes Solelec Admin</h2>
+        <div id="progress"></div>
+
+        <script>
+            const sizes = [16, 32, 48, 72, 96, 144, 152, 192, 384, 512];
+            let currentIndex = 0;
+
+            function generateIcon(size) {
+                const canvas = document.createElement("canvas");
+                canvas.width = size;
+                canvas.height = size;
+                const ctx = canvas.getContext("2d");
+
+                // Background
+                ctx.fillStyle = "#2D2D2D";
+                ctx.fillRect(0, 0, size, size);
+
+                // Orange circle (proportionnel)
+                const circleRadius = size * 0.18;
+                const circleY = size * 0.4;
+                ctx.fillStyle = "#FF8C42";
+                ctx.beginPath();
+                ctx.arc(size / 2, circleY, circleRadius, 0, 2 * Math.PI);
+                ctx.fill();
+
+                // White "S" (proportionnel)
+                ctx.fillStyle = "white";
+                ctx.font = `bold ${size * 0.25}px Arial`;
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText("S", size / 2, circleY);
+
+                // "ADMIN" text (proportionnel)
+                if (size >= 48) {
+                    ctx.font = `bold ${size * 0.1}px Arial`;
+                    ctx.fillText("ADMIN", size / 2, size * 0.75);
+                }
+
+                // Download
+                canvas.toBlob(function (blob) {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = `icon-${size}x${size}.png`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+
+                    // Next icon
+                    currentIndex++;
+                    if (currentIndex < sizes.length) {
+                        setTimeout(
+                            () => generateIcon(sizes[currentIndex]),
+                            500
+                        );
+                    } else {
+                        document.getElementById("progress").innerHTML =
+                            '<h3 style="color: green;">✅ Toutes les icônes générées !</h3>';
+                    }
+                });
+
+                document.getElementById(
+                    "progress"
+                ).innerHTML = `Génération de l'icône ${size}x${size}... (${
+                    currentIndex + 1
+                }/${sizes.length})`;
+            }
+
+            // Start generation
+            generateIcon(sizes[0]);
+        </script>
+    </body>
+</html>
