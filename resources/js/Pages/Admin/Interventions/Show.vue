@@ -2457,7 +2457,8 @@ main {
 }
 
 /* Styles pour s'assurer que le contenu des notes ne dépasse pas son parent */
-.text-gray-700 * {
+.markdown-content .text-gray-700 *,
+main .text-gray-700 * {
     max-width: 100%;
     width: 100%;
     overflow-wrap: break-word;
@@ -2465,20 +2466,23 @@ main {
     word-break: break-word;
 }
 
-.text-gray-700 p {
+.markdown-content .text-gray-700 p,
+main .text-gray-700 p {
     width: 100% !important;
     display: block !important;
     box-sizing: border-box !important;
 }
 
 /* Surcharger les styles de prose pour les notes */
-.prose p {
+.markdown-content .prose p,
+main .prose p {
     width: 100% !important;
     display: block !important;
     box-sizing: border-box !important;
 }
 
-.prose * {
+.markdown-content .prose *,
+main .prose * {
     width: 100% !important;
     max-width: 100% !important;
 }

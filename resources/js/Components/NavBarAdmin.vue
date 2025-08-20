@@ -283,7 +283,7 @@ const navItems = [
 
                         <Link
                             :href="route('profile.admin')"
-                            class="flex space-x-3 text-gray-700 py-2 hover:text-[#FF8C42] transition-colors duration-200"
+                            class="flex items-center space-x-3 text-gray-700 py-2 hover:text-[#FF8C42] transition-colors duration-200 w-full text-left"
                             @click="toggleMobileMenu"
                         >
                             <svg
