@@ -1,5 +1,6 @@
 <script setup>
 import { ref, provide, inject, onMounted, onUnmounted, watchEffect } from "vue";
+import { Head } from "@inertiajs/vue3";
 import NavBarAdmin from "@/Components/NavBarAdmin.vue";
 import { usePage } from "@inertiajs/vue3";
 
@@ -78,6 +79,70 @@ const hideNotificationHandler = () => {
 onMounted(() => {
     window.addEventListener("show-notification", showNotificationHandler);
     window.addEventListener("hide-notification", hideNotificationHandler);
+
+    // Enregistrer le Service Worker pour PWA
+    if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+            navigator.serviceWorker
+                .register("/sw.js")
+                .then((registration) => {
+                    console.log(
+                        "Service Worker enregistré avec succès:",
+                        registration
+                    );
+
+                    // Écouter les mises à jour
+                    registration.addEventListener("updatefound", () => {
+                        const newWorker = registration.installing;
+                        newWorker.addEventListener("statechange", () => {
+                            if (
+                                newWorker.state === "installed" &&
+                                navigator.serviceWorker.controller
+                            ) {
+                                showNotification(
+                                    "Une nouvelle version de l'application est disponible. Rechargez la page pour l'utiliser.",
+                                    "success"
+                                );
+                            }
+                        });
+                    });
+                })
+                .catch((error) => {
+                    console.log(
+                        "Échec de l'enregistrement du Service Worker:",
+                        error
+                    );
+                });
+        });
+
+        // Écouter les messages du Service Worker
+        navigator.serviceWorker.addEventListener("message", (event) => {
+            if (event.data && event.data.type === "UPDATE_AVAILABLE") {
+                showNotification(event.data.message, "success");
+            }
+        });
+    }
+
+    // Gestion de l'installation PWA
+    let deferredPrompt;
+    window.addEventListener("beforeinstallprompt", (e) => {
+        // Empêcher l'affichage automatique de la bannière d'installation
+        e.preventDefault();
+        // Stocker l'événement pour l'utiliser plus tard
+        deferredPrompt = e;
+
+        // Afficher un bouton d'installation personnalisé ou une notification
+        showNotification(
+            "Cette application peut être installée sur votre appareil ! Consultez les options de votre navigateur.",
+            "success"
+        );
+    });
+
+    // Détection d'installation réussie
+    window.addEventListener("appinstalled", (evt) => {
+        showNotification("Application installée avec succès !", "success");
+        deferredPrompt = null;
+    });
 });
 
 onUnmounted(() => {
@@ -88,6 +153,46 @@ onUnmounted(() => {
 
 <template>
     <div class="flex flex-col min-h-screen">
+        <!-- Métadonnées PWA -->
+        <Head>
+            <!-- Manifest PWA -->
+            <link rel="manifest" href="/manifest.json" />
+
+            <!-- Métadonnées PWA -->
+            <meta name="theme-color" content="#FF8C42" />
+            <meta name="background-color" content="#2D2D2D" />
+
+            <!-- Icônes pour différentes plateformes -->
+            <link
+                rel="icon"
+                type="image/svg+xml"
+                href="/images/icons/temp-icon.svg"
+            />
+            <link rel="apple-touch-icon" href="/images/icons/temp-icon.svg" />
+
+            <!-- Métadonnées Apple -->
+            <meta name="apple-mobile-web-app-capable" content="yes" />
+            <meta
+                name="apple-mobile-web-app-status-bar-style"
+                content="black-translucent"
+            />
+            <meta name="apple-mobile-web-app-title" content="Solelec Admin" />
+
+            <!-- Métadonnées Microsoft -->
+            <meta name="msapplication-TileColor" content="#FF8C42" />
+            <meta
+                name="msapplication-TileImage"
+                content="/images/icons/temp-icon.svg"
+            />
+
+            <!-- Optimisations mobile -->
+            <meta name="mobile-web-app-capable" content="yes" />
+            <meta
+                name="viewport"
+                content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+            />
+        </Head>
+
         <NavBarAdmin />
 
         <!-- Système de notification -->

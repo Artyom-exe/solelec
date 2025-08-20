@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Générateur d'icône PNG</title>
+    </head>
+    <body>
+        <canvas id="canvas" width="512" height="512"></canvas>
+        <script>
+            const canvas = document.getElementById("canvas");
+            const ctx = canvas.getContext("2d");
+
+            // Background
+            ctx.fillStyle = "#2D2D2D";
+            ctx.fillRect(0, 0, 512, 512);
+
+            // Orange circle
+            ctx.fillStyle = "#FF8C42";
+            ctx.beginPath();
+            ctx.arc(256, 200, 90, 0, 2 * Math.PI);
+            ctx.fill();
+
+            // White "S"
+            ctx.fillStyle = "white";
+            ctx.font = "bold 120px Arial";
+            ctx.textAlign = "center";
+            ctx.fillText("S", 256, 240);
+
+            // "ADMIN" text
+            ctx.font = "bold 48px Arial";
+            ctx.fillText("ADMIN", 256, 350);
+
+            // Download as PNG
+            canvas.toBlob(function (blob) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "icon-512x512.png";
+                a.click();
+            });
+        </script>
+    </body>
+</html>
