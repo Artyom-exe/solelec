@@ -14,6 +14,7 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\InterventionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NoteController;
+use App\Http\Controllers\NotificationController;
 
 Route::get('/', function () {
     return Inertia::render('Accueil');
@@ -82,6 +83,11 @@ Route::middleware([
     // Routes pour les devis
     Route::get('/devis', [QuoteController::class, 'index'])->name('devis');
     Route::delete('/devis/{quote}', [QuoteController::class, 'destroy'])->name('devis.destroy');
+
+    // Routes pour les notifications
+    Route::get('/notifications', [NotificationController::class, 'getNotifications'])->name('notifications.get');
+    Route::get('/notifications/count', [NotificationController::class, 'getNotificationCount'])->name('notifications.count');
+    Route::post('/notifications/test', [NotificationController::class, 'sendTestNotification'])->name('notifications.test');
 });
 
 Route::match(['get', 'post'], '/register', function () {

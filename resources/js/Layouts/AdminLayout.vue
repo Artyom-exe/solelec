@@ -2,6 +2,7 @@
 import { ref, provide, inject, onMounted, onUnmounted, watchEffect } from "vue";
 import { Head } from "@inertiajs/vue3";
 import NavBarAdmin from "@/Components/NavBarAdmin.vue";
+import NotificationPanel from "@/Components/NotificationPanel.vue";
 import { usePage } from "@inertiajs/vue3";
 
 const page = usePage();
@@ -15,6 +16,10 @@ const notification = ref({
 
 // PWA Installation - Méthode classique du navigateur
 const deferredPrompt = ref(null);
+
+// Système de notifications PWA
+const notificationCount = ref(0);
+const showNotificationPanel = ref(false);
 
 // Surveiller les messages flash pour les afficher automatiquement
 watchEffect(() => {
@@ -77,6 +82,39 @@ provide("showNotification", showNotification);
 
 const hideNotificationHandler = () => {
     notification.value.show = false;
+};
+
+// Fonctions pour les notifications PWA
+const updateNotificationCount = async () => {
+    try {
+        const response = await fetch("/admin/notifications/count");
+        const data = await response.json();
+        notificationCount.value = data.total_count || 0;
+
+        // Mettre à jour le badge de l'application
+        if (
+            "serviceWorker" in navigator &&
+            navigator.serviceWorker.controller
+        ) {
+            navigator.serviceWorker.controller.postMessage({
+                type: "UPDATE_BADGE",
+                count: data.urgent_count || 0,
+            });
+        }
+    } catch (error) {
+        console.error(
+            "Erreur lors de la récupération du nombre de notifications:",
+            error
+        );
+    }
+};
+
+const toggleNotificationPanel = () => {
+    showNotificationPanel.value = !showNotificationPanel.value;
+};
+
+const closeNotificationPanel = () => {
+    showNotificationPanel.value = false;
 };
 
 onMounted(() => {
@@ -167,11 +205,25 @@ onMounted(() => {
         showNotification("Application installée avec succès !", "success");
         deferredPrompt.value = null;
     });
+
+    // Mettre à jour le nombre de notifications au démarrage
+    updateNotificationCount();
+
+    // Actualiser les notifications toutes les 2 minutes
+    const notificationInterval = setInterval(updateNotificationCount, 120000);
+
+    // Stocker l'interval pour le nettoyer plus tard
+    window.notificationInterval = notificationInterval;
 });
 
 onUnmounted(() => {
     window.removeEventListener("show-notification", showNotificationHandler);
     window.removeEventListener("hide-notification", hideNotificationHandler);
+
+    // Nettoyer l'interval des notifications
+    if (window.notificationInterval) {
+        clearInterval(window.notificationInterval);
+    }
 });
 </script>
 
@@ -220,7 +272,16 @@ onUnmounted(() => {
             />
         </Head>
 
-        <NavBarAdmin />
+        <NavBarAdmin
+            :notificationCount="notificationCount"
+            @toggleNotifications="toggleNotificationPanel"
+        />
+
+        <!-- Panneau de notifications -->
+        <NotificationPanel
+            :showNotifications="showNotificationPanel"
+            @close="closeNotificationPanel"
+        />
 
         <!-- Système de notification -->
         <div

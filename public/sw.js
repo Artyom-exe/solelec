@@ -1,4 +1,4 @@
-const CACHE_NAME = "solelec-admin-v1.2";
+const CACHE_NAME = "solelec-admin-v1.3";
 const isDevelopment =
     location.hostname === "localhost" || location.hostname.includes(".test");
 
@@ -37,6 +37,82 @@ self.addEventListener("activate", (event) => {
         })
     );
     self.clients.claim(); // Prend contrôle immédiatement
+});
+
+// Gestion des notifications push
+self.addEventListener("push", (event) => {
+    if (event.data) {
+        const data = event.data.json();
+
+        const options = {
+            body: data.message || "Nouvelle notification Solelec",
+            icon: "/images/icons/icon-192x192.png",
+            badge: "/images/icons/icon-192x192.png",
+            tag: data.tag || "solelec-notification",
+            data: data.data || {},
+            actions: [
+                {
+                    action: "view",
+                    title: "Voir",
+                    icon: "/images/icons/icon-192x192.png",
+                },
+                {
+                    action: "dismiss",
+                    title: "Ignorer",
+                },
+            ],
+            requireInteraction: data.priority === "high",
+            renotify: true,
+            vibrate: data.priority === "high" ? [200, 100, 200] : [100],
+        };
+
+        event.waitUntil(
+            self.registration.showNotification(
+                data.title || "Solelec Admin",
+                options
+            )
+        );
+    }
+});
+
+// Gestion des clics sur les notifications
+self.addEventListener("notificationclick", (event) => {
+    event.notification.close();
+
+    if (event.action === "view" || !event.action) {
+        // Ouvrir ou focus sur l'application
+        event.waitUntil(
+            clients.matchAll({ type: "window" }).then((clientList) => {
+                // Chercher si l'app est déjà ouverte
+                for (const client of clientList) {
+                    if (client.url.includes("/admin") && "focus" in client) {
+                        return client.focus();
+                    }
+                }
+                // Sinon ouvrir une nouvelle fenêtre
+                if (clients.openWindow) {
+                    const url = event.notification.data.url || "/admin";
+                    return clients.openWindow(url);
+                }
+            })
+        );
+    }
+});
+
+// Gestion des messages pour mettre à jour le badge
+self.addEventListener("message", (event) => {
+    if (event.data && event.data.type === "UPDATE_BADGE") {
+        const count = event.data.count || 0;
+
+        // Mettre à jour le badge sur l'icône de l'application
+        if ("setAppBadge" in navigator) {
+            if (count > 0) {
+                navigator.setAppBadge(count);
+            } else {
+                navigator.clearAppBadge();
+            }
+        }
+    }
 });
 
 // Intercepter les requêtes réseau

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Quote;
 use App\Models\Intervention;
 use App\Models\Activity;
+use App\Services\NotificationService;
 use Inertia\Inertia;
 
 class DashboardController extends Controller
@@ -24,6 +25,10 @@ class DashboardController extends Controller
 
         // Compter les interventions en cours
         $ongoingInterventionsCount = Intervention::where('status', 'en cours')->count();
+
+        // Récupérer les notifications urgentes
+        $notifications = NotificationService::getUrgentNotifications();
+        $notificationCount = NotificationService::getTotalNotificationsCount();
 
         // Récupérer les 10 dernières activités
         $recentActivities = Activity::with('user')
@@ -45,7 +50,9 @@ class DashboardController extends Controller
         return Inertia::render('Admin/Dashboard', [
             'pendingQuotesCount' => $pendingQuotesCount,
             'ongoingInterventionsCount' => $ongoingInterventionsCount,
-            'recentActivities' => $recentActivities
+            'recentActivities' => $recentActivities,
+            'notifications' => $notifications,
+            'notificationCount' => $notificationCount
         ]);
     }
 
