@@ -3,6 +3,15 @@ import { ref, onMounted, onBeforeUnmount } from "vue";
 import { Link, router } from "@inertiajs/vue3";
 import logo from "./logo.vue";
 
+const props = defineProps({
+    notificationCount: {
+        type: Number,
+        default: 0,
+    },
+});
+
+const emit = defineEmits(["toggleNotifications"]);
+
 const mobileMenuOpen = ref(false);
 const profileMenuOpen = ref(false);
 
@@ -74,6 +83,36 @@ const navItems = [
                         </Link>
                     </template>
                 </div>
+            </div>
+
+            <!-- Bouton de notifications (Desktop) -->
+            <div class="hidden md:flex items-center mr-4">
+                <button
+                    @click="$emit('toggleNotifications')"
+                    class="relative p-2 text-white hover:text-[#FF8C42] transition-colors duration-200"
+                    title="Notifications"
+                >
+                    <svg
+                        class="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M15 17h5l-5-5v-6a7 7 0 11-14 0v6l-5 5h5m9 0v1a3 3 0 01-3 3 3 3 0 01-3-3v-1m6 0H9"
+                        />
+                    </svg>
+                    <!-- Badge de notification -->
+                    <span
+                        v-if="notificationCount > 0"
+                        class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold"
+                    >
+                        {{ notificationCount > 99 ? "99+" : notificationCount }}
+                    </span>
+                </button>
             </div>
 
             <!-- Menu profil (Desktop) -->
