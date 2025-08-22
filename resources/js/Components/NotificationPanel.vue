@@ -10,10 +10,10 @@
             <h3 class="text-lg font-semibold text-gray-900">
                 Notifications
                 <span
-                    v-if="urgentCount > 0"
-                    class="ml-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full"
+                    v-if="unreadCount > 0"
+                    class="ml-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full"
                 >
-                    {{ urgentCount }}
+                    {{ unreadCount }}
                 </span>
             </h3>
             <button
@@ -43,14 +43,17 @@
                 :key="notification.id"
                 @click="() => openNotification(notification)"
                 class="p-4 hover:bg-gray-50 cursor-pointer transition-colors duration-200"
-                :class="{
-                    'border-l-4 border-red-500 bg-red-50':
-                        notification.priority === 'high',
-                    'border-l-4 border-yellow-500 bg-yellow-50':
-                        notification.priority === 'medium',
-                    'border-l-4 border-blue-500 bg-blue-50':
-                        notification.priority === 'low',
-                }"
+                :class="[
+                    notification.is_read ? 'opacity-60' : 'opacity-100',
+                    {
+                        'border-l-4 border-red-500 bg-red-50':
+                            notification.priority === 'high',
+                        'border-l-4 border-yellow-500 bg-yellow-50':
+                            notification.priority === 'medium',
+                        'border-l-4 border-blue-500 bg-blue-50':
+                            notification.priority === 'low',
+                    },
+                ]"
             >
                 <div class="flex items-start">
                     <!-- Icône -->
@@ -152,7 +155,7 @@
             class="bg-gray-50 px-4 py-3 border-t border-gray-200"
         >
             <button
-                @click="markAllAsRead"
+                @click="() => markAllAsRead(true)"
                 class="text-sm text-blue-600 hover:text-blue-800 font-medium"
             >
                 Tout marquer comme lu
@@ -165,6 +168,10 @@
 import { ref, computed, watch, onMounted, onUnmounted } from "vue";
 import { router } from "@inertiajs/vue3";
 
+const unreadCount = computed(
+    () => notifications.value.filter((n) => !n.is_read).length
+);
+
 const props = defineProps({
     showNotifications: {
         type: Boolean,
@@ -172,7 +179,7 @@ const props = defineProps({
     },
 });
 
-const emit = defineEmits(["close"]);
+const emit = defineEmits(["close", "notificationRead"]);
 
 const notifications = ref([]);
 const loading = ref(false);
@@ -204,18 +211,80 @@ const closeNotifications = () => {
 };
 
 // Fonction pour ouvrir une notification
-const openNotification = (notification) => {
+const openNotification = async (notification) => {
+    // Marquer comme lue avant de naviguer (mise à jour optimiste)
+    await markAsRead(notification, { optimistic: true });
+
     if (notification.url) {
         router.visit(notification.url);
     }
     closeNotifications();
 };
 
+// Fonction pour marquer une notification comme lue
+const markAsRead = async (
+    notification,
+    { optimistic } = { optimistic: false }
+) => {
+    try {
+        await fetch("/admin/notifications/mark-read", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN":
+                    document
+                        .querySelector('meta[name="csrf-token"]')
+                        ?.getAttribute("content") || "",
+                "X-Requested-With": "XMLHttpRequest",
+            },
+            body: JSON.stringify({
+                type: notification.type,
+                notification_id:
+                    notification.notification_id || notification.data?.id,
+            }),
+        });
+        // Mise à jour optimiste: retirer l'élément sans re-fetch
+        if (optimistic) {
+            const targetId =
+                notification.notification_id || notification.data?.id;
+            const targetType = notification.type;
+            notifications.value = notifications.value.filter((n) => {
+                const id = n.notification_id || n.data?.id;
+                return !(n.type === targetType && id === targetId);
+            });
+        }
+
+        // Émettre un événement pour mettre à jour le compteur dans la navbar
+        emit("notificationRead");
+    } catch (error) {
+        console.error("Erreur lors du marquage de la notification:", error);
+    }
+};
+
 // Fonction pour marquer toutes les notifications comme lues
-const markAllAsRead = () => {
-    // Pour l'instant, on ferme juste le panneau
-    // Plus tard, on pourra implémenter la logique de marquage
-    closeNotifications();
+const markAllAsRead = async (closePanel = false) => {
+    try {
+        await fetch("/admin/notifications/mark-all-read", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN":
+                    document
+                        .querySelector('meta[name="csrf-token"]')
+                        ?.getAttribute("content") || "",
+                "X-Requested-With": "XMLHttpRequest",
+            },
+        });
+        emit("notificationRead");
+        if (closePanel) {
+            closeNotifications();
+        }
+    } catch (error) {
+        console.error(
+            "Erreur lors du marquage de toutes les notifications:",
+            error
+        );
+    }
 };
 
 // Fonction pour formater la date
@@ -235,12 +304,16 @@ const formatDate = (dateString) => {
     }
 };
 
-// Charger les notifications quand le composant est affiché
+// Charger les notifications et marquer comme lues à l'ouverture du panneau
 watch(
     () => props.showNotifications,
-    (newValue) => {
+    async (newValue) => {
         if (newValue) {
-            fetchNotifications();
+            await fetchNotifications();
+            // Marquer toutes comme lues dès l'ouverture
+            await markAllAsRead();
+            // Recharger la liste pour mettre à jour l'état "is_read"
+            await fetchNotifications();
         }
     }
 );
