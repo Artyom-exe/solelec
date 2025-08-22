@@ -5,13 +5,14 @@ namespace App\Services;
 use App\Models\Intervention;
 use App\Models\Quote;
 use Carbon\Carbon;
+use App\Models\NotificationRead;
 
 class NotificationService
 {
     /**
-     * Récupère toutes les notifications urgentes
+     * Récupère toutes les notifications urgentes pour un utilisateur
      */
-    public static function getUrgentNotifications()
+    public static function getUrgentNotifications($userId = null)
     {
         $notifications = [];
 
@@ -35,9 +36,10 @@ class NotificationService
                 'priority' => $isToday ? 'high' : 'medium',
                 'title' => $isToday ? 'Intervention aujourd\'hui' : 'Intervention demain',
                 'message' => "Intervention {$intervention->status} chez {$clientName}",
-                'date' => $intervention->date,
+                'date' => $intervention->updated_at ?? $intervention->date,
                 'url' => route('interventions.show', $intervention->id),
-                'data' => $intervention
+                'data' => $intervention,
+                'notification_id' => $intervention->id
             ];
         }
 
@@ -57,9 +59,10 @@ class NotificationService
                 'priority' => 'medium',
                 'title' => 'Devis en attente',
                 'message' => "Devis de {$clientName} en attente depuis {$daysOld} jours",
-                'date' => $quote->created_at,
+                'date' => $quote->updated_at ?? $quote->created_at,
                 'url' => route('devis.show', $quote->id),
-                'data' => $quote
+                'data' => $quote,
+                'notification_id' => $quote->id
             ];
         }
 
@@ -78,44 +81,96 @@ class NotificationService
                 'priority' => 'high',
                 'title' => 'Nouveau devis',
                 'message' => "Nouvelle demande de devis de {$clientName}",
-                'date' => $quote->created_at,
+                'date' => $quote->updated_at ?? $quote->created_at,
                 'url' => route('devis.show', $quote->id),
-                'data' => $quote
+                'data' => $quote,
+                'notification_id' => $quote->id
             ];
         }
 
-        // Trier par priorité puis par date
-        usort($notifications, function($a, $b) {
-            $priorityOrder = ['high' => 3, 'medium' => 2, 'low' => 1];
-            $aPriority = $priorityOrder[$a['priority']] ?? 1;
-            $bPriority = $priorityOrder[$b['priority']] ?? 1;
-
-            if ($aPriority === $bPriority) {
-                return strtotime($b['date']) - strtotime($a['date']);
+        // Ajouter le statut de lecture pour chaque notification
+        if ($userId) {
+            $readNotifications = NotificationRead::where('user_id', $userId)
+                ->get()
+                ->keyBy(function ($item) {
+                    return $item->notification_type . '_' . $item->notification_id;
+                });
+            foreach ($notifications as &$notification) {
+                // Utilise bien notification_type et notification_id pour la clé
+                $key = $notification['type'] . '_' . $notification['notification_id'];
+                $notification['is_read'] = $readNotifications->has($key);
             }
+            unset($notification);
+        }
 
-            return $bPriority - $aPriority;
+        // Tri strictement chronologique : non lues en haut, puis lues, le tout du plus récent au moins récent
+        usort($notifications, function($a, $b) {
+            $aRead = $a['is_read'] ?? false;
+            $bRead = $b['is_read'] ?? false;
+            if ($aRead !== $bRead) {
+                return $aRead ? 1 : -1;
+            }
+            // Plus récent en haut
+            return strtotime($b['date']) - strtotime($a['date']);
         });
-
         return $notifications;
     }
 
     /**
-     * Compte le nombre de notifications urgentes
+     * Compte le nombre de notifications urgentes pour un utilisateur
      */
-    public static function getUrgentNotificationsCount()
+    public static function getUrgentNotificationsCount($userId = null)
     {
-        $notifications = self::getUrgentNotifications();
+        $notifications = self::getUrgentNotifications($userId);
         return count(array_filter($notifications, function($notif) {
             return $notif['priority'] === 'high';
         }));
     }
 
     /**
-     * Compte le total des notifications
+     * Compte le total des notifications pour un utilisateur
      */
-    public static function getTotalNotificationsCount()
+    public static function getTotalNotificationsCount($userId = null)
     {
-        return count(self::getUrgentNotifications());
+        $notifications = self::getUrgentNotifications($userId);
+        return count(array_filter($notifications, function($notif) {
+            return empty($notif['is_read']) || $notif['is_read'] === false;
+        }));
+    }
+
+    /**
+     * Marquer une notification comme lue (utilise la table)
+     */
+    public static function markAsRead($userId, $notificationType, $notificationId)
+    {
+        return NotificationRead::updateOrCreate(
+            [
+                'user_id' => $userId,
+                'notification_type' => $notificationType,
+                'notification_id' => $notificationId,
+            ],
+            [
+                'read_at' => Carbon::now(),
+            ]
+        );
+    }
+
+    /**
+     * Marquer toutes les notifications comme lues pour un utilisateur
+     */
+    public static function markAllAsRead($userId)
+    {
+        \Log::info('[Notification] markAllAsRead called', ['user_id' => $userId]);
+        $notifications = self::getUrgentNotifications(); // Sans filtrage par utilisateur pour obtenir toutes les notifications
+        foreach ($notifications as $notification) {
+            \Log::info('[Notification] markAllAsRead - notification', [
+                'user_id' => $userId,
+                'type' => $notification['type'],
+                'notification_id' => $notification['notification_id']
+            ]);
+            self::markAsRead($userId, $notification['type'], $notification['notification_id']);
+        }
+        return true;
     }
 }
+

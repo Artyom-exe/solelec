@@ -117,6 +117,14 @@ const closeNotificationPanel = () => {
     showNotificationPanel.value = false;
 };
 
+// Fonction appelée quand une notification est lue
+const handleNotificationRead = () => {
+    // Mise à jour rapide du badge (optimiste)
+    if (notificationCount.value > 0) notificationCount.value -= 1;
+    // Synchroniser avec le serveur en arrière-plan
+    updateNotificationCount();
+};
+
 onMounted(() => {
     window.addEventListener("show-notification", showNotificationHandler);
     window.addEventListener("hide-notification", hideNotificationHandler);
@@ -281,6 +289,7 @@ onUnmounted(() => {
         <NotificationPanel
             :showNotifications="showNotificationPanel"
             @close="closeNotificationPanel"
+            @notificationRead="handleNotificationRead"
         />
 
         <!-- Système de notification -->

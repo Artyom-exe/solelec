@@ -242,7 +242,7 @@ class InterventionController extends Controller
 
         return redirect()->back()->with('success', 'Statut de l\'intervention mis à jour avec succès');
     }
-    
+
     /**
      * Met à jour la date d'une intervention
      */
@@ -256,9 +256,14 @@ class InterventionController extends Controller
             'date' => $request->date
         ]);
 
+        // Réinitialiser la notification pour cette intervention (tous les utilisateurs)
+        \App\Models\NotificationRead::where('notification_type', 'intervention')
+            ->where('notification_id', $intervention->id)
+            ->delete();
+
         return redirect()->back()->with('success', 'Date mise à jour avec succès');
     }
-    
+
     /**
      * Met à jour les services associés à une intervention
      */
@@ -268,18 +273,18 @@ class InterventionController extends Controller
             'services' => 'required|array',
             'services.*' => 'exists:services,id'
         ]);
-        
+
         // Vérifier si l'intervention a un devis associé
         if (!$intervention->devis_id) {
             return redirect()->back()->with('error', 'Cette intervention n\'a pas de devis associé');
         }
-        
+
         // Mettre à jour les services du devis associé à l'intervention
         $intervention->devis->services()->sync($request->services);
-        
+
         // Journaliser l'activité
         ActivityLogger::log('intervention', $intervention, 'Services mis à jour pour l\'intervention #' . $intervention->id);
-        
+
         return redirect()->back()->with('success', 'Services mis à jour avec succès');
     }
 

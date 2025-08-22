@@ -8,13 +8,14 @@ use Illuminate\Http\Request;
 class NotificationController extends Controller
 {
     /**
-     * Récupère toutes les notifications urgentes
+     * Récupère toutes les notifications urgentes pour l'utilisateur connecté
      */
     public function getNotifications()
     {
-        $notifications = NotificationService::getUrgentNotifications();
+        $userId = auth()->id();
+        $notifications = NotificationService::getUrgentNotifications($userId);
         $totalCount = count($notifications);
-        $urgentCount = NotificationService::getUrgentNotificationsCount();
+        $urgentCount = NotificationService::getUrgentNotificationsCount($userId);
 
         return response()->json([
             'notifications' => $notifications,
@@ -24,13 +25,50 @@ class NotificationController extends Controller
     }
 
     /**
-     * Récupère uniquement le compteur de notifications
+     * Récupère uniquement le compteur de notifications pour l'utilisateur connecté
      */
     public function getNotificationCount()
     {
+        $userId = auth()->id();
         return response()->json([
-            'total_count' => NotificationService::getTotalNotificationsCount(),
-            'urgent_count' => NotificationService::getUrgentNotificationsCount()
+            'total_count' => NotificationService::getTotalNotificationsCount($userId),
+            'urgent_count' => NotificationService::getUrgentNotificationsCount($userId)
+        ]);
+    }
+
+    /**
+     * Marquer une notification comme lue
+     */
+    public function markAsRead(Request $request)
+    {
+        $request->validate([
+            'type' => 'required|string',
+            'notification_id' => 'required|integer'
+        ]);
+
+        $userId = auth()->id();
+
+        NotificationService::markAsRead(
+            $userId,
+            $request->type,
+            $request->notification_id
+        );
+
+        return response()->json([
+            'message' => 'Notification marquée comme lue'
+        ]);
+    }
+
+    /**
+     * Marquer toutes les notifications comme lues
+     */
+    public function markAllAsRead()
+    {
+        $userId = auth()->id();
+        NotificationService::markAllAsRead($userId);
+
+        return response()->json([
+            'message' => 'Toutes les notifications ont été marquées comme lues'
         ]);
     }
 
@@ -52,3 +90,4 @@ class NotificationController extends Controller
         ]);
     }
 }
+

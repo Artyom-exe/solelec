@@ -89,28 +89,29 @@ const navItems = [
             <div class="hidden md:flex items-center mr-4">
                 <button
                     @click="$emit('toggleNotifications')"
-                    class="relative p-2 text-white hover:text-[#FF8C42] transition-colors duration-200"
+                    class="relative p-2 text-white hover:text-[#FF8C42] transition-all duration-300 ease-in-out transform hover:scale-110 active:scale-95 rounded-lg hover:bg-white/10"
                     title="Notifications"
                 >
                     <svg
-                        class="w-6 h-6"
+                        class="w-5 h-5 transition-all duration-300"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
+                        stroke-width="2"
                     >
                         <path
                             stroke-linecap="round"
                             stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M15 17h5l-5-5v-6a7 7 0 11-14 0v6l-5 5h5m9 0v1a3 3 0 01-3 3 3 3 0 01-3-3v-1m6 0H9"
+                            d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"
                         />
                     </svg>
-                    <!-- Badge de notification -->
+                    <!-- Badge de notification avec animation -->
                     <span
                         v-if="notificationCount > 0"
-                        class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold"
+                        class="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center font-bold animate-pulse shadow-lg"
+                        style="font-size: 10px"
                     >
-                        {{ notificationCount > 99 ? "99+" : notificationCount }}
+                        {{ notificationCount > 9 ? "9+" : notificationCount }}
                     </span>
                 </button>
             </div>
