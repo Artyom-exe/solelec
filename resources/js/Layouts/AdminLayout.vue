@@ -91,14 +91,14 @@ const updateNotificationCount = async () => {
         const data = await response.json();
         notificationCount.value = data.total_count || 0;
 
-        // Mettre à jour le badge de l'application
+        // Mettre à jour le badge de l'application avec le nombre de notifications non lues
         if (
             "serviceWorker" in navigator &&
             navigator.serviceWorker.controller
         ) {
             navigator.serviceWorker.controller.postMessage({
                 type: "UPDATE_BADGE",
-                count: data.urgent_count || 0,
+                count: data.total_count || 0,
             });
         }
     } catch (error) {
