@@ -869,6 +869,28 @@ function compiledMarkdown(text) {
         <header
             class="bg-[#2D2D2D] text-white md:py-28 py-16 md:px-16 px-5 md:mt-[72px] mt-[64px]"
         >
+            <!-- Flèche de retour -->
+            <div class="mb-6">
+                <Link
+                    :href="route('interventions')"
+                    class="inline-flex items-center text-white hover:text-[#FF8C42] transition-colors font-medium"
+                >
+                    <svg
+                        class="w-6 h-6 mr-2"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M15 19l-7-7 7-7"
+                        />
+                    </svg>
+                    Retour à la liste
+                </Link>
+            </div>
             <div
                 class="container flex md:flex-row flex-col items-start md:gap-20 gap-12 self-stretch"
             >
