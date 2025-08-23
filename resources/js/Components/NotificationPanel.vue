@@ -107,20 +107,17 @@
                                 {{ notification.title }}
                             </p>
                             <div
-                                class="flex items-center text-xs text-gray-500"
+                                class="flex items-center text-xs text-gray-500 gap-3"
                             >
                                 <span
                                     v-if="notification.priority === 'high'"
                                     class="text-red-600 font-medium"
-                                    >Urgent</span
-                                >
+                                >Urgent</span>
                                 <span
-                                    v-else-if="
-                                        notification.priority === 'medium'
-                                    "
+                                    v-else-if="notification.priority === 'medium'"
                                     class="text-yellow-600 font-medium"
-                                    >Important</span
-                                >
+                                >Important</span>
+                                <span v-if="notification.priority === 'high' || notification.priority === 'medium'" class="mx-1">•</span>
                                 <span>{{ formatDate(notification.date) }}</span>
                             </div>
                         </div>
