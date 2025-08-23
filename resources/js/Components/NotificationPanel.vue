@@ -1,6 +1,7 @@
 <template>
     <div
         v-if="showNotifications"
+        ref="panelRef"
         class="fixed top-20 right-4 z-50 w-80 max-h-96 overflow-y-auto bg-white rounded-lg shadow-xl border border-gray-200"
     >
         <!-- En-tête -->
@@ -165,7 +166,19 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, onUnmounted } from "vue";
+import { ref, computed, watch, onMounted, onUnmounted, nextTick } from "vue";
+import { inject } from "vue";
+// Permet de notifier la navbar de réinitialiser la cloche mobile
+const resetMobileBell = inject("resetMobileBell", null);
+// Référence pour le panneau
+const panelRef = ref(null);
+
+// Gestion du clic extérieur pour fermer le panneau
+const handleClickOutside = (event) => {
+    if (panelRef.value && !panelRef.value.contains(event.target)) {
+        closeNotifications();
+    }
+};
 import { router } from "@inertiajs/vue3";
 
 const unreadCount = computed(
@@ -208,6 +221,7 @@ const fetchNotifications = async () => {
 // Fonction pour fermer le panneau de notifications
 const closeNotifications = () => {
     emit("close");
+    if (resetMobileBell) resetMobileBell();
 };
 
 // Fonction pour ouvrir une notification
@@ -332,11 +346,29 @@ onMounted(() => {
             fetchNotifications();
         }
     }, 5000);
+
+    watch(
+        () => props.showNotifications,
+        (show) => {
+            if (show) {
+                nextTick(() => {
+                    document.addEventListener("mousedown", handleClickOutside);
+                    document.addEventListener("touchstart", handleClickOutside);
+                });
+            } else {
+                document.removeEventListener("mousedown", handleClickOutside);
+                document.removeEventListener("touchstart", handleClickOutside);
+            }
+        },
+        { immediate: true }
+    );
 });
 
 onUnmounted(() => {
     if (notificationInterval) {
         clearInterval(notificationInterval);
     }
+    document.removeEventListener("mousedown", handleClickOutside);
+    document.removeEventListener("touchstart", handleClickOutside);
 });
 </script>
