@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from "vue";
+import { ref, onMounted, onBeforeUnmount, nextTick, provide } from "vue";
 import { Link, router } from "@inertiajs/vue3";
 import logo from "./logo.vue";
 
@@ -12,11 +12,43 @@ const props = defineProps({
 
 const emit = defineEmits(["toggleNotifications"]);
 
+// État pour la cloche mobile
+// Gestion ouverture/fermeture notifications mobile
+const handleMobileBellClick = () => {
+    emit("toggleNotifications");
+};
+
+// Permet au parent de réinitialiser l'état de la cloche
+// Plus besoin de resetMobileBell, tout est géré par le CSS natif
+
 const mobileMenuOpen = ref(false);
+const mobileMenuRef = ref(null);
 const profileMenuOpen = ref(false);
 
 const toggleMobileMenu = () => {
+    // Toujours retirer l'écouteur avant de changer l'état
+    document.removeEventListener("mousedown", handleClickOutsideMobileMenu);
     mobileMenuOpen.value = !mobileMenuOpen.value;
+    if (mobileMenuOpen.value) {
+        nextTick(() => {
+            document.addEventListener(
+                "mousedown",
+                handleClickOutsideMobileMenu
+            );
+        });
+    }
+};
+
+const handleClickOutsideMobileMenu = (event) => {
+    // Empêche la fermeture si le clic vient du bouton burger
+    const burgerBtn = document.querySelector(".hamburger-icon");
+    if (burgerBtn && burgerBtn.contains(event.target)) {
+        return;
+    }
+    if (mobileMenuRef.value && !mobileMenuRef.value.contains(event.target)) {
+        mobileMenuOpen.value = false;
+        document.removeEventListener("mousedown", handleClickOutsideMobileMenu);
+    }
 };
 
 const toggleProfileMenu = () => {
@@ -40,6 +72,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
     document.removeEventListener("click", closeProfileMenu);
+    document.removeEventListener("mousedown", handleClickOutsideMobileMenu);
 });
 
 const navItems = [
@@ -226,8 +259,34 @@ const navItems = [
                 </transition>
             </div>
 
-            <!-- Hamburger (Mobile) avec animation cross - masqué sur desktop avec v-if -->
-            <div class="md:hidden">
+            <!-- Zone boutons mobile (cloche + burger) -->
+            <div class="md:hidden flex items-center gap-4">
+                <button
+                    @click="handleMobileBellClick"
+                    class="relative p-2 text-white transition-all duration-300 ease-in-out transform rounded-lg z-20 hover:text-[#FF8C42] hover:bg-white/10 hover:scale-110 active:bg-white/20 active:text-[#FF8C42] active:scale-95"
+                    title="Notifications"
+                >
+                    <svg
+                        class="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        stroke-width="2"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"
+                        />
+                    </svg>
+                    <span
+                        v-if="notificationCount > 0"
+                        class="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center font-bold animate-pulse shadow-lg"
+                        style="font-size: 10px"
+                    >
+                        {{ notificationCount > 9 ? "9+" : notificationCount }}
+                    </span>
+                </button>
                 <button
                     @click="toggleMobileMenu"
                     class="hamburger-icon cross-animation z-[100] my-auto"
@@ -250,7 +309,9 @@ const navItems = [
         >
             <div
                 v-if="mobileMenuOpen"
+                ref="mobileMenuRef"
                 class="md:hidden fixed top-[64px] left-0 right-0 bottom-0 bg-white shadow-lg py-4 px-6 overflow-y-auto z-50"
+                @transitionend="resetMobileBell"
             >
                 <div class="flex flex-col space-y-6 mt-4">
                     <!-- Informations utilisateur -->
