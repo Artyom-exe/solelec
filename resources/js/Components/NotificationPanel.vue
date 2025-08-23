@@ -112,12 +112,23 @@
                                 <span
                                     v-if="notification.priority === 'high'"
                                     class="text-red-600 font-medium"
-                                >Urgent</span>
+                                    >Urgent</span
+                                >
                                 <span
-                                    v-else-if="notification.priority === 'medium'"
+                                    v-else-if="
+                                        notification.priority === 'medium'
+                                    "
                                     class="text-yellow-600 font-medium"
-                                >Important</span>
-                                <span v-if="notification.priority === 'high' || notification.priority === 'medium'" class="mx-1">•</span>
+                                    >Important</span
+                                >
+                                <span
+                                    v-if="
+                                        notification.priority === 'high' ||
+                                        notification.priority === 'medium'
+                                    "
+                                    class="mx-1"
+                                    >•</span
+                                >
                                 <span>{{ formatDate(notification.date) }}</span>
                             </div>
                         </div>
