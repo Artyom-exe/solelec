@@ -218,7 +218,7 @@ onMounted(() => {
     updateNotificationCount();
 
     // Actualiser les notifications toutes les 2 minutes
-    const notificationInterval = setInterval(updateNotificationCount, 120000);
+    const notificationInterval = setInterval(updateNotificationCount, 5000);
 
     // Stocker l'interval pour le nettoyer plus tard
     window.notificationInterval = notificationInterval;

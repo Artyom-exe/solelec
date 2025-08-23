@@ -256,6 +256,8 @@ const markAsRead = async (
 
         // Émettre un événement pour mettre à jour le compteur dans la navbar
         emit("notificationRead");
+        // Recharger la liste pour affichage temps réel
+        await fetchNotifications();
     } catch (error) {
         console.error("Erreur lors du marquage de la notification:", error);
     }
@@ -276,6 +278,8 @@ const markAllAsRead = async (closePanel = false) => {
             },
         });
         emit("notificationRead");
+        // Recharger la liste pour affichage temps réel
+        await fetchNotifications();
         if (closePanel) {
             closeNotifications();
         }
@@ -322,12 +326,12 @@ watch(
 let notificationInterval;
 
 onMounted(() => {
-    // Actualiser toutes les 30 secondes
+    // Actualiser toutes les 5 secondes
     notificationInterval = setInterval(() => {
         if (props.showNotifications) {
             fetchNotifications();
         }
-    }, 30000);
+    }, 5000);
 });
 
 onUnmounted(() => {
