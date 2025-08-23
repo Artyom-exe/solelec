@@ -104,12 +104,12 @@ self.addEventListener("message", (event) => {
     if (event.data && event.data.type === "UPDATE_BADGE") {
         const count = event.data.count || 0;
 
-        // Mettre à jour le badge sur l'icône de l'application
-        if ("setAppBadge" in navigator) {
+        // Mettre à jour le badge sur l'icône de l'application (PWA)
+        if ("setAppBadge" in self.registration) {
             if (count > 0) {
-                navigator.setAppBadge(count);
+                self.registration.setAppBadge(count);
             } else {
-                navigator.clearAppBadge();
+                self.registration.clearAppBadge();
             }
         }
     }
