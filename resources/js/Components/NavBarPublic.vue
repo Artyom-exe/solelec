@@ -312,9 +312,22 @@ const toggleMobileMenu = () => {
     mobileMenuOpen.value = !mobileMenuOpen.value;
 };
 
+// Pour positionner le dropdown en fixed sous le bouton "À propos"
+import { nextTick } from "vue";
+const dropdownPositionStyle = ref({});
 const toggleAboutDropdown = (event) => {
     event.stopPropagation();
     aboutDropdownOpen.value = !aboutDropdownOpen.value;
+    if (aboutDropdownOpen.value) {
+        nextTick(() => {
+            const btn = event.currentTarget;
+            const rect = btn.getBoundingClientRect();
+            dropdownPositionStyle.value = {
+                left: rect.left + "px",
+                top: rect.bottom + 4 + "px", // 4px de marge
+            };
+        });
+    }
 };
 
 const navItems = [
@@ -433,10 +446,11 @@ const emit = defineEmits(["scrollToSection"]);
                             </svg>
                         </button>
 
-                        <!-- Dropdown menu -->
+                        <!-- Dropdown menu (fixed, pour éviter le scroll de la navbar) -->
                         <div
                             v-show="aboutDropdownOpen"
-                            class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10"
+                            class="fixed bg-white rounded-md shadow-lg py-1 z-50 w-48"
+                            :style="dropdownPositionStyle"
                         >
                             <a
                                 v-for="item in aboutSubItems"
