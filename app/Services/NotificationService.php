@@ -60,7 +60,7 @@ class NotificationService
                 'title' => 'Devis en attente',
                 'message' => "Devis de {$clientName} en attente depuis {$daysOld} jours",
                 'date' => $quote->updated_at ?? $quote->created_at,
-                'url' => route('devis.show', $quote->id),
+                'url' => route('devis', $quote->id),
                 'data' => $quote,
                 'notification_id' => $quote->id
             ];
@@ -82,7 +82,7 @@ class NotificationService
                 'title' => 'Nouveau devis',
                 'message' => "Nouvelle demande de devis de {$clientName}",
                 'date' => $quote->updated_at ?? $quote->created_at,
-                'url' => route('devis.show', $quote->id),
+                'url' => route('devis', $quote->id),
                 'data' => $quote,
                 'notification_id' => $quote->id
             ];

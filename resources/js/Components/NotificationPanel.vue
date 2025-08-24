@@ -237,7 +237,12 @@ const openNotification = async (notification) => {
     // Marquer comme lue avant de naviguer (mise à jour optimiste)
     await markAsRead(notification, { optimistic: true });
 
-    if (notification.url) {
+    // Redirection personnalisée selon le type de notification
+    if (notification.type === "quote" || notification.type === "new_quote") {
+        // Toujours aller vers la liste des devis
+        router.visit(route("devis"));
+    } else if (notification.url) {
+        // Fallback : url fournie
         router.visit(notification.url);
     }
     closeNotifications();
