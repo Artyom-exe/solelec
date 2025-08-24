@@ -423,7 +423,7 @@ onMounted(() => {
             class="flex flex-col items-center gap-2 bg-[#2D2D2D] lg:h-[calc(100vh-72px)] md:px-16 px-5 overflow-hidden md:mt-[72px] mt-[64px] relative"
         >
             <div
-                class="flex items-center flex-1 self-stretch h-full w-full flex-wrap"
+                class="flex items-center max-w-screen-2xl mx-auto justify-center flex-1 self-stretch h-full w-full flex-wrap"
             >
                 <div
                     class="flex flex-col lg:pr-20 justify-center items-start lg:gap-8 gap-6 flex-1 py-16 lg:py-0"
@@ -572,7 +572,7 @@ onMounted(() => {
             class="flex md:py-28 py-16 md:px-16 px-5 flex-col md:gap-20 gap-12 bg-[#FBFAF6]"
         >
             <div
-                class="flex flex-col md:gap-6 gap-4 text-[#0D0703]"
+                class="flex flex-col md:gap-6 gap-4 text-[#0D0703] max-w-screen-2xl mx-auto"
                 data-aos="fade-up"
             >
                 <div class="flex flex-col items-center md:gap-2 gap-1">
@@ -617,7 +617,7 @@ onMounted(() => {
             </div>
             <!-- Utilisation d'un wrapper div pour les animations AOS -->
             <div
-                class="transition-all w-full"
+                class="transition-all w-full max-w-screen-2xl mx-auto"
                 data-aos="zoom-in"
                 data-aos-duration="800"
             >
@@ -634,35 +634,40 @@ onMounted(() => {
         <!-- À propos -->
         <section
             id="a-propos"
-            class="flex flex-col md:flex-row md:py-28 py-16 md:px-16 px-5 md:gap-20 gap-5 bg-[#2D2D2D] text-white"
+            class="flex flex-col md:flex-row md:py-28 py-16 md:px-16 px-5 bg-[#2D2D2D] text-white"
         >
             <div
-                class="flex flex-col flex-1 gap-4"
-                data-aos="fade-right"
-                data-aos-duration="1000"
+                class="max-w-screen-2xl mx-auto flex flex-col md:flex-row md:gap-20 gap-5 bg-[#2D2D2D] text-white"
             >
-                <h2
-                    class="font-poppins text-[32px] leading-[38.4px] md:text-[40px] md:leading-[48px] font-medium tracking-[-0.32px] md:tracking-[-0.4px]"
+                <div
+                    class="flex flex-col flex-1 gap-4"
+                    data-aos="fade-right"
+                    data-aos-duration="1000"
                 >
-                    Découvrez l'expertise de S<span class="text-[#FF8C42]"
-                        >o</span
-                    >lelec en électricité et énergies renouvelables.
-                </h2>
-            </div>
-            <div
-                class="flex flex-1 flex-col gap-6"
-                data-aos="fade-left"
-                data-aos-duration="1000"
-                data-aos-delay="200"
-            >
-                <p class="font-inter md:text-lg text-base font-normal">
-                    S<span class="text-[#FF8C42]">o</span>lelec, c'est 3 ans
-                    d'expertise dans les solutions électriques et
-                    photovoltaïques. Nous guidons nos clients à chaque étape de
-                    leur projet, garantissant un service de qualité et des
-                    installations conformes aux normes. Faites confiance à notre
-                    savoir-faire pour des solutions adaptées à vos besoins.
-                </p>
+                    <h2
+                        class="font-poppins text-[32px] leading-[38.4px] md:text-[40px] md:leading-[48px] font-medium tracking-[-0.32px] md:tracking-[-0.4px]"
+                    >
+                        Découvrez l'expertise de S<span class="text-[#FF8C42]"
+                            >o</span
+                        >lelec en électricité et énergies renouvelables.
+                    </h2>
+                </div>
+                <div
+                    class="flex flex-1 flex-col gap-6"
+                    data-aos="fade-left"
+                    data-aos-duration="1000"
+                    data-aos-delay="200"
+                >
+                    <p class="font-inter md:text-lg text-base font-normal">
+                        S<span class="text-[#FF8C42]">o</span>lelec, c'est 3 ans
+                        d'expertise dans les solutions électriques et
+                        photovoltaïques. Nous guidons nos clients à chaque étape
+                        de leur projet, garantissant un service de qualité et
+                        des installations conformes aux normes. Faites confiance
+                        à notre savoir-faire pour des solutions adaptées à vos
+                        besoins.
+                    </p>
+                </div>
             </div>
         </section>
 
@@ -672,7 +677,7 @@ onMounted(() => {
             class="flex md:py-28 py-16 md:px-16 px-5 flex-col items-center md:gap-20 gap-12 bg-[#F5F5F5] text-[#0D0703]"
         >
             <div
-                class="flex flex-col md:gap-6 gap-4 text-[#0D0703]"
+                class="flex flex-col md:gap-6 gap-4 text-[#0D0703] max-w-screen-2xl mx-auto"
                 data-aos="fade-up"
                 dataaos-duration="800"
             >
@@ -716,7 +721,9 @@ onMounted(() => {
                     </h4>
                 </div>
             </div>
-            <div class="flex flex-col gap-16 items-center">
+            <div
+                class="flex flex-col gap-16 items-center max-w-screen-2xl mx-auto"
+            >
                 <!-- Utilisation d'un wrapper div pour les animations AOS -->
                 <div
                     class="transition-all w-full"
@@ -780,7 +787,7 @@ onMounted(() => {
             class="flex md:py-28 py-16 md:px-16 px-5 flex-col items-center md:gap-20 gap-12 bg-[#2D2D2D] text-white"
         >
             <div
-                class="flex flex-col md:gap-6 gap-4"
+                class="flex flex-col md:gap-6 gap-4 max-w-screen-2xl mx-auto"
                 data-aos="fade-up"
                 dataaos-duration="800"
             >
@@ -821,7 +828,7 @@ onMounted(() => {
                 </div>
             </div>
 
-            <div class="w-screen -mx-16">
+            <div class="w-screen -mx-16 max-w-screen-2xl">
                 <div
                     class="transition-all w-full"
                     data-aos="fade-up"
@@ -843,124 +850,129 @@ onMounted(() => {
             id="faq"
             class="flex flex-col md:py-28 py-16 px-5 gap-12 md:px-16 md:gap-20 bg-[#F5F5F5] text-white"
         >
-            <div class="flex flex-col gap-6 text-[#0D0703]" data-aos="fade-up">
-                <div class="flex flex-col gap-5 md:gap-6">
-                    <div class="relative flex flex-col">
-                        <div class="flex items-center gap-4 mb-4">
-                            <div class="w-12 h-[2px] bg-[#FF8C42]"></div>
-                            <h2
-                                class="font-inter text-sm font-semibold uppercase tracking-[2px] text-[#FF8C42]"
-                            >
-                                Questions fréquentes
-                            </h2>
-                        </div>
-                        <h3
-                            class="font-poppins md:text-5xl text-4xl text-left font-semibold md:leading-[57.6px] leading-[43.2px] md:tracking-[-0.48px] tracking-[-0.36px] relative z-10"
-                        >
-                            <span class="relative inline-block">
-                                FAQ
-                                <div
-                                    class="absolute bottom-1 left-0 w-full h-3 bg-[#FF8C42] bg-opacity-20 -z-10"
-                                    data-aos="slide-right"
-                                    data-aos-duration="1200"
-                                    data-aos-delay="300"
-                                ></div>
-                            </span>
-                        </h3>
-                    </div>
-                    <h4
-                        class="font-inter md:text-lg text-base text-left text-gray-600 max-w-3xl"
-                    >
-                        Trouvez rapidement les réponses aux questions les plus
-                        fréquentes concernant nos services électriques et
-                        photovoltaïques.
-                    </h4>
-                </div>
-            </div>
-            <div
-                class="flex flex-col border-b border-[#0D070326/15] text-[#0D0703]"
-            >
+            <div class="max-w-screen-2xl mx-auto flex flex-col w-full">
                 <div
-                    v-for="(item, index) in faq"
-                    :key="item.id"
-                    class="flex flex-col font-inter border-t border-[#0D070326/15]"
+                    class="flex flex-col gap-6 text-[#0D0703]"
                     data-aos="fade-up"
-                    :data-aos-delay="index * 100"
-                    data-aos-duration="800"
-                    data-aos-anchor="#faq"
+                >
+                    <div class="flex flex-col gap-5 md:gap-6">
+                        <div class="relative flex flex-col">
+                            <div class="flex items-center gap-4 mb-4">
+                                <div class="w-12 h-[2px] bg-[#FF8C42]"></div>
+                                <h2
+                                    class="font-inter text-sm font-semibold uppercase tracking-[2px] text-[#FF8C42]"
+                                >
+                                    Questions fréquentes
+                                </h2>
+                            </div>
+                            <h3
+                                class="font-poppins md:text-5xl text-4xl text-left font-semibold md:leading-[57.6px] leading-[43.2px] md:tracking-[-0.48px] tracking-[-0.36px] relative z-10"
+                            >
+                                <span class="relative inline-block">
+                                    FAQ
+                                    <div
+                                        class="absolute bottom-1 left-0 w-full h-3 bg-[#FF8C42] bg-opacity-20 -z-10"
+                                        data-aos="slide-right"
+                                        data-aos-duration="1200"
+                                        data-aos-delay="300"
+                                    ></div>
+                                </span>
+                            </h3>
+                        </div>
+                        <h4
+                            class="font-inter md:text-lg text-base text-left text-gray-600 max-w-3xl"
+                        >
+                            Trouvez rapidement les réponses aux questions les
+                            plus fréquentes concernant nos services électriques
+                            et photovoltaïques.
+                        </h4>
+                    </div>
+                </div>
+                <div
+                    class="flex flex-col border-b border-[#0D070326/15] text-[#0D0703]"
                 >
                     <div
-                        class="flex items md:py-5 py-4 gap-6 justify-between cursor-pointer"
-                        @click="toggle(item.id)"
+                        v-for="(item, index) in faq"
+                        :key="item.id"
+                        class="flex flex-col font-inter border-t border-[#0D070326/15]"
+                        data-aos="fade-up"
+                        :data-aos-delay="index * 100"
+                        data-aos-duration="800"
+                        data-aos-anchor="#faq"
                     >
-                        <h5 class="md:text-lg text-base font-bold">
-                            {{ item.question }}
-                        </h5>
-                        <svg
-                            v-if="openedItems.includes(item.id)"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="32"
-                            height="33"
-                            viewBox="0 0 32 33"
-                            fill="none"
-                            class="transform transition-transform duration-300"
+                        <div
+                            class="flex items md:py-5 py-4 gap-6 justify-between cursor-pointer"
+                            @click="toggle(item.id)"
                         >
-                            <path
-                                d="M23.8233 21.0656L23.8232 21.0656L23.4697 21.4192C23.4697 21.4192 23.4697 21.4192 23.4697 21.4192C23.3721 21.5168 23.2138 21.5168 23.1162 21.4192C23.1162 21.4192 23.1162 21.4192 23.1161 21.4192L16.3536 14.6566L16 14.303L15.6465 14.6566L8.88388 21.4192C8.78625 21.5168 8.62803 21.5168 8.53039 21.4192L8.17679 21.0656C8.07915 20.968 8.07915 20.8097 8.17679 20.7121L15.8233 13.0656C15.9209 12.968 16.0791 12.968 16.1768 13.0656L23.8233 20.7121C23.8233 20.7121 23.8233 20.7121 23.8233 20.7121C23.9209 20.8097 23.9209 20.968 23.8233 21.0656Z"
-                                fill="#0D0703"
-                                stroke="#0D0703"
-                            />
-                        </svg>
-                        <svg
-                            v-else
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="32"
-                            height="33"
-                            viewBox="0 0 32 33"
-                            fill="none"
-                            class="transform transition-transform duration-300"
-                        >
-                            <path
-                                d="M8.17679 13.0656L8.17686 13.0656L8.53046 12.712C8.5305 12.712 8.53054 12.712 8.53058 12.712C8.62819 12.6144 8.78638 12.6144 8.884 12.712C8.88404 12.712 8.88408 12.712 8.88412 12.712L15.6465 19.4744L16 19.828L16.3535 19.4744L23.1162 12.712C23.2138 12.6144 23.372 12.6144 23.4697 12.712L23.8233 13.0656C23.921 13.1632 23.921 13.3214 23.8233 13.4191L16.1768 21.0656C16.0792 21.1632 15.9209 21.1632 15.8233 21.0656L8.17679 13.4191C8.17676 13.4191 8.17672 13.419 8.17679 13.4191C8.07919 13.3214 8.07919 13.1632 8.17679 13.0656Z"
-                                fill="#0D0703"
-                                stroke="#0D0703"
-                            />
-                        </svg>
-                    </div>
+                            <h5 class="md:text-lg text-base font-bold">
+                                {{ item.question }}
+                            </h5>
+                            <svg
+                                v-if="openedItems.includes(item.id)"
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="32"
+                                height="33"
+                                viewBox="0 0 32 33"
+                                fill="none"
+                                class="transform transition-transform duration-300"
+                            >
+                                <path
+                                    d="M23.8233 21.0656L23.8232 21.0656L23.4697 21.4192C23.4697 21.4192 23.4697 21.4192 23.4697 21.4192C23.3721 21.5168 23.2138 21.5168 23.1162 21.4192C23.1162 21.4192 23.1162 21.4192 23.1161 21.4192L16.3536 14.6566L16 14.303L15.6465 14.6566L8.88388 21.4192C8.78625 21.5168 8.62803 21.5168 8.53039 21.4192L8.17679 21.0656C8.07915 20.968 8.07915 20.8097 8.17679 20.7121L15.8233 13.0656C15.9209 12.968 16.0791 12.968 16.1768 13.0656L23.8233 20.7121C23.8233 20.7121 23.8233 20.7121 23.8233 20.7121C23.9209 20.8097 23.9209 20.968 23.8233 21.0656Z"
+                                    fill="#0D0703"
+                                    stroke="#0D0703"
+                                />
+                            </svg>
+                            <svg
+                                v-else
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="32"
+                                height="33"
+                                viewBox="0 0 32 33"
+                                fill="none"
+                                class="transform transition-transform duration-300"
+                            >
+                                <path
+                                    d="M8.17679 13.0656L8.17686 13.0656L8.53046 12.712C8.5305 12.712 8.53054 12.712 8.53058 12.712C8.62819 12.6144 8.78638 12.6144 8.884 12.712C8.88404 12.712 8.88408 12.712 8.88412 12.712L15.6465 19.4744L16 19.828L16.3535 19.4744L23.1162 12.712C23.2138 12.6144 23.372 12.6144 23.4697 12.712L23.8233 13.0656C23.921 13.1632 23.921 13.3214 23.8233 13.4191L16.1768 21.0656C16.0792 21.1632 15.9209 21.1632 15.8233 21.0656L8.17679 13.4191C8.17676 13.4191 8.17672 13.419 8.17679 13.4191C8.07919 13.3214 8.07919 13.1632 8.17679 13.0656Z"
+                                    fill="#0D0703"
+                                    stroke="#0D0703"
+                                />
+                            </svg>
+                        </div>
 
-                    <div
-                        class="overflow-hidden transition-all duration-300 ease-in-out"
-                        :class="
-                            openedItems.includes(item.id)
-                                ? 'max-h-96 opacity-100'
-                                : 'max-h-0 opacity-0'
-                        "
-                    >
-                        <p
-                            class="font-inter text-base md:pb-6 pb-5 gap-4 max-w-[768px] min-w-[600px]"
+                        <div
+                            class="overflow-hidden transition-all duration-300 ease-in-out"
+                            :class="
+                                openedItems.includes(item.id)
+                                    ? 'max-h-96 opacity-100'
+                                    : 'max-h-0 opacity-0'
+                            "
                         >
-                            {{ item.answer }}
+                            <p
+                                class="font-inter text-base md:pb-6 pb-5 gap-4 max-w-[768px] min-w-[600px]"
+                            >
+                                {{ item.answer }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-6" data-aos="fade-up">
+                    <div class="flex flex-col gap-4 text-[#0D0703]">
+                        <h3
+                            class="font-poppins md:text-[32px] text-2xl font-medium md:leading-[41.6px] leading-[31.2px] tracking-[-0.24px]"
+                        >
+                            Des questions supplémentaires ?
+                        </h3>
+                        <p class="font-inter md:text-lg text-base">
+                            N'hésitez pas à nous contacter.
                         </p>
                     </div>
-                </div>
-            </div>
-            <div class="flex flex-col gap-6" data-aos="fade-up">
-                <div class="flex flex-col gap-4 text-[#0D0703]">
-                    <h3
-                        class="font-poppins md:text-[32px] text-2xl font-medium md:leading-[41.6px] leading-[31.2px] tracking-[-0.24px]"
+                    <SecondaryButton
+                        class="self-start"
+                        variant="dark"
+                        @click="scrollToSection('contact')"
+                        >Contact</SecondaryButton
                     >
-                        Des questions supplémentaires ?
-                    </h3>
-                    <p class="font-inter md:text-lg text-base">
-                        N'hésitez pas à nous contacter.
-                    </p>
                 </div>
-                <SecondaryButton
-                    class="self-start"
-                    variant="dark"
-                    @click="scrollToSection('contact')"
-                    >Contact</SecondaryButton
-                >
             </div>
         </section>
 
@@ -969,7 +981,9 @@ onMounted(() => {
             id="contact"
             class="flex md:py-28 py-16 md:px-16 px-5 flex-col md:gap-20 gap-12 text-white bg-[#2D2D2D]"
         >
-            <div class="flex md:flex-row flex-col md:gap-20 gap-12">
+            <div
+                class="flex md:flex-row flex-col md:gap-20 gap-12 w-full max-w-screen-2xl mx-auto"
+            >
                 <div
                     class="flex flex-col md:gap-6 gap-4 flex-1"
                     data-aos="fade-right"
@@ -1202,51 +1216,53 @@ onMounted(() => {
             id="zones"
             class="flex md:py-28 py-16 md:px-16 px-5 flex-col md:gap-20 gap-12 bg-[#F5F5F5] text-[#0D0703]"
         >
-            <div
-                class="flex flex-col md:gap-8 gap-4 flex-1"
-                data-aos="fade-right"
-                data-aos-duration="1000"
-            >
-                <div class="flex flex-col gap-4">
-                    <div class="flex items-center gap-3">
-                        <div
-                            class="w-8 h-[2px] bg-gradient-to-r from-transparent to-[#FF8C42]"
-                        ></div>
-                        <h2
-                            class="font-inter text-sm font-semibold uppercase tracking-[2px] text-[#FF8C42]"
+            <div class="w-full max-w-screen-2xl mx-auto flex flex-col">
+                <div
+                    class="flex flex-col md:gap-8 gap-4 flex-1"
+                    data-aos="fade-right"
+                    data-aos-duration="1000"
+                >
+                    <div class="flex flex-col gap-4">
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="w-8 h-[2px] bg-gradient-to-r from-transparent to-[#FF8C42]"
+                            ></div>
+                            <h2
+                                class="font-inter text-sm font-semibold uppercase tracking-[2px] text-[#FF8C42]"
+                            >
+                                Zones d'intervention
+                            </h2>
+                        </div>
+                    </div>
+                    <div class="flex flex-col md:gap-6 gap-5">
+                        <div class="relative">
+                            <h3
+                                class="font-poppins md:text-5xl text-4xl font-semibold relative z-10"
+                            >
+                                <span class="relative inline-block">
+                                    Interventions
+                                    <div
+                                        class="absolute bottom-1 left-0 w-full h-3 bg-[#FF8C42] bg-opacity-20 -z-10"
+                                        data-aos="slide-right"
+                                        data-aos-duration="1200"
+                                        data-aos-delay="300"
+                                    ></div>
+                                </span>
+                            </h3>
+                        </div>
+                        <p
+                            class="font-inter md:text-lg text-base font-normal text-gray-600 max-w-2xl"
                         >
-                            Zones d'intervention
-                        </h2>
+                            Nous intervenons dans
+                            <strong>toute la Wallonie</strong> et à
+                            <strong>Bruxelles</strong>. Voici quelques villes
+                            régulièrement desservies :
+                        </p>
                     </div>
                 </div>
-                <div class="flex flex-col md:gap-6 gap-5">
-                    <div class="relative">
-                        <h3
-                            class="font-poppins md:text-5xl text-4xl font-semibold relative z-10"
-                        >
-                            <span class="relative inline-block">
-                                Interventions
-                                <div
-                                    class="absolute bottom-1 left-0 w-full h-3 bg-[#FF8C42] bg-opacity-20 -z-10"
-                                    data-aos="slide-right"
-                                    data-aos-duration="1200"
-                                    data-aos-delay="300"
-                                ></div>
-                            </span>
-                        </h3>
-                    </div>
-                    <p
-                        class="font-inter md:text-lg text-base font-normal text-gray-600 max-w-2xl"
-                    >
-                        Nous intervenons dans
-                        <strong>toute la Wallonie</strong> et à
-                        <strong>Bruxelles</strong>. Voici quelques villes
-                        régulièrement desservies :
-                    </p>
-                </div>
-            </div>
 
-            <InterventionMap />
+                <InterventionMap />
+            </div>
         </section>
     </PublicLayout>
 </template>

@@ -363,7 +363,9 @@ const emit = defineEmits(["scrollToSection"]);
     <nav
         class="flex fixed top-0 left-0 right-0 bg-[#2D2D2D] md:px-16 px-5 justify-center flex-col items-center md:h-[72px] h-[64px] z-50"
     >
-        <div class="flex justify-between items-center md:gap-8 self-stretch">
+        <div
+            class="flex justify-between items-center md:gap-8 self-stretch max-w-screen-2xl mx-auto w-full"
+        >
             <!-- Logo -->
             <Link
                 href="/"

@@ -298,7 +298,7 @@ provide("navigateToSection", navigateToSection);
             class="flex md:py-20 py-12 md:px-16 px-5 flex-col items-center md:gap-20 gap-12 bg-[#2D2D2D]"
         >
             <div
-                class="flex md:flex-row flex-col justify-between w-full md:items-center self-stretch md:gap-0 gap-12"
+                class="flex md:flex-row flex-col justify-between w-full md:items-center self-stretch md:gap-0 gap-12 max-w-screen-2xl mx-auto w-full"
             >
                 <div class="flex flex-col items-start md:gap-8 gap-6">
                     <logo />
@@ -393,7 +393,7 @@ provide("navigateToSection", navigateToSection);
                 </div>
             </div>
             <div
-                class="flex flex-col flex-start md:gap-8 gap-6 self-stretch text-[#ffff] font-inter text-sm"
+                class="flex flex-col flex-start md:gap-8 gap-6 self-stretch text-[#ffff] font-inter text-sm max-w-screen-2xl mx-auto w-full"
             >
                 <div class="border-t border-white/20"></div>
                 <div
