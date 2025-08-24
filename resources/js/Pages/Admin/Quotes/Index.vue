@@ -1,4 +1,12 @@
 <script setup>
+// Fonction utilitaire pour badge "Nouveau"
+function isNewQuote(quote) {
+    if (!quote.created_at) return false;
+    const created = new Date(quote.created_at);
+    const now = new Date();
+    const diff = (now - created) / (1000 * 60 * 60); // heures
+    return diff < 24;
+}
 import AdminLayout from "@/Layouts/AdminLayout.vue";
 import { Link } from "@inertiajs/vue3";
 import { ref, computed, onMounted, onUnmounted } from "vue";
@@ -311,7 +319,7 @@ const renderMarkdown = (text) => {
                                         class="flex items-center gap-4 flex-1 flex-wrap"
                                     >
                                         <h4
-                                            class="font-poppins md:text-2xl text-xl font-medium tracking-[-0.24px] relative z-10"
+                                            class="font-poppins md:text-2xl text-xl font-medium tracking-[-0.24px] relative z-10 flex items-center gap-2"
                                         >
                                             <span class="relative inline-block">
                                                 {{ quote.client?.name }}
@@ -320,6 +328,7 @@ const renderMarkdown = (text) => {
                                                     class="absolute bottom-0 left-0 w-full h-1 bg-[#FF8C42] bg-opacity-30 -z-10"
                                                 ></div>
                                             </span>
+                                            <span v-if="isNewQuote(quote)" class="ml-2 px-2 py-0.5 rounded-full text-xs font-semibold bg-[#FF8C42] text-white animate-pulse">Nouveau</span>
                                         </h4>
                                         <!-- Affichage compact des services avec popup au survol -->
                                         <div
