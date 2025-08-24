@@ -2,7 +2,7 @@
     <div
         v-if="showNotifications"
         ref="panelRef"
-        class="fixed top-20 right-4 z-50 w-80 max-h-96 overflow-y-auto bg-white rounded-lg shadow-xl border border-gray-200"
+        class="fixed top-20 right-0 md:right-4 z-50 w-full md:w-96 max-h-[32rem] overflow-y-auto bg-white rounded-lg shadow-xl border border-gray-200"
     >
         <!-- En-tête -->
         <div
