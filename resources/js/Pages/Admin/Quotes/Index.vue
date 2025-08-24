@@ -328,7 +328,11 @@ const renderMarkdown = (text) => {
                                                     class="absolute bottom-0 left-0 w-full h-1 bg-[#FF8C42] bg-opacity-30 -z-10"
                                                 ></div>
                                             </span>
-                                            <span v-if="isNewQuote(quote)" class="ml-2 px-2 py-0.5 rounded-full text-xs font-semibold bg-[#FF8C42] text-white animate-pulse">Nouveau</span>
+                                            <span
+                                                v-if="isNewQuote(quote)"
+                                                class="ml-2 px-2 py-0.5 rounded-full text-xs font-semibold bg-[#FF8C42] text-white animate-pulse"
+                                                >Nouveau</span
+                                            >
                                         </h4>
                                         <!-- Affichage compact des services avec popup au survol -->
                                         <div
