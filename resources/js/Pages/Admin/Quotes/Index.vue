@@ -319,7 +319,7 @@ const renderMarkdown = (text) => {
                                         class="flex items-center gap-4 flex-1 flex-wrap"
                                     >
                                         <h4
-                                            class="font-poppins md:text-2xl text-xl font-medium tracking-[-0.24px] relative z-10 flex items-center gap-2"
+                                            class="font-poppins md:text-2xl text-xl font-medium tracking-[-0.24px] relative z-10 items-start flex gap-2"
                                         >
                                             <span class="relative inline-block">
                                                 {{ quote.client?.name }}

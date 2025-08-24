@@ -373,6 +373,14 @@ const sortedInterventions = computed(() => {
 
     return filtered;
 });
+// Fonction utilitaire pour badge "Nouveau" interventions
+function isNewIntervention(intervention) {
+    if (!intervention.created_at) return false;
+    const created = new Date(intervention.created_at);
+    const now = new Date();
+    const diff = (now - created) / (1000 * 60 * 60); // heures
+    return diff < 24;
+}
 </script>
 <template>
     <AdminLayout>
@@ -951,12 +959,10 @@ const sortedInterventions = computed(() => {
                             class="absolute inset-0 z-30 bg-black/20 backdrop-blur-sm md:hidden rounded-lg pointer-events-none"
                         ></div>
 
-                        <div class="flex justify-between w-full"></div>
-
                         <!-- Nom du client en haut -->
                         <div class="flex justify-between w-full">
                             <h4
-                                class="text-white font-poppins md:text-2xl text-xl font-medium relative z-10"
+                                class="text-white font-poppins md:text-2xl text-xl font-medium relative z-10 flex items-center gap-2"
                             >
                                 <span class="relative inline-block">
                                     {{ intervention.client?.name }}
@@ -965,6 +971,11 @@ const sortedInterventions = computed(() => {
                                         class="absolute bottom-0 left-0 w-full h-1 bg-[#FF8C42] bg-opacity-30 -z-10"
                                     ></div>
                                 </span>
+                                <span
+                                    v-if="isNewIntervention(intervention)"
+                                    class="ml-2 px-2 py-0.5 rounded-full text-xs font-semibold bg-[#FF8C42] text-white animate-pulse"
+                                    >Nouveau</span
+                                >
                             </h4>
                             <!-- Service sur desktop seulement -->
                             <div class="relative service-group hidden md:block">
