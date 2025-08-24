@@ -348,297 +348,313 @@ onMounted(() => {
     <PublicLayout @devisModalOpened="openDevisModal = $event">
         <section
             id="services"
-            class="flex md:flex-row flex-col md:py-28 py-16 md:px-16 px-5 items-start md:gap-20 gap-6 bg-[#2D2D2D] text-white md:mt-[72px] mt-[64px]"
+            class="flex md:flex-row flex-col md:py-28 py-16 md:px-16 px-5 items-start bg-[#2D2D2D] text-white md:mt-[72px] mt-[64px]"
         >
-            <article
-                class="flex md:w-1/2 w-full flex-col items-start gap-8 flex-1"
-                data-aos="fade-right"
-                data-aos-delay="200"
+            <div
+                class="flex max-w-screen-2xl mx-auto md:gap-20 gap-6 md:flex-row flex-col w-full"
             >
-                <!-- Partie gauche avec animations -->
-                <div
-                    class="flex flex-col items-start md:gap-6 gap-4 self-stretch"
-                    data-aos="fade-up"
-                    data-aos-delay="300"
+                <article
+                    class="flex md:w-1/2 w-full flex-col items-start gap-8 flex-1"
+                    data-aos="fade-right"
+                    data-aos-delay="200"
                 >
-                    <div class="flex items-center gap-3">
-                        <div
-                            class="w-8 h-[2px] bg-gradient-to-r from-transparent to-[#FF8C42]"
-                        ></div>
-                        <h3
-                            class="font-inter font-semibold text-sm uppercase tracking-[2px] text-[#FF8C42]"
-                            data-aos="fade-right"
-                            data-aos-delay="400"
-                        >
-                            Services
-                        </h3>
-                    </div>
+                    <!-- Partie gauche avec animations -->
                     <div
-                        class="flex flex-col items-start md:gap-6 gap-5 self-stretch"
+                        class="flex flex-col items-start md:gap-6 gap-4 self-stretch"
+                        data-aos="fade-up"
+                        data-aos-delay="300"
                     >
-                        <h2
-                            class="font-poppins md:text-5xl text-4xl font-semibold relative z-10"
-                            data-aos="fade-up"
-                            data-aos-delay="500"
-                        >
-                            Nos Services Électriques
-                            <span class="relative inline-block">
-                                de Qualité
-                                <div
-                                    class="absolute bottom-1 left-0 w-full h-3 bg-[#FF8C42] bg-opacity-30 -z-10"
-                                    data-aos="slide-right"
-                                    data-aos-duration="1200"
-                                    data-aos-delay="700"
-                                ></div>
-                            </span>
-                        </h2>
-                        <p
-                            class="font-inter md:text-lg text-base text-gray-300 max-w-2xl"
-                            data-aos="fade-up"
-                            data-aos-delay="600"
-                        >
-                            Nous offrons une gamme complète de services
-                            électriques adaptés à vos besoins. Découvrez notre
-                            expertise en photovoltaïque, mise en conformité,
-                            gros œuvre et bornes de recharge.
-                        </p>
-                    </div>
-                </div>
-                <!-- Version desktop - liste verticale -->
-                <div
-                    class="hidden md:flex flex-col items-start self-stretch max-h-[294px] overflow-y-auto hide-scrollbar"
-                    data-aos="fade-up"
-                    data-aos-delay="700"
-                >
-                    <div
-                        v-for="(service, index) in services"
-                        :key="index"
-                        :id="'service-' + service.id"
-                        class="w-full flex pr-4 py-4 pl-6 flex-col justify-center items-start gap-2 self-stretch cursor-pointer transition-all duration-300 ease-in-out"
-                        :class="{
-                            'border-l border-[#FF8C42] bg-[#242424] translate-x-2 scale-[1.02] z-10 shadow-lg':
-                                isActive(index),
-                            'border-l border-transparent hover:border-[#693a1d] hover:translate-x-2 hover:bg-[#242424] opacity-70 hover:opacity-90':
-                                !isActive(index),
-                        }"
-                        @click="selectService(index)"
-                    >
-                        <h4
-                            class="font-poppins md:text-2xl text-xl font-medium"
-                        >
-                            {{ service.title }}
-                        </h4>
-                        <div class="w-full">
-                            <p
-                                class="description font-inter text-base font-normal"
-                                :class="
-                                    isActive(index) ? 'expanded' : 'collapsed'
-                                "
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="w-8 h-[2px] bg-gradient-to-r from-transparent to-[#FF8C42]"
+                            ></div>
+                            <h3
+                                class="font-inter font-semibold text-sm uppercase tracking-[2px] text-[#FF8C42]"
+                                data-aos="fade-right"
+                                data-aos-delay="400"
                             >
-                                {{ service.description }}
+                                Services
+                            </h3>
+                        </div>
+                        <div
+                            class="flex flex-col items-start md:gap-6 gap-5 self-stretch"
+                        >
+                            <h2
+                                class="font-poppins md:text-5xl text-4xl font-semibold relative z-10"
+                                data-aos="fade-up"
+                                data-aos-delay="500"
+                            >
+                                Nos Services Électriques
+                                <span class="relative inline-block">
+                                    de Qualité
+                                    <div
+                                        class="absolute bottom-1 left-0 w-full h-3 bg-[#FF8C42] bg-opacity-30 -z-10"
+                                        data-aos="slide-right"
+                                        data-aos-duration="1200"
+                                        data-aos-delay="700"
+                                    ></div>
+                                </span>
+                            </h2>
+                            <p
+                                class="font-inter md:text-lg text-base text-gray-300 max-w-2xl"
+                                data-aos="fade-up"
+                                data-aos-delay="600"
+                            >
+                                Nous offrons une gamme complète de services
+                                électriques adaptés à vos besoins. Découvrez
+                                notre expertise en photovoltaïque, mise en
+                                conformité, gros œuvre et bornes de recharge.
                             </p>
                         </div>
                     </div>
-                </div>
-
-                <!-- Version mobile - carrousel Splide -->
-                <div
-                    class="md:hidden w-full"
-                    data-aos="fade-up"
-                    data-aos-delay="700"
-                >
-                    <!-- Indicateurs de navigation -->
-                    <div class="flex justify-center mb-4 gap-2">
-                        <button
-                            v-for="(service, index) in services"
-                            :key="'indicator-' + index"
-                            class="w-2 h-2 rounded-full transition-all duration-300"
-                            :class="
-                                isActive(index)
-                                    ? 'bg-[#FF8C42] scale-125'
-                                    : 'bg-gray-600 hover:bg-gray-500'
-                            "
-                            @click="selectService(index)"
-                        ></button>
-                    </div>
-
-                    <!-- Carrousel Splide -->
-                    <Splide
-                        ref="splideRef"
-                        :options="{
-                            type: 'slide',
-                            gap: '16px',
-                            perPage: 1,
-                            arrows: false,
-                            pagination: false,
-                            drag: true,
-                            snap: true,
-                            speed: 400,
-                            focus: 'center',
-                            trimSpace: false,
-                            autoWidth: false,
-                            rewind: true,
-                        }"
-                        @splide:moved="onSlideChange"
-                        @splide:active="onSlideChange"
-                        class="w-full"
+                    <!-- Version desktop - liste verticale -->
+                    <div
+                        class="hidden md:flex flex-col items-start self-stretch max-h-[294px] overflow-y-auto hide-scrollbar"
+                        data-aos="fade-up"
+                        data-aos-delay="700"
                     >
-                        <SplideSlide
+                        <div
                             v-for="(service, index) in services"
-                            :key="'slide-' + index"
-                            class="w-full"
+                            :key="index"
+                            :id="'service-' + service.id"
+                            class="w-full flex pr-4 py-4 pl-6 flex-col justify-center items-start gap-2 self-stretch cursor-pointer transition-all duration-300 ease-in-out"
+                            :class="{
+                                'border-l border-[#FF8C42] bg-[#242424] translate-x-2 scale-[1.02] z-10 shadow-lg':
+                                    isActive(index),
+                                'border-l border-transparent hover:border-[#693a1d] hover:translate-x-2 hover:bg-[#242424] opacity-70 hover:opacity-90':
+                                    !isActive(index),
+                            }"
+                            @click="selectService(index)"
                         >
-                            <div
-                                :id="'mobile-service-' + service.id"
-                                class="flex flex-col p-6 bg-[#242424] rounded-lg border-l-4 transition-all duration-500 min-h-[160px] w-full"
-                                :class="{
-                                    'border-[#FF8C42] shadow-lg':
-                                        isActive(index),
-                                    'border-gray-600 opacity-70':
-                                        !isActive(index),
-                                }"
+                            <h4
+                                class="font-poppins md:text-2xl text-xl font-medium"
                             >
-                                <h4
-                                    class="font-poppins text-xl font-medium mb-3"
+                                {{ service.title }}
+                            </h4>
+                            <div class="w-full">
+                                <p
+                                    class="description font-inter text-base font-normal"
+                                    :class="
+                                        isActive(index)
+                                            ? 'expanded'
+                                            : 'collapsed'
+                                    "
                                 >
-                                    {{ service.title }}
-                                </h4>
-                                <p class="font-inter text-sm leading-relaxed">
                                     {{ service.description }}
                                 </p>
                             </div>
-                        </SplideSlide>
-                    </Splide>
+                        </div>
+                    </div>
+
+                    <!-- Version mobile - carrousel Splide -->
+                    <div
+                        class="md:hidden w-full"
+                        data-aos="fade-up"
+                        data-aos-delay="700"
+                    >
+                        <!-- Indicateurs de navigation -->
+                        <div class="flex justify-center mb-4 gap-2">
+                            <button
+                                v-for="(service, index) in services"
+                                :key="'indicator-' + index"
+                                class="w-2 h-2 rounded-full transition-all duration-300"
+                                :class="
+                                    isActive(index)
+                                        ? 'bg-[#FF8C42] scale-125'
+                                        : 'bg-gray-600 hover:bg-gray-500'
+                                "
+                                @click="selectService(index)"
+                            ></button>
+                        </div>
+
+                        <!-- Carrousel Splide -->
+                        <Splide
+                            ref="splideRef"
+                            :options="{
+                                type: 'slide',
+                                gap: '16px',
+                                perPage: 1,
+                                arrows: false,
+                                pagination: false,
+                                drag: true,
+                                snap: true,
+                                speed: 400,
+                                focus: 'center',
+                                trimSpace: false,
+                                autoWidth: false,
+                                rewind: true,
+                            }"
+                            @splide:moved="onSlideChange"
+                            @splide:active="onSlideChange"
+                            class="w-full"
+                        >
+                            <SplideSlide
+                                v-for="(service, index) in services"
+                                :key="'slide-' + index"
+                                class="w-full"
+                            >
+                                <div
+                                    :id="'mobile-service-' + service.id"
+                                    class="flex flex-col p-6 bg-[#242424] rounded-lg border-l-4 transition-all duration-500 min-h-[160px] w-full"
+                                    :class="{
+                                        'border-[#FF8C42] shadow-lg':
+                                            isActive(index),
+                                        'border-gray-600 opacity-70':
+                                            !isActive(index),
+                                    }"
+                                >
+                                    <h4
+                                        class="font-poppins text-xl font-medium mb-3"
+                                    >
+                                        {{ service.title }}
+                                    </h4>
+                                    <p
+                                        class="font-inter text-sm leading-relaxed"
+                                    >
+                                        {{ service.description }}
+                                    </p>
+                                </div>
+                            </SplideSlide>
+                        </Splide>
+                    </div>
+                    <PrimaryButton
+                        class="hidden md:flex"
+                        @click="openModalWithOverflowFix"
+                    >
+                        Devis
+                    </PrimaryButton>
+                </article>
+                <div
+                    class="md:w-1/2 w-full flex justify-center items-center"
+                    data-aos="fade-left"
+                    data-aos-delay="400"
+                >
+                    <div
+                        v-if="services.length > 0"
+                        class="relative w-full md:h-[640px] h-[346px]"
+                    >
+                        <!-- Images avec animations -->
+                        <div
+                            v-for="(service, index) in services"
+                            :key="index"
+                            class="absolute top-0 left-0 w-full h-full"
+                            :class="{ hidden: index !== activeIndex }"
+                        >
+                            <img
+                                :src="
+                                    service.image || '/images/placeholder.jpg'
+                                "
+                                :alt="service.title"
+                                class="w-full h-full object-cover rounded-lg shadow-lg"
+                                data-aos="fade-left"
+                                data-aos-duration="800"
+                            />
+                        </div>
+                    </div>
+                    <div
+                        v-else
+                        class="flex justify-center items-center h-96 w-full bg-gray-800 rounded-lg"
+                        data-aos="fade-in"
+                    >
+                        <p class="text-gray-400">Chargement des services...</p>
+                    </div>
                 </div>
                 <PrimaryButton
-                    class="hidden md:flex"
+                    class="md:hidden flex"
                     @click="openModalWithOverflowFix"
                 >
                     Devis
                 </PrimaryButton>
-            </article>
-            <div
-                class="md:w-1/2 w-full flex justify-center items-center"
-                data-aos="fade-left"
-                data-aos-delay="400"
-            >
-                <div
-                    v-if="services.length > 0"
-                    class="relative w-full md:h-[640px] h-[346px]"
-                >
-                    <!-- Images avec animations -->
-                    <div
-                        v-for="(service, index) in services"
-                        :key="index"
-                        class="absolute top-0 left-0 w-full h-full"
-                        :class="{ hidden: index !== activeIndex }"
-                    >
-                        <img
-                            :src="service.image || '/images/placeholder.jpg'"
-                            :alt="service.title"
-                            class="w-full h-full object-cover rounded-lg shadow-lg"
-                            data-aos="fade-left"
-                            data-aos-duration="800"
-                        />
-                    </div>
-                </div>
-                <div
-                    v-else
-                    class="flex justify-center items-center h-96 w-full bg-gray-800 rounded-lg"
-                    data-aos="fade-in"
-                >
-                    <p class="text-gray-400">Chargement des services...</p>
-                </div>
             </div>
-            <PrimaryButton
-                class="md:hidden flex"
-                @click="openModalWithOverflowFix"
-            >
-                Devis
-            </PrimaryButton>
         </section>
         <section
             id="portfolio"
-            class="flex md:py-28 py-16 md:px-16 px-5 flex-col items-center md:gap-20 gap-12"
+            class="flex md:py-28 py-16 md:px-16 px-5 flex-col items-center"
         >
             <div
-                class="flex flex-col md:gap-6 gap-4 text-[#0D0703]"
-                data-aos="fade-up"
+                class="flex flex-col w-full max-w-screen-2xl mx-auto md:gap-20 gap-12"
             >
-                <div class="relative flex flex-col md:gap-6 gap-5 items-center">
-                    <div class="flex items-center gap-3">
-                        <div
-                            class="w-8 h-[2px] bg-gradient-to-r from-transparent to-[#FF8C42]"
-                        ></div>
-                        <span
-                            class="font-inter text-sm font-semibold uppercase tracking-[2px] text-[#FF8C42]"
-                        >
-                            Portfolio
-                        </span>
-                        <div
-                            class="w-8 h-[2px] bg-gradient-to-l from-transparent to-[#FF8C42]"
-                        ></div>
-                    </div>
-                    <h2
-                        class="font-poppins md:text-5xl text-4xl text-center font-semibold leading-[57.6px] tracking-[-0.48px] relative z-10"
-                    >
-                        Nos
-                        <span class="relative inline-block">
-                            réalisations
-                            <div
-                                class="absolute bottom-1 left-0 w-full h-3 bg-[#FF8C42] bg-opacity-20 -z-10"
-                                data-aos="slide-left"
-                                data-aos-duration="1200"
-                                data-aos-delay="300"
-                            ></div>
-                        </span>
-                    </h2>
-                    <h4
-                        class="font-inter md:text-lg text-base text-center text-gray-600 max-w-2xl mx-auto"
-                    >
-                        Découvrez nos réalisations concrètes en électricité et
-                        énergies renouvelables.
-                    </h4>
-                </div>
-            </div>
-            <div class="w-full" data-aos="fade-up" data-aos-delay="300">
-                <div class="portfolio-gallery">
+                <div
+                    class="flex flex-col md:gap-6 gap-4 text-[#0D0703]"
+                    data-aos="fade-up"
+                >
                     <div
-                        v-for="item in portfolio"
-                        :key="item.id"
-                        class="portfolio-item overflow-hidden rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl"
+                        class="relative flex flex-col md:gap-6 gap-5 items-center"
                     >
-                        <div class="relative group">
-                            <img
-                                :src="item.image"
-                                :alt="item.title"
-                                class="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
-                            />
+                        <div class="flex items-center gap-3">
                             <div
-                                class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6"
+                                class="w-8 h-[2px] bg-gradient-to-r from-transparent to-[#FF8C42]"
+                            ></div>
+                            <span
+                                class="font-inter text-sm font-semibold uppercase tracking-[2px] text-[#FF8C42]"
                             >
+                                Portfolio
+                            </span>
+                            <div
+                                class="w-8 h-[2px] bg-gradient-to-l from-transparent to-[#FF8C42]"
+                            ></div>
+                        </div>
+                        <h2
+                            class="font-poppins md:text-5xl text-4xl text-center font-semibold leading-[57.6px] tracking-[-0.48px] relative z-10"
+                        >
+                            Nos
+                            <span class="relative inline-block">
+                                réalisations
                                 <div
-                                    class="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300"
+                                    class="absolute bottom-1 left-0 w-full h-3 bg-[#FF8C42] bg-opacity-20 -z-10"
+                                    data-aos="slide-left"
+                                    data-aos-duration="1200"
+                                    data-aos-delay="300"
+                                ></div>
+                            </span>
+                        </h2>
+                        <h4
+                            class="font-inter md:text-lg text-base text-center text-gray-600 max-w-2xl mx-auto"
+                        >
+                            Découvrez nos réalisations concrètes en électricité
+                            et énergies renouvelables.
+                        </h4>
+                    </div>
+                </div>
+                <div class="w-full" data-aos="fade-up" data-aos-delay="300">
+                    <div class="portfolio-gallery">
+                        <div
+                            v-for="item in portfolio"
+                            :key="item.id"
+                            class="portfolio-item overflow-hidden rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl"
+                        >
+                            <div class="relative group">
+                                <img
+                                    :src="item.image"
+                                    :alt="item.title"
+                                    class="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
+                                />
+                                <div
+                                    class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6"
                                 >
-                                    <h3
-                                        class="font-poppins text-xl font-medium text-white mb-2"
+                                    <div
+                                        class="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300"
                                     >
-                                        {{ item.title }}
-                                    </h3>
-                                    <!-- Description affichée seulement au hover -->
-                                    <p
-                                        class="text-sm text-white/90 mb-3 line-clamp-3"
-                                    >
-                                        {{ item.description }}
-                                    </p>
-                                    <div class="flex flex-wrap gap-2 mt-2">
-                                        <span
-                                            v-for="tag in item.tags"
-                                            :key="tag.id"
-                                            class="px-2 py-1 bg-[#FF8C42]/80 text-white text-xs rounded-full"
+                                        <h3
+                                            class="font-poppins text-xl font-medium text-white mb-2"
                                         >
-                                            {{ tag.name }}
-                                        </span>
+                                            {{ item.title }}
+                                        </h3>
+                                        <!-- Description affichée seulement au hover -->
+                                        <p
+                                            class="text-sm text-white/90 mb-3 line-clamp-3"
+                                        >
+                                            {{ item.description }}
+                                        </p>
+                                        <div class="flex flex-wrap gap-2 mt-2">
+                                            <span
+                                                v-for="tag in item.tags"
+                                                :key="tag.id"
+                                                class="px-2 py-1 bg-[#FF8C42]/80 text-white text-xs rounded-full"
+                                            >
+                                                {{ tag.name }}
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
