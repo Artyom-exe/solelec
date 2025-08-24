@@ -13,10 +13,10 @@ defineProps({
     <AdminLayout>
         <Head title="Dashboard" />
         <header
-            class="flex md:py-28 py-16 md:px-16 px-5 flex-col items-start gap-20 bg-[#2D2D2D] md:mt-[72px] mt-16"
+            class="flex md:py-28 py-16 md:px-16 px-5 flex-col items-start bg-[#2D2D2D] md:mt-[72px] mt-16"
         >
             <div
-                class="flex md:flex-row flex-col items-start md:gap-20 gap-5 self-stretch"
+                class="flex md:flex-row flex-col items-start md:gap-20 gap-5 self-stretch w-full max-w-screen-2xl mx-auto"
             >
                 <div class="md:w-1/2">
                     <div class="flex items-center gap-3 mb-6">
@@ -81,76 +81,130 @@ defineProps({
 
         <!-- Section des activités récentes -->
         <section
-            class="bg-white md:py-28 py-16 md:px-16 px-5 items-center flex flex-col md:gap-20 gap-12"
+            class="bg-white md:py-28 py-16 md:px-16 px-5 items-center flex flex-col"
         >
-            <div class="flex flex-col items-center gap-6">
-                <div class="flex items-center gap-3">
-                    <div
-                        class="w-12 h-[2px] bg-gradient-to-r from-transparent via-[#FF8C42] to-[#FF8C42]"
-                    ></div>
-                    <span
-                        class="font-inter text-sm font-semibold uppercase tracking-[2px] text-[#FF8C42]"
-                    >
-                        Historique
-                    </span>
-                </div>
-                <h2
-                    class="font-poppins md:text-5xl text-4xl text-center font-medium md:leading-[57.6px] md:tracking-[-0.48px] leading-[43.2px] tracking-[-0.36px] relative z-10"
-                >
-                    Activités
-                    <span class="relative inline-block">
-                        Récentes
+            <div
+                class="w-full max-w-screen-2xl mx-auto md:gap-20 gap-12 flex flex-col"
+            >
+                <div class="flex flex-col items-center gap-6">
+                    <div class="flex items-center gap-3">
                         <div
-                            class="absolute bottom-1 left-0 w-full h-3 bg-[#FF8C42] bg-opacity-20 -z-10"
+                            class="w-12 h-[2px] bg-gradient-to-r from-transparent via-[#FF8C42] to-[#FF8C42]"
                         ></div>
-                    </span>
-                </h2>
-            </div>
-            <div class="bg-white w-full">
-                <div
-                    v-if="recentActivities && recentActivities.length"
-                    class="overflow-x-auto"
-                >
-                    <!-- Vue desktop : tableau classique -->
-                    <table class="w-full border-collapse hidden md:table">
-                        <thead>
-                            <tr>
-                                <th
-                                    scope="col"
-                                    class="px-6 py-5 text-left font-poppins text-sm font-medium text-[#0D0703]"
+                        <span
+                            class="font-inter text-sm font-semibold uppercase tracking-[2px] text-[#FF8C42]"
+                        >
+                            Historique
+                        </span>
+                    </div>
+                    <h2
+                        class="font-poppins md:text-5xl text-4xl text-center font-medium md:leading-[57.6px] md:tracking-[-0.48px] leading-[43.2px] tracking-[-0.36px] relative z-10"
+                    >
+                        Activités
+                        <span class="relative inline-block">
+                            Récentes
+                            <div
+                                class="absolute bottom-1 left-0 w-full h-3 bg-[#FF8C42] bg-opacity-20 -z-10"
+                            ></div>
+                        </span>
+                    </h2>
+                </div>
+                <div class="bg-white w-full">
+                    <div
+                        v-if="recentActivities && recentActivities.length"
+                        class="overflow-x-auto"
+                    >
+                        <!-- Vue desktop : tableau classique -->
+                        <table class="w-full border-collapse hidden md:table">
+                            <thead>
+                                <tr>
+                                    <th
+                                        scope="col"
+                                        class="px-6 py-5 text-left font-poppins text-sm font-medium text-[#0D0703]"
+                                    >
+                                        Type
+                                    </th>
+                                    <th
+                                        scope="col"
+                                        class="px-6 py-5 text-left font-poppins text-sm font-medium text-[#0D0703]"
+                                    >
+                                        Description
+                                    </th>
+                                    <th
+                                        scope="col"
+                                        class="px-6 py-5 text-left font-poppins text-sm font-medium text-[#0D0703]"
+                                    >
+                                        Utilisateur
+                                    </th>
+                                    <th
+                                        scope="col"
+                                        class="px-6 py-5 text-left font-poppins text-sm font-medium text-[#0D0703]"
+                                    >
+                                        Date
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr
+                                    v-for="(
+                                        activity, index
+                                    ) in recentActivities"
+                                    :key="activity.id"
+                                    :class="{
+                                        'bg-white': index % 2 === 1,
+                                        'bg-[#F9F9F9]': index % 2 === 0,
+                                    }"
                                 >
-                                    Type
-                                </th>
-                                <th
-                                    scope="col"
-                                    class="px-6 py-5 text-left font-poppins text-sm font-medium text-[#0D0703]"
-                                >
-                                    Description
-                                </th>
-                                <th
-                                    scope="col"
-                                    class="px-6 py-5 text-left font-poppins text-sm font-medium text-[#0D0703]"
-                                >
-                                    Utilisateur
-                                </th>
-                                <th
-                                    scope="col"
-                                    class="px-6 py-5 text-left font-poppins text-sm font-medium text-[#0D0703]"
-                                >
-                                    Date
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr
+                                    <td class="px-6 py-5 whitespace-nowrap">
+                                        <span
+                                            :class="{
+                                                'bg-[#E7F6E7] text-[#28A745]':
+                                                    activity.type === 'create',
+                                                'bg-[#E6F3FF] text-[#0D6EFD]':
+                                                    activity.type === 'update',
+                                                'bg-[#FEECEC] text-[#DC3545]':
+                                                    activity.type === 'delete',
+                                                'bg-[#FFF4EC] text-[#FF8C42]':
+                                                    activity.type === 'quote',
+                                                'bg-[#F3EBFF] text-[#6F42C1]':
+                                                    activity.type ===
+                                                    'intervention',
+                                            }"
+                                            class="px-4 py-1.5 rounded-full text-xs font-medium font-inter inline-block min-w-[90px] text-center"
+                                        >
+                                            {{ activity.typeLabel }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-5">
+                                        <p class="font-inter text-[#0D0703]">
+                                            {{ activity.description }}
+                                        </p>
+                                    </td>
+                                    <td class="px-6 py-5 whitespace-nowrap">
+                                        <p class="font-inter text-[#0D0703]">
+                                            {{ activity.user }}
+                                        </p>
+                                    </td>
+                                    <td
+                                        class="px-6 py-5 whitespace-nowrap font-inter text-[#6C757D]"
+                                        :title="activity.date"
+                                    >
+                                        {{ activity.timeAgo }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Vue mobile : cartes empilées -->
+                        <div class="md:hidden space-y-4">
+                            <div
                                 v-for="(activity, index) in recentActivities"
                                 :key="activity.id"
-                                :class="{
-                                    'bg-white': index % 2 === 1,
-                                    'bg-[#F9F9F9]': index % 2 === 0,
-                                }"
+                                class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm"
                             >
-                                <td class="px-6 py-5 whitespace-nowrap">
+                                <div
+                                    class="flex justify-between items-start mb-3"
+                                >
                                     <span
                                         :class="{
                                             'bg-[#E7F6E7] text-[#28A745]':
@@ -165,77 +219,34 @@ defineProps({
                                                 activity.type ===
                                                 'intervention',
                                         }"
-                                        class="px-4 py-1.5 rounded-full text-xs font-medium font-inter inline-block min-w-[90px] text-center"
+                                        class="px-3 py-1 rounded-full text-xs font-medium font-inter"
                                     >
                                         {{ activity.typeLabel }}
                                     </span>
-                                </td>
-                                <td class="px-6 py-5">
-                                    <p class="font-inter text-[#0D0703]">
-                                        {{ activity.description }}
-                                    </p>
-                                </td>
-                                <td class="px-6 py-5 whitespace-nowrap">
-                                    <p class="font-inter text-[#0D0703]">
-                                        {{ activity.user }}
-                                    </p>
-                                </td>
-                                <td
-                                    class="px-6 py-5 whitespace-nowrap font-inter text-[#6C757D]"
-                                    :title="activity.date"
+                                    <span
+                                        class="text-xs font-inter text-[#6C757D]"
+                                        :title="activity.date"
+                                    >
+                                        {{ activity.timeAgo }}
+                                    </span>
+                                </div>
+                                <p
+                                    class="font-inter text-[#0D0703] text-sm mb-2"
                                 >
-                                    {{ activity.timeAgo }}
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <!-- Vue mobile : cartes empilées -->
-                    <div class="md:hidden space-y-4">
-                        <div
-                            v-for="(activity, index) in recentActivities"
-                            :key="activity.id"
-                            class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm"
-                        >
-                            <div class="flex justify-between items-start mb-3">
-                                <span
-                                    :class="{
-                                        'bg-[#E7F6E7] text-[#28A745]':
-                                            activity.type === 'create',
-                                        'bg-[#E6F3FF] text-[#0D6EFD]':
-                                            activity.type === 'update',
-                                        'bg-[#FEECEC] text-[#DC3545]':
-                                            activity.type === 'delete',
-                                        'bg-[#FFF4EC] text-[#FF8C42]':
-                                            activity.type === 'quote',
-                                        'bg-[#F3EBFF] text-[#6F42C1]':
-                                            activity.type === 'intervention',
-                                    }"
-                                    class="px-3 py-1 rounded-full text-xs font-medium font-inter"
-                                >
-                                    {{ activity.typeLabel }}
-                                </span>
-                                <span
-                                    class="text-xs font-inter text-[#6C757D]"
-                                    :title="activity.date"
-                                >
-                                    {{ activity.timeAgo }}
-                                </span>
+                                    {{ activity.description }}
+                                </p>
+                                <p class="font-inter text-[#6C757D] text-xs">
+                                    Par {{ activity.user }}
+                                </p>
                             </div>
-                            <p class="font-inter text-[#0D0703] text-sm mb-2">
-                                {{ activity.description }}
-                            </p>
-                            <p class="font-inter text-[#6C757D] text-xs">
-                                Par {{ activity.user }}
-                            </p>
                         </div>
                     </div>
-                </div>
-                <div
-                    v-else
-                    class="py-12 px-6 text-center font-inter text-[#6C757D]"
-                >
-                    Aucune activité récente à afficher
+                    <div
+                        v-else
+                        class="py-12 px-6 text-center font-inter text-[#6C757D]"
+                    >
+                        Aucune activité récente à afficher
+                    </div>
                 </div>
             </div>
         </section>
