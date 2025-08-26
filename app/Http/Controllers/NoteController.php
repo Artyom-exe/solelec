@@ -49,7 +49,7 @@ class NoteController extends Controller
     {
         // Pour simplifier, on permet à tout utilisateur authentifié de supprimer n'importe quelle note
         // Dans un environnement de production, vous voudriez peut-être restreindre cela davantage
-        
+
         $note->delete();
 
         return back()->with('success', 'Note supprimée avec succès');
