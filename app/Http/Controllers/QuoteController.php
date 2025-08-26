@@ -6,12 +6,19 @@ use App\Models\Client;
 use App\Models\Quote;
 use App\Models\Service;
 use App\Services\ActivityLogger;
-use Illuminate\Http\Request;
+use App\Http\Requests\QuoteStoreRequest;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
+use App\Services\HtmlSanitizer;
 
 class QuoteController extends Controller
 {
+    protected HtmlSanitizer $sanitizer;
+
+    public function __construct(HtmlSanitizer $sanitizer)
+    {
+        $this->sanitizer = $sanitizer;
+    }
     /**
      * Affiche la liste des devis
      */
@@ -37,30 +44,15 @@ class QuoteController extends Controller
     /**
      * Traite la création d'un nouveau devis depuis le formulaire public
      */
-    public function store(Request $request)
+    public function store(QuoteStoreRequest $request)
     {
-        // 1) Valider les données du formulaire
-        $validator = Validator::make($request->all(), [
-            'name'             => 'required|string|max:255',
-            'lastname'         => 'nullable|string|max:255',
-            'phone'            => 'nullable|string|max:20',
-            'email'            => 'nullable|email|max:255',
-            'adress'           => 'nullable|string',
-            'description'      => 'required|string',
-            'requested_date'   => 'nullable|date',
-            'end_date'         => 'nullable|date|after_or_equal:requested_date',
-            'services'         => 'required|array',    // liste d'IDs de services
-            'services.*'       => 'exists:services,id', // chaque service doit exister
-        ]);
+        // Récupérer les données validées via QuoteStoreRequest
+        $data = $request->validated();
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-
-        // 2) Créer ou récupérer le client (via l'email ou le phone par ex.)
-        //    Logique: si l'email existe déjà => on update éventuellement
-        //    Sinon on crée un nouveau client
-        $data = $validator->validated();
+        // Assainir la description riche côté serveur (HTMLPurifier)
+            if (!empty($data['description'] ?? null)) {
+                $data['description'] = $this->sanitizer->sanitize($data['description']);
+            }
 
         // On essaie de trouver un client par email
         $client = null;

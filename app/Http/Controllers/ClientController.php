@@ -6,6 +6,7 @@ use App\Models\Client;
 use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\Http\Requests\ClientRequest;
 
 class ClientController extends Controller
 {
@@ -17,18 +18,12 @@ class ClientController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(ClientRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'lastname' => 'nullable|string|max:255',
-            'phone' => 'nullable|string|max:20',
-            'email' => 'nullable|email|unique:clients,email|max:255',
-            'adress' => 'nullable|string',
-        ]);
+        $validated = $request->validated();
 
         $client = Client::create($validated);
-        ActivityLogger::log('create', $client, 'Client ' . $client->name . ' ' . $client->lastname . ' ajouté');
+    ActivityLogger::log('create', $client, 'Client ' . $client->name . ' ' . $client->lastname . ' ajouté');
 
         return back()->with([
             'success' => 'Client ajouté avec succès',
@@ -36,18 +31,12 @@ class ClientController extends Controller
         ]);
     }
 
-    public function update(Request $request, Client $client)
+    public function update(ClientRequest $request, Client $client)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'lastname' => 'nullable|string|max:255',
-            'phone' => 'nullable|string|max:20',
-            'email' => 'nullable|email|max:255|unique:clients,email,'.$client->id,
-            'adress' => 'nullable|string',
-        ]);
+        $validated = $request->validated();
 
         $client->update($validated);
-        ActivityLogger::log('update', $client, 'Client ' . $client->name . ' ' . $client->lastname . ' mis à jour');
+    ActivityLogger::log('update', $client, 'Client ' . $client->name . ' ' . $client->lastname . ' mis à jour');
 
         return back()->with('success', 'Client mis à jour avec succès');
     }

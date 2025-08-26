@@ -39,19 +39,16 @@ class NotificationController extends Controller
     /**
      * Marquer une notification comme lue
      */
-    public function markAsRead(Request $request)
+    public function markAsRead(\App\Http\Requests\NotificationMarkAsReadRequest $request)
     {
-        $request->validate([
-            'type' => 'required|string',
-            'notification_id' => 'required|integer'
-        ]);
+        $validated = $request->validated();
 
         $userId = auth()->id();
 
         NotificationService::markAsRead(
             $userId,
-            $request->type,
-            $request->notification_id
+            $validated['type'],
+            $validated['notification_id']
         );
 
         return response()->json([

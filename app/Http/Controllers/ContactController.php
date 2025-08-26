@@ -2,26 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\ContactRequest;
+use App\Services\HtmlSanitizer;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ContactFormMail;
 
 class ContactController extends Controller
 {
-    public function sendEmail(Request $request)
+    public function sendEmail(ContactRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'message' => 'required|string',
-            'acceptConditions' => 'required|accepted'
-        ]);
+        $data = $request->validated();
 
-        $data = [
-            'name' => $request->name,
-            'email' => $request->email,
-            'message' => $request->message
-        ];
+        $sanitizer = app(HtmlSanitizer::class);
+        if (!empty($data['message'] ?? null)) {
+            $data['message'] = $sanitizer->sanitize($data['message']);
+        }
 
         // Envoi de l'email à l'adresse souhaitée
         Mail::to('solelec.lmbt@gmail.com')->send(new ContactFormMail($data));

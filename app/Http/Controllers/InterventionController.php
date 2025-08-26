@@ -8,12 +8,24 @@ use App\Models\Quote;
 use App\Models\Service;
 use App\Models\InterventionImage;
 use App\Services\ActivityLogger;
-use Illuminate\Http\Request;
+use App\Http\Requests\InterventionRequest;
+use App\Services\HtmlSanitizer;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
+use HTMLPurifier;
+use HTMLPurifier_Config;
 
 class InterventionController extends Controller
 {
+    /**
+     * Html sanitizer instance.
+     */
+    protected $sanitizer;
+
+    public function __construct(\App\Services\HtmlSanitizer $sanitizer)
+    {
+        $this->sanitizer = $sanitizer;
+    }
     /**
      * Affiche la liste des interventions
      */
@@ -49,14 +61,10 @@ class InterventionController extends Controller
     /**
      * Enregistre une nouvelle intervention dans la base de données
      */
-    public function store(Request $request)
+    public function store(InterventionRequest $request)
     {
-        // Valider les données de base
-        $request->validate([
-            'status' => 'required|string|in:planifiée,en cours,terminée,annulée',
-            'services' => 'required|array',
-            'services.*' => 'exists:services,id'
-        ]);
+        // Règles centralisées dans InterventionRequest
+        $validated = $request->validated();
 
         // Gérer le client (existant ou nouveau)
         $clientId = null;
@@ -85,7 +93,7 @@ class InterventionController extends Controller
             return redirect()->back()->with('error', 'Vous devez sélectionner un client ou en créer un nouveau');
         }
 
-        // 1. Créer un devis avec statut 'converti'
+    // 1. Créer un devis avec statut 'converti'
         $quote = Quote::create([
             'client_id' => $clientId,
             'description' => 'Devis créé automatiquement pour intervention',
@@ -100,10 +108,13 @@ class InterventionController extends Controller
         ActivityLogger::log('quote', $quote, 'Devis #' . $quote->id . ' créé automatiquement pour ' . $clientName);
 
         // 2. Créer l'intervention avec le devis créé
+    // Assainir notes si fournies
+    $notes = $this->sanitizer->sanitize($validated['notes'] ?? '');
+
         $intervention = Intervention::create([
-            'status' => $request->status,
+            'status' => $validated['status'] ?? $request->status,
             'date' => now(), // Date actuelle
-            'notes' => '',
+            'notes' => $notes,
             'clients_id' => $clientId,
             'devis_id' => $quote->id
         ]);
@@ -147,19 +158,14 @@ class InterventionController extends Controller
     /**
      * Met à jour les informations d'une intervention
      */
-    public function update(Request $request, Intervention $intervention)
+    public function update(InterventionRequest $request, Intervention $intervention)
     {
-        $validated = $request->validate([
-            'status' => 'required|string|in:planifiée,en cours,terminée,annulée',
-            'date' => 'required|date',
-            'notes' => 'nullable|string',
-            'clients_id' => 'required|exists:clients,id',
-            'devis_id' => 'nullable|exists:quotes,id',
-            'images' => 'nullable|array',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-            'delete_images' => 'nullable|array',
-            'delete_images.*' => 'exists:intervention_images,id'
-        ]);
+        $validated = $request->validated();
+
+        // Assainir notes si présent
+        if (!empty($validated['notes'] ?? null)) {
+            $validated['notes'] = $this->sanitizer->sanitize($validated['notes']);
+        }
 
         // Vérifier si le statut a changé pour le message de journalisation
         $statusChanged = $intervention->status !== $validated['status'];
@@ -220,11 +226,9 @@ class InterventionController extends Controller
     /**
      * Met à jour uniquement le statut d'une intervention
      */
-    public function updateStatus(Request $request, Intervention $intervention)
+    public function updateStatus(\App\Http\Requests\InterventionStatusRequest $request, Intervention $intervention)
     {
-        $validated = $request->validate([
-            'status' => 'required|string|in:planifiée,en cours,terminée,annulée',
-        ]);
+        $validated = $request->validated();
 
         $oldStatus = $intervention->status;
 
@@ -246,14 +250,12 @@ class InterventionController extends Controller
     /**
      * Met à jour la date d'une intervention
      */
-    public function updateDate(Request $request, Intervention $intervention)
+    public function updateDate(\App\Http\Requests\InterventionDateRequest $request, Intervention $intervention)
     {
-        $request->validate([
-            'date' => 'required|date'
-        ]);
+        $validated = $request->validated();
 
         $intervention->update([
-            'date' => $request->date
+            'date' => $validated['date']
         ]);
 
         // Réinitialiser la notification pour cette intervention (tous les utilisateurs)
@@ -267,20 +269,17 @@ class InterventionController extends Controller
     /**
      * Met à jour les services associés à une intervention
      */
-    public function updateServices(Request $request, Intervention $intervention)
+    public function updateServices(\App\Http\Requests\InterventionServicesRequest $request, Intervention $intervention)
     {
-        $request->validate([
-            'services' => 'required|array',
-            'services.*' => 'exists:services,id'
-        ]);
+        $validated = $request->validated();
 
         // Vérifier si l'intervention a un devis associé
         if (!$intervention->devis_id) {
             return redirect()->back()->with('error', 'Cette intervention n\'a pas de devis associé');
         }
 
-        // Mettre à jour les services du devis associé à l'intervention
-        $intervention->devis->services()->sync($request->services);
+    // Mettre à jour les services du devis associé à l'intervention
+    $intervention->devis->services()->sync($validated['services']);
 
         // Journaliser l'activité
         ActivityLogger::log('intervention', $intervention, 'Services mis à jour pour l\'intervention #' . $intervention->id);
@@ -291,12 +290,9 @@ class InterventionController extends Controller
     /**
      * Télécharge des images pour une intervention
      */
-    public function uploadImages(Request $request, Intervention $intervention)
+    public function uploadImages(\App\Http\Requests\InterventionImagesRequest $request, Intervention $intervention)
     {
-        $request->validate([
-            'images' => 'required|array',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
-        ]);
+        $validated = $request->validated();
 
         $uploadedImages = [];
 
