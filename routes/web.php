@@ -92,6 +92,14 @@ Route::middleware([
     Route::post('/notifications/test', [NotificationController::class, 'sendTestNotification'])->name('notifications.test');
 });
 
+// Registration is disabled (single user). Redirect any /register requests to /login.
+use Laravel\Fortify\Features;
+
 Route::match(['get', 'post'], '/register', function () {
+    // If registration is disabled, return 404 to match test expectations
+    if (! Features::enabled(Features::registration())) {
+        abort(404);
+    }
+
     return redirect('/login');
 });

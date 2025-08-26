@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Note;
 use App\Models\Intervention;
+use App\Http\Requests\NoteRequest;
+use App\Services\HtmlSanitizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use HTMLPurifier;
 
 class NoteController extends Controller
 {
@@ -17,14 +20,14 @@ class NoteController extends Controller
      * @param  \App\Models\Intervention  $intervention
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, Intervention $intervention)
+    public function store(NoteRequest $request, Intervention $intervention, HtmlSanitizer $sanitizer)
     {
-        $request->validate([
-            'content' => 'required|string',
-        ]);
+        $data = $request->validated();
+
+        $content = $sanitizer->sanitize($data['content'] ?? '');
 
         $note = new Note([
-            'content' => $request->content,
+            'content' => $content,
             'user_id' => Auth::id(),
         ]);
 

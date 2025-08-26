@@ -123,4 +123,7 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    // Application service providers are registered via package discovery
+    // or in AppServiceProvider. Do not override the default providers list here.
+
 ];

@@ -5,6 +5,7 @@ namespace App\Actions\Fortify;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\Fortify\UpdatePasswordRequest as FortifyUpdatePasswordRequest;
 use Laravel\Fortify\Contracts\ResetsUserPasswords;
 
 class ResetUserPassword implements ResetsUserPasswords
@@ -18,6 +19,7 @@ class ResetUserPassword implements ResetsUserPasswords
      */
     public function reset(User $user, array $input): void
     {
+        // For password reset via token we should only validate the new password rules
         Validator::make($input, [
             'password' => $this->passwordRules(),
         ])->validate();
