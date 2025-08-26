@@ -59,7 +59,7 @@ npm install dompurify
 ```
 
 ```js
-import DOMPurify from 'dompurify';
+import DOMPurify from "dompurify";
 
 const clean = DOMPurify.sanitize(dirtyHtml);
 ```
@@ -67,10 +67,11 @@ const clean = DOMPurify.sanitize(dirtyHtml);
 Important : cela n’exempte pas l’assainissement côté serveur.
 
 ## Recommandations supplémentaires
-- Logger les contenus bloqués pour audit.
-- Fournir une whitelist d’éléments autorisés si nécessaire (ex: <p>, <ul>, <li>, <strong>, <em>, <a>). 
-- Éviter d’autoriser des iframes externes sauf si besoin.
-- Ajouter des tests unitaires pour vérifier que les contenus malicieux sont neutralisés.
+
+-   Logger les contenus bloqués pour audit.
+-   Fournir une whitelist d’éléments autorisés si nécessaire (ex: <p>, <ul>, <li>, <strong>, <em>, <a>).
+-   Éviter d’autoriser des iframes externes sauf si besoin.
+-   Ajouter des tests unitaires pour vérifier que les contenus malicieux sont neutralisés.
 
 ---
 
