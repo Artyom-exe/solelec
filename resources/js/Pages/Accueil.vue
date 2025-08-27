@@ -852,9 +852,11 @@ onMounted(() => {
         <!-- FAQ -->
         <section
             id="faq"
-            class="flex flex-col md:py-28 py-16 px-5 gap-12 md:px-16 md:gap-20 bg-[#F5F5F5] text-white"
+            class="flex flex-col md:py-28 py-16 px-5 md:px-16 bg-[#F5F5F5] text-white"
         >
-            <div class="max-w-screen-2xl mx-auto flex flex-col w-full">
+            <div
+                class="max-w-screen-2xl mx-auto gap-12 md:gap-20 flex flex-col w-full"
+            >
                 <div
                     class="flex flex-col gap-6 text-[#0D0703]"
                     data-aos="fade-up"
@@ -1218,9 +1220,11 @@ onMounted(() => {
         <!-- zones d'intervention -->
         <section
             id="zones"
-            class="flex md:py-28 py-16 md:px-16 px-5 flex-col md:gap-20 gap-12 bg-[#F5F5F5] text-[#0D0703]"
+            class="flex md:py-28 py-16 md:px-16 px-5 flex-col bg-[#F5F5F5] text-[#0D0703]"
         >
-            <div class="w-full max-w-screen-2xl mx-auto flex flex-col">
+            <div
+                class="w-full max-w-screen-2xl mx-auto flex md:gap-20 gap-12 flex-col"
+            >
                 <div
                     class="flex flex-col md:gap-8 gap-4 flex-1"
                     data-aos="fade-right"
