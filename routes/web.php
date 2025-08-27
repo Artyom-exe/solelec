@@ -15,6 +15,8 @@ use App\Http\Controllers\InterventionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\NotificationController;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\URL;
 
 Route::get('/', function () {
     return Inertia::render('Accueil');
@@ -41,6 +43,32 @@ Route::post('send-email', [ContactController::class, 'sendEmail']);
 Route::get('customer-reviews', [CustomerReviewController::class, 'index']);
 
 Route::post('/quotes', [QuoteController::class, 'store']);
+
+// Simple sitemap route (cached 1 hour). Generates basic sitemap with main pages and portfolios.
+
+
+Route::get('/sitemap.xml', function () {
+    $host = rtrim(config('app.url', env('APP_URL')), '/');
+
+    $xml = new \SimpleXMLElement('<urlset/>');
+    $xml->addAttribute('xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9');
+
+    $pages = [
+        '/',
+        '/services-portfolio',
+    ];
+
+    foreach ($pages as $p) {
+        $url = $xml->addChild('url');
+        $url->addChild('loc', $host . $p);
+        $url->addChild('lastmod', now()->toAtomString()); // date ISO8601
+        $url->addChild('changefreq', 'monthly');
+        $url->addChild('priority', '0.8');
+    }
+
+    return response($xml->asXML(), 200)
+        ->header('Content-Type', 'application/xml; charset=utf-8');
+});
 
 
 Route::middleware([
