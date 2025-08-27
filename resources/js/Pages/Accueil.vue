@@ -408,11 +408,15 @@ onMounted(() => {
             </title>
             <meta
                 name="description"
-                content="Solutions électriques innovantes et éco-responsables pour vos projets. Expertise en électricité et énergies renouvelables par Solelec."
+                content="Solelec (Ottignies-Louvain-la-Neuve) — électricien professionnel pour installations, maintenance et photovoltaïque. Devis gratuit et interventions en Wallonie."
             />
             <meta
                 name="keywords"
-                content="électricité, énergies renouvelables, installation électrique, panneau solaire"
+                content="électricité, photovoltaïque, mise en conformité, maintenance électrique, bornes de recharge"
+            />
+            <link
+                rel="canonical"
+                href="{{ config('app.url', 'http://localhost') }}"
             />
         </Head>
 

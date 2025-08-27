@@ -346,6 +346,19 @@ onMounted(() => {
 
 <template>
     <PublicLayout @devisModalOpened="openDevisModal = $event">
+        <Head>
+            <title>
+                Solelec — Nos services en électricité et photovoltaïque
+            </title>
+            <meta
+                name="description"
+                content="Découvrez les services Solelec : installation photovoltaïque, mise en conformité, maintenance électrique et bornes de recharge. Interventions rapides en Wallonie."
+            />
+            <link
+                rel="canonical"
+                href="{{ config('app.url', 'http://localhost') }}/services-portfolio"
+            />
+        </Head>
         <section
             id="services"
             class="flex md:flex-row flex-col md:py-28 py-16 md:px-16 px-5 items-start bg-[#2D2D2D] text-white md:mt-[72px] mt-[64px]"
