@@ -407,18 +407,13 @@ provide("navigateToSection", navigateToSection);
                     >
                         <a
                             class="underline underline-offset-2 decoration-solid decoration-1 hover:text-[#FF8C42] transition-colors"
-                            href=""
+                            href="/privacy"
                             >Politique de confidentialité</a
                         >
                         <a
                             class="underline underline-offset-2 decoration-solid decoration-1 hover:text-[#FF8C42] transition-colors"
-                            href=""
-                            >Conditions de service</a
-                        >
-                        <a
-                            class="underline underline-offset-2 decoration-solid decoration-1 hover:text-[#FF8C42] transition-colors"
-                            href=""
-                            >Paramètres des cookies</a
+                            href="/mentions-legales"
+                            >Mentions légales</a
                         >
                     </div>
                 </div>

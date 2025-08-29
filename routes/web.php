@@ -131,3 +131,13 @@ Route::match(['get', 'post'], '/register', function () {
 
     return redirect('/login');
 });
+
+// Politique de confidentialité (page statique)
+Route::get('/privacy', function () {
+    return view('privacy');
+})->name('privacy');
+
+// Mentions légales
+Route::get('/mentions-legales', function () {
+    return view('mentions');
+})->name('mentions');
