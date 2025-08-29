@@ -1198,11 +1198,12 @@ onMounted(() => {
                                 class="w-4 h-4 border border-white/20 bg-white/10 rounded-[2px] focus:ring-[#FF8C42] focus:border-[#FF8C42]"
                             />
                             <span class="text-sm"
-                                >J'accepte les conditions générales
-                                d'utilisation<span class="text-red-500"
-                                    >*</span
-                                ></span
-                            >
+                                >J'accepte la
+                                <a href="/privacy" class="underline"
+                                    >Politique de confidentialité</a
+                                >
+                                <span class="text-red-500">*</span>
+                            </span>
                         </label>
                     </div>
 
@@ -1212,10 +1213,6 @@ onMounted(() => {
                         data-aos-anchor="#contact"
                     >
                         <PrimaryButton type="submit">Envoyer</PrimaryButton>
-                    </div>
-                    <div class="text-sm text-gray-300 mt-2">
-                        En soumettant ce formulaire, vous acceptez notre
-                        <a href="/privacy" class="underline">Politique de confidentialité</a>.
                     </div>
                 </form>
             </div>
