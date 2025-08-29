@@ -1213,6 +1213,10 @@ onMounted(() => {
                     >
                         <PrimaryButton type="submit">Envoyer</PrimaryButton>
                     </div>
+                    <div class="text-sm text-gray-300 mt-2">
+                        En soumettant ce formulaire, vous acceptez notre
+                        <a href="/privacy" class="underline">Politique de confidentialité</a>.
+                    </div>
                 </form>
             </div>
         </section>
