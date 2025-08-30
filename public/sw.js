@@ -66,11 +66,40 @@ self.addEventListener("push", (event) => {
             vibrate: data.priority === "high" ? [200, 100, 200] : [100],
         };
 
+        // Afficher la notification puis mettre à jour le badge
         event.waitUntil(
-            self.registration.showNotification(
-                data.title || "Solelec Admin",
-                options
-            )
+            (async () => {
+                await self.registration.showNotification(
+                    data.title || "Solelec Admin",
+                    options
+                );
+
+                // Mettre à jour le compteur de badge : si le payload fournit un count/badge, on l'utilise,
+                // sinon on incrémente le compteur localement.
+                try {
+                    const payloadCount =
+                        typeof data.count === "number"
+                            ? data.count
+                            : typeof data.badge === "number"
+                            ? data.badge
+                            : null;
+
+                    let newCount;
+                    if (payloadCount !== null) {
+                        newCount = payloadCount;
+                    } else {
+                        // Incrément par défaut
+                        const current = await readBadgeCount();
+                        newCount = (current || 0) + 1;
+                    }
+
+                    await writeBadgeCount(newCount);
+                    await setAppBadgeSafe(newCount);
+                } catch (e) {
+                    // Ne pas bloquer l'affichage de la notification si l'update du badge échoue
+                    console.warn("Badge update failed in push handler:", e);
+                }
+            })()
         );
     }
 });
@@ -86,12 +115,32 @@ self.addEventListener("notificationclick", (event) => {
                 // Chercher si l'app est déjà ouverte
                 for (const client of clientList) {
                     if (client.url.includes("/admin") && "focus" in client) {
+                        // Clear badge when user opens the app from the notification
+                        (async () => {
+                            try {
+                                await self.registration.clearAppBadge();
+                            } catch (e) {
+                                // ignore
+                            }
+                            try {
+                                await writeBadgeCount(0);
+                            } catch (e) {}
+                        })();
                         return client.focus();
                     }
                 }
                 // Sinon ouvrir une nouvelle fenêtre
                 if (clients.openWindow) {
                     const url = event.notification.data.url || "/admin";
+                    // Clear badge when opening app
+                    (async () => {
+                        try {
+                            await self.registration.clearAppBadge();
+                        } catch (e) {}
+                        try {
+                            await writeBadgeCount(0);
+                        } catch (e) {}
+                    })();
                     return clients.openWindow(url);
                 }
             })
@@ -105,15 +154,97 @@ self.addEventListener("message", (event) => {
         const count = event.data.count || 0;
 
         // Mettre à jour le badge sur l'icône de l'application (PWA)
-        if ("setAppBadge" in self.registration) {
-            if (count > 0) {
-                self.registration.setAppBadge(count);
-            } else {
-                self.registration.clearAppBadge();
-            }
-        }
+        event.waitUntil(
+            (async () => {
+                try {
+                    if (count > 0) {
+                        await writeBadgeCount(count);
+                        await setAppBadgeSafe(count);
+                    } else {
+                        await writeBadgeCount(0);
+                        await clearAppBadgeSafe();
+                    }
+                } catch (e) {
+                    console.warn("UPDATE_BADGE failed:", e);
+                }
+            })()
+        );
     }
 });
+
+// --- Helpers for badge persistence (IndexedDB) and safe badge calls ---
+function openDb() {
+    return new Promise((resolve, reject) => {
+        try {
+            const req = indexedDB.open("solelec-sw", 1);
+            req.onupgradeneeded = (e) => {
+                const db = e.target.result;
+                if (!db.objectStoreNames.contains("meta")) {
+                    db.createObjectStore("meta");
+                }
+            };
+            req.onsuccess = () => resolve(req.result);
+            req.onerror = () => reject(req.error);
+        } catch (e) {
+            reject(e);
+        }
+    });
+}
+
+function readBadgeCount() {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const db = await openDb();
+            const tx = db.transaction("meta", "readonly");
+            const store = tx.objectStore("meta");
+            const r = store.get("badge");
+            r.onsuccess = () => resolve(r.result || 0);
+            r.onerror = () => resolve(0);
+        } catch (e) {
+            resolve(0);
+        }
+    });
+}
+
+function writeBadgeCount(count) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const db = await openDb();
+            const tx = db.transaction("meta", "readwrite");
+            const store = tx.objectStore("meta");
+            const r = store.put(count, "badge");
+            r.onsuccess = () => resolve();
+            r.onerror = () => reject(r.error);
+        } catch (e) {
+            reject(e);
+        }
+    });
+}
+
+async function setAppBadgeSafe(count) {
+    try {
+        if (self.registration && "setAppBadge" in self.registration) {
+            await self.registration.setAppBadge(count);
+        } else if (typeof navigator !== "undefined" && "setAppBadge" in navigator) {
+            await navigator.setAppBadge(count);
+        }
+    } catch (e) {
+        // Some browsers may throw if badge unsupported
+        // ignore silently
+    }
+}
+
+async function clearAppBadgeSafe() {
+    try {
+        if (self.registration && "clearAppBadge" in self.registration) {
+            await self.registration.clearAppBadge();
+        } else if (typeof navigator !== "undefined" && "clearAppBadge" in navigator) {
+            await navigator.clearAppBadge();
+        }
+    } catch (e) {
+        // ignore
+    }
+}
 
 // Intercepter les requêtes réseau
 self.addEventListener("fetch", (event) => {
