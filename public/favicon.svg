@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <!-- Background square -->
+  <rect width="100%" height="100%" fill="#2D2D2D"/>
+  <!-- Orange circle centered -->
+  <circle cx="32" cy="32" r="18" fill="#FF8C42"/>
+  <!-- Centered S inside the circle (adjusted for visual centering) -->
+  <text x="32" y="32" font-family="Poppins, Arial, sans-serif" font-weight="700" font-size="26" fill="#FFFFFF" text-anchor="middle" dy="0.35em">S</text>
+</svg>

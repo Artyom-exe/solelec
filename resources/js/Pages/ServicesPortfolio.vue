@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, watch, inject, nextTick } from "vue";
 import axios from "axios";
+import { Head } from "@inertiajs/vue3";
 import PublicLayout from "@/Layouts/PublicLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import { Splide, SplideSlide } from "@splidejs/vue-splide";
