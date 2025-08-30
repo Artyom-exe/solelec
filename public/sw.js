@@ -225,7 +225,10 @@ async function setAppBadgeSafe(count) {
     try {
         if (self.registration && "setAppBadge" in self.registration) {
             await self.registration.setAppBadge(count);
-        } else if (typeof navigator !== "undefined" && "setAppBadge" in navigator) {
+        } else if (
+            typeof navigator !== "undefined" &&
+            "setAppBadge" in navigator
+        ) {
             await navigator.setAppBadge(count);
         }
     } catch (e) {
@@ -238,7 +241,10 @@ async function clearAppBadgeSafe() {
     try {
         if (self.registration && "clearAppBadge" in self.registration) {
             await self.registration.clearAppBadge();
-        } else if (typeof navigator !== "undefined" && "clearAppBadge" in navigator) {
+        } else if (
+            typeof navigator !== "undefined" &&
+            "clearAppBadge" in navigator
+        ) {
             await navigator.clearAppBadge();
         }
     } catch (e) {
