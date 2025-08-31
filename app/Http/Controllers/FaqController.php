@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\FAQ;
+use App\Models\Faq;
 
 class FaqController extends Controller
 {
@@ -12,7 +12,7 @@ class FaqController extends Controller
      */
     public function index()
     {
-        return FAQ::orderBy('display_order')->get();
+        return Faq::orderBy('display_order')->get();
     }
 
     /**

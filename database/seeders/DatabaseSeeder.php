@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
             PortfolioSeeder::class,
             ServiceSeeder::class,
             PortfolioTagSeeder::class,
-            FAQSeeder::class,
+            FaqSeeder::class,
             CustomerReviewSeeder::class,
 
         ]);
