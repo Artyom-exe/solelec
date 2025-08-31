@@ -6,7 +6,7 @@ use Inertia\Inertia;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\PortfolioController;
 use App\Http\Controllers\TagController;
-use App\Http\Controllers\FAQController;
+use App\Http\Controllers\FaqController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CustomerReviewController;
 use App\Http\Controllers\QuoteController;
@@ -36,7 +36,7 @@ Route::get('portfolios/{portfolio}', [PortfolioController::class, 'show']);
 Route::get('tags', [TagController::class, 'index']);
 Route::get('tags/{tag}', [TagController::class, 'show']);
 
-Route::get('faq', [FAQController::class, 'index']);
+Route::get('faq', [FaqController::class, 'index']);
 
 Route::post('send-email', [ContactController::class, 'sendEmail']);
 
