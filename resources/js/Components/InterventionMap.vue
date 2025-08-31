@@ -85,8 +85,61 @@ onMounted(() => {
         });
     };
 
+    // Diagnostic + defensive CSS: some mobile CSS/overlays can hide map tiles while markers remain visible.
+    // We inject a small stylesheet and listen for the tilesloaded event to re-apply if needed.
+    const ensureTilesVisible = () => {
+        try {
+            const styleId = "gm-tiles-visibility-fix";
+            if (!document.getElementById(styleId)) {
+                const style = document.createElement("style");
+                style.id = styleId;
+                style.innerHTML = `
+                    /* Force Google Maps tile images to be visible on all viewports */
+                    .gm-style img { max-width: none !important; opacity: 1 !important; visibility: visible !important; filter: none !important; }
+                    .gm-style .gm-tile { visibility: visible !important; opacity: 1 !important; }
+                    .gm-style > div { z-index: 0 !important; }
+                `;
+                document.head.appendChild(style);
+                // small log to help debugging in mobile console
+                // eslint-disable-next-line no-console
+                console.info(
+                    "[InterventionMap] injected gm-tiles visibility fix"
+                );
+            }
+        } catch (e) {
+            // eslint-disable-next-line no-console
+            console.warn("[InterventionMap] ensureTilesVisible failed", e);
+        }
+    };
+
+    // If Google Maps already loaded, we still want to attach tilesloaded listener
+    const attachTilesLoadedListener = () => {
+        try {
+            if (map.value && google && google.maps && google.maps.event) {
+                google.maps.event.addListenerOnce(
+                    map.value,
+                    "tilesloaded",
+                    () => {
+                        // eslint-disable-next-line no-console
+                        console.info("[InterventionMap] tilesloaded event");
+                        ensureTilesVisible();
+                    }
+                );
+            }
+        } catch (e) {
+            // eslint-disable-next-line no-console
+            console.warn(
+                "[InterventionMap] attachTilesLoadedListener failed",
+                e
+            );
+        }
+    };
+
     if (window.google && window.google.maps) {
         window.initMap();
+        // apply defensive fix and listener after init
+        ensureTilesVisible();
+        attachTilesLoadedListener();
     }
 
     nextTick(() => {
