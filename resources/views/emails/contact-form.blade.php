@@ -104,22 +104,28 @@
             </div>
 
             <div class="content">
+                @php
+                    // Défendre contre le cas où une variable fournie serait un objet (ex: $message injecté par le mailer)
+                    $safeName = isset($name) && is_string($name) ? $name : '';
+                    $safeEmail = isset($email) && is_string($email) ? $email : '';
+                    $safeMessage = isset($messageContent) && is_string($messageContent) ? $messageContent : '';
+                @endphp
                 <div class="info-item">
                     <div class="info-label">Nom</div>
-                    <div class="info-value">{{ $name }}</div>
+                    <div class="info-value">{{ $safeName }}</div>
                 </div>
 
                 <div class="info-item">
                     <div class="info-label">Email</div>
-                    <div class="info-value">{{ $email }}</div>
+                    <div class="info-value">{{ $safeEmail }}</div>
                 </div>
 
                 <div class="info-item">
                     <div class="info-label">Message</div>
-                    <div class="message-box">{{ $messageContent }}</div>
+                    <div class="message-box">{!! nl2br(e($safeMessage)) !!}</div>
                 </div>
 
-                <a href="mailto:{{ $email }}" class="reply-button">Répondre par email</a>
+                <a href="mailto:{{ $safeEmail }}" class="reply-button">Répondre par email</a>
             </div>
 
             <div class="footer">
