@@ -359,8 +359,8 @@ onMounted(() => {
         offset: 50,
         anchorPlacement: "top-center",
         startEvent: "DOMContentLoaded",
-        // Activer AOS sur tous les appareils (mobile et desktop)
-        disable: false,
+        // Désactiver AOS sur petits écrans mobiles pour éviter travail JS intensif
+        disable: () => window.innerWidth < 768,
     });
 
     // Appliquer la prévention du débordement horizontal
@@ -383,7 +383,7 @@ onMounted(() => {
             easing: "ease-out-cubic",
             offset: 50,
             anchorPlacement: "top-center",
-            disable: false,
+            disable: () => window.innerWidth < 768,
         });
 
         // Réappliquer la prévention du débordement après redimensionnement

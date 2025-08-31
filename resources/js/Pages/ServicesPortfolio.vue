@@ -306,6 +306,8 @@ onMounted(() => {
         offset: 50,
         anchorPlacement: "top-center",
         startEvent: "DOMContentLoaded",
+        // Désactiver AOS sur mobile pour réduire risque de blocage
+        disable: () => window.innerWidth < 768,
     });
 
     // Appliquer la prévention du débordement horizontal
