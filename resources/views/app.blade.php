@@ -11,16 +11,28 @@
     <!-- Default SEO meta -->
     <meta name="description" content="Solelec — Électricien professionnel (Wallonie). Installation, maintenance et solutions photovoltaïques pour particuliers et entreprises." />
     <meta name="robots" content="index, follow" />
+    @php
+        $baseUrl = rtrim(config('app.url', env('APP_URL')), '/');
+        $currentUrl = url()->current();
+        $socialImage = "$baseUrl/images/social-default.jpg"; // 1200x630 recommandé
+    @endphp
     <meta property="og:site_name" content="{{ config('app.name', 'Solelec') }}" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="{{ config('app.name', 'Solelec') }}" />
     <meta property="og:description" content="Solelec — Électricien professionnel (Wallonie). Installation, maintenance et solutions photovoltaïques." />
-    <meta property="og:url" content="{{ rtrim(config('app.url', env('APP_URL')), '/') }}" />
-    <meta property="og:image" content="{{ rtrim(config('app.url', env('APP_URL')), '/') }}/images/social-default.jpg" />
+    <link rel="canonical" href="{{ $currentUrl }}" />
+    <meta property="og:url" content="{{ $currentUrl }}" />
+    <meta property="og:image" content="{{ $socialImage }}" />
+    <meta property="og:image:secure_url" content="{{ $socialImage }}" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:alt" content="{{ config('app.name', 'Solelec') }}" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="{{ config('app.name', 'Solelec') }}" />
     <meta name="twitter:description" content="Installation et maintenance électrique — Solelec" />
-    <meta name="twitter:image" content="{{ rtrim(config('app.url', env('APP_URL')), '/') }}/images/social-default.jpg" />
+    <meta name="twitter:image" content="{{ $socialImage }}" />
+    <meta name="twitter:image:alt" content="{{ config('app.name', 'Solelec') }}" />
 
     <!-- JSON-LD Organization -->
     <script type="application/ld+json">
@@ -28,9 +40,9 @@
     "@context": "https://schema.org",
     "@type": "Electrician",
     "name": "Solelec",
-    "url": "https://solelec.be",
-    "logo": "https://solelec.be/images/logo.png",
-    "image": "https://solelec.be/images/social-default.jpg",
+    "url": "{{ $baseUrl }}",
+    "logo": "{{ $baseUrl }}/images/logo.png",
+    "image": "{{ $socialImage }}",
     "description": "Solelec — Électricien professionnel en Wallonie. Installation, maintenance et dépannage électrique pour particuliers et entreprises.",
     "telephone": "0492 51 09 31",
     "email": "solelec.lmbt@gmail.com",
@@ -44,7 +56,7 @@
     "areaServed": {
         "@type": "AdministrativeArea",
         "name": "Wallonie"
-    },
+    }
     }
 </script>
 
