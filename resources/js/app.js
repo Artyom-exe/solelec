@@ -48,11 +48,3 @@ createInertiaApp({
         color: "#4B5563",
     },
 });
-
-// Gestion des erreurs Inertia
-document.addEventListener("inertia:error", (event) => {
-    if (event.detail.response.status === 419) {
-        // Erreur CSRF - recharger la page pour obtenir un nouveau token
-        window.location.reload();
-    }
-});

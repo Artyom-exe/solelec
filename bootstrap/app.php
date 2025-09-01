@@ -17,13 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
         ]);
 
-        // Exclure SEULEMENT les routes d'authentification admin du CSRF
-        // Les formulaires publics (contact, devis) restent protégés
-        $middleware->validateCsrfTokens(except: [
-            '/login',
-            '/logout',
-            '/admin/profile*',  // Routes de profil admin
-            '/admin/*/password', // Changements de mot de passe
+        // Middleware CSRF personnalisé pour gérer la production
+        $middleware->web(replace: [
+            \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class => \App\Http\Middleware\VerifyCsrfToken::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
