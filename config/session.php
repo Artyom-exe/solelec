@@ -156,7 +156,9 @@ return [
     |
     */
 
-    'domain' => env('SESSION_DOMAIN'),
+    // Si SESSION_DOMAIN est vide dans l'environnement, on utilise null afin de
+    // laisser Laravel définir un cookie "host-only" (recommandé en local).
+    'domain' => env('SESSION_DOMAIN') ?: null,
 
     /*
     |--------------------------------------------------------------------------

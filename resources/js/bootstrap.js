@@ -1,17 +1,14 @@
 import axios from "axios";
 window.axios = axios;
 
+// Requêtes AJAX
 window.axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
 
-// Envoyer les cookies de session (utile en local si le cookie est défini pour le domaine)
+// Cookies de session autorisés
 window.axios.defaults.withCredentials = true;
 
-// Configuration CSRF
-let token = document.head.querySelector('meta[name="csrf-token"]');
-if (token) {
-    window.axios.defaults.headers.common["X-CSRF-TOKEN"] = token.content;
-} else {
-    console.error(
-        "CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token"
-    );
-}
+// Utiliser le cookie XSRF-TOKEN automatiquement pour éviter les tokens périmés
+// après rotation de session (login/logout). Axios lira le cookie "XSRF-TOKEN"
+// et enverra l'entête "X-XSRF-TOKEN" correspondant.
+window.axios.defaults.xsrfCookieName = "XSRF-TOKEN";
+window.axios.defaults.xsrfHeaderName = "X-XSRF-TOKEN";
