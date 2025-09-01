@@ -1405,10 +1405,10 @@ function compiledMarkdown(text) {
                         </h3>
                     </div>
                     <div
-                        class="flex md:w-[672px] md:h-[304px] h-[400px] md:p-8 p-6 flex-col items-start gap-6 rounded-lg border border-white/20 bg-[#F2F2F2] overflow-y-auto hide-scrollbar"
+                        class="flex md:w-[672px] w-full md:h-[304px] h-[400px] md:p-8 p-6 flex-col items-start gap-6 rounded-lg border border-white/20 bg-[#F2F2F2] overflow-y-auto hide-scrollbar"
                     >
                         <div
-                            class="text-[#0D0703] font-inter md:text-xl text-lg font-normal markdown-content"
+                            class="text-[#0D0703] font-inter md:text-xl text-lg font-normal markdown-content w-full"
                             v-html="
                                 compiledMarkdown(
                                     intervention.devis.description || ''
