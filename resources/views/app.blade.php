@@ -16,11 +16,10 @@
         $currentUrl = url()->current();
         $socialImage = "$baseUrl/images/social-default.png"; // 1200x630 recommandé
     @endphp
-    <meta property="fb:app_id" content="{{ env('FACEBOOK_APP_ID', '') }}" />
     <meta property="og:site_name" content="{{ config('app.name', 'Solelec') }}" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="{{ config('app.name', 'Solelec') }}" />
-    <meta property="og:description" content="Solelec — Électricien professionnel (Wallonie). Installation, maintenance et solutions photovoltaïques." />
+    <meta property="og:description" content="Solelec — Électricien professionnel en Wallonie et Bruxelles. Installation, maintenance et solutions photovoltaïques." />
     <link rel="canonical" href="{{ $currentUrl }}" />
     <meta property="og:url" content="{{ $currentUrl }}" />
     <meta property="og:image" content="{{ $socialImage }}" />
