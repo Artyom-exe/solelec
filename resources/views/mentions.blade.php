@@ -19,6 +19,15 @@
         href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
         rel="stylesheet">
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=2">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=2">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=2">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
+    <meta name="msapplication-TileImage" content="/favicon.ico?v=2">
+
     <!-- Charger l'entrée Vite (inclut le CSS via import dans app.js) -->
     @vite('resources/js/app.js')
 </head>
