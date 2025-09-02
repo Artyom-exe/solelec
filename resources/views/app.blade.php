@@ -9,13 +9,14 @@
     <title inertia>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Default SEO meta -->
-    <meta name="description" content="Solelec — Électricien professionnel (Wallonie). Installation, maintenance et solutions photovoltaïques pour particuliers et entreprises." />
+    <meta name="description" content="Solelec — Électricien professionnel en Wallonie et Bruxelles. Installation, maintenance et solutions photovoltaïques pour particuliers et entreprises." />
     <meta name="robots" content="index, follow" />
     @php
         $baseUrl = rtrim(config('app.url', env('APP_URL')), '/');
         $currentUrl = url()->current();
         $socialImage = "$baseUrl/images/social-default.png"; // 1200x630 recommandé
     @endphp
+    <meta property="fb:app_id" content="{{ env('FACEBOOK_APP_ID', '') }}" />
     <meta property="og:site_name" content="{{ config('app.name', 'Solelec') }}" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="{{ config('app.name', 'Solelec') }}" />
@@ -43,7 +44,7 @@
     "url": "{{ $baseUrl }}",
     "logo": "{{ $baseUrl }}/images/logo.png",
     "image": "{{ $socialImage }}",
-    "description": "Solelec — Électricien professionnel en Wallonie. Installation, maintenance et dépannage électrique pour particuliers et entreprises.",
+    "description": "Solelec — Électricien professionnel en Wallonie et Bruxelles. Installation, maintenance et dépannage électrique pour particuliers et entreprises.",
     "telephone": "0492 51 09 31",
     "email": "solelec.lmbt@gmail.com",
     "address": {
@@ -55,7 +56,7 @@
     },
     "areaServed": {
         "@type": "AdministrativeArea",
-        "name": "Wallonie"
+        "name": "Wallonie et Bruxelles",
     }
     }
 </script>
