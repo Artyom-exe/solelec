@@ -14,7 +14,7 @@
     @php
         $baseUrl = rtrim(config('app.url', env('APP_URL')), '/');
         $currentUrl = url()->current();
-        $socialImage = "$baseUrl/images/social-default.jpg"; // 1200x630 recommandé
+        $socialImage = "$baseUrl/images/social-default.png"; // 1200x630 recommandé
     @endphp
     <meta property="og:site_name" content="{{ config('app.name', 'Solelec') }}" />
     <meta property="og:type" content="website" />
@@ -26,7 +26,7 @@
     <meta property="og:image:secure_url" content="{{ $socialImage }}" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:type" content="image/png" />
     <meta property="og:image:alt" content="{{ config('app.name', 'Solelec') }}" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="{{ config('app.name', 'Solelec') }}" />
