@@ -13,6 +13,10 @@
     "lang": "fr",
     "dir": "ltr",
     "prefer_related_applications": false,
+    "gcm_sender_id": "103953800507",
+    "edge_side_panel": {
+        "preferred_width": 480
+    },
     "icons": [
         {
             "src": "/images/icons/icon-192x192.png",

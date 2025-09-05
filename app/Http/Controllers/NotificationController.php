@@ -68,23 +68,5 @@ class NotificationController extends Controller
             'message' => 'Toutes les notifications ont été marquées comme lues'
         ]);
     }
-
-    /**
-     * Envoie une notification push (pour test)
-     */
-    public function sendTestNotification(Request $request)
-    {
-        // Cette méthode pourra être utilisée plus tard pour envoyer des notifications push réelles
-        // Pour l'instant, on retourne juste une confirmation
-
-        return response()->json([
-            'message' => 'Notification test envoyée',
-            'data' => [
-                'title' => 'Test Solelec',
-                'message' => 'Ceci est une notification de test',
-                'priority' => 'medium'
-            ]
-        ]);
-    }
 }
 

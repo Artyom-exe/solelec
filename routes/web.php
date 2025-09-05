@@ -117,7 +117,6 @@ Route::middleware([
     Route::get('/notifications/count', [NotificationController::class, 'getNotificationCount'])->name('notifications.count');
     Route::post('/notifications/mark-read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
     Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
-    Route::post('/notifications/test', [NotificationController::class, 'sendTestNotification'])->name('notifications.test');
 });
 
 // Registration is disabled (single user). Redirect any /register requests to /login.
