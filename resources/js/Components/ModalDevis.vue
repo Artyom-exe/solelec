@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, inject, onMounted, watch, nextTick } from "vue";
+import { ref, reactive, inject, onMounted, onUnmounted, watch, nextTick } from "vue";
 import { VueFinalModal, useVfm } from "vue-final-modal";
 import "vue-final-modal/style.css";
 import axios from "axios";
@@ -45,6 +45,13 @@ const vfm = useVfm();
 
 // Variable pour contrôler l'animation
 const modalVisible = ref(false);
+// Détection mobile (< 768px)
+const isMobile = ref(false);
+
+// Fonction partagée pour MAJ du flag mobile
+const updateIsMobile = () => {
+    isMobile.value = window.innerWidth < 768;
+};
 
 // Fonction pour animer l'apparition du modal
 onMounted(() => {
@@ -55,6 +62,13 @@ onMounted(() => {
             modalVisible.value = true;
         }, 50);
     });
+    // Init mobile flag
+    updateIsMobile();
+    window.addEventListener("resize", updateIsMobile, { passive: true });
+});
+
+onUnmounted(() => {
+    window.removeEventListener("resize", updateIsMobile);
 });
 
 // Fonction pour fermer le modal avec animation
@@ -85,6 +99,36 @@ const formData = reactive({
     phone: "",
     email: "",
     address: "",
+});
+
+// Hauteur visible sur mobile pour éviter le chevauchement avec l'UI du navigateur
+const setVh = () => {
+    const baseH = window.visualViewport?.height ?? window.innerHeight;
+    const vh = baseH * 0.01;
+    document.documentElement.style.setProperty("--vh", `${vh}px`);
+};
+
+onMounted(() => {
+    setVh();
+    window.addEventListener("orientationchange", setVh, { passive: true });
+    window.addEventListener("resize", setVh, { passive: true });
+    if (window.visualViewport) {
+        window.visualViewport.addEventListener("resize", setVh, {
+            passive: true,
+        });
+        window.visualViewport.addEventListener("scroll", setVh, {
+            passive: true,
+        });
+    }
+});
+
+onUnmounted(() => {
+    window.removeEventListener("orientationchange", setVh);
+    window.removeEventListener("resize", setVh);
+    if (window.visualViewport) {
+        window.visualViewport.removeEventListener("resize", setVh);
+        window.visualViewport.removeEventListener("scroll", setVh);
+    }
 });
 
 // Configuration de l'éditeur TipTap
@@ -494,19 +538,21 @@ onMounted(() => {
         overlay-class="bg-[rgba(0,0,0,0.4)]"
         class="flex justify-center items-end md:items-center md:px-2 px-0"
         :content-class="[
-            'w-full md:max-w-5xl shadow-lg relative md:h-[min(720px,90vh)] md:max-h-[90vh] h-screen max-h-screen flex flex-col transition-all duration-300',
+            'w-full md:max-w-5xl shadow-lg relative md:h-[min(720px,90vh)] md:max-h-[90vh] flex flex-col transition-all duration-300',
             modalVisible
                 ? 'translate-y-0 opacity-100 md:scale-100 md:translate-y-0'
                 : 'translate-y-full md:scale-95 md:translate-y-0 opacity-0',
             'md:ease-[cubic-bezier(0.19,1,0.22,1)] ease-out md:rounded-xl overflow-hidden',
         ]"
+        :content-style="isMobile ? { height: 'calc(var(--vh, 1vh) * 100)', maxHeight: 'calc(var(--vh, 1vh) * 100)', paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'env(safe-area-inset-bottom)' } : {}"
         :reserve-scroll-bar-gap="false"
-        :lock-scroll="false"
+        :lock-scroll="isMobile"
     >
         <!-- Bouton de fermeture (croix) - pour mobile et desktop -->
         <button
             @click="closeWithAnimation()"
             class="absolute top-3 right-3 z-20 bg-white/10 hover:bg-white/20 rounded-full p-2 transition-all duration-300 md:top-4 md:right-4"
+            :style="isMobile ? { top: 'calc(0.75rem + env(safe-area-inset-top))' } : {}"
             aria-label="Fermer"
         >
             <svg
@@ -542,6 +588,7 @@ onMounted(() => {
 
         <div
             class="flex-1 overflow-y-auto flex justify-center overflow-x-hidden"
+            :style="isMobile ? { paddingBottom: 'env(safe-area-inset-bottom)' } : {}"
             :class="{
                 'bg-[#FBFAF6]': step === 1 || step === 3,
                 'bg-[#2D2D2D]': step === 2,
@@ -1099,6 +1146,7 @@ onMounted(() => {
 
         <div
             class="p-6 md:rounded-b-lg sticky bottom-0 w-full"
+            :style="isMobile ? { paddingBottom: 'max(env(safe-area-inset-bottom), 0px)' } : {}"
             :class="{
                 'bg-[#FBFAF6]': step === 1 || step === 3,
                 'bg-[#2D2D2D]': step === 2,
