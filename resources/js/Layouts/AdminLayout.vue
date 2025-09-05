@@ -89,7 +89,14 @@ const updateNotificationCount = async () => {
     try {
         const response = await fetch("/admin/notifications/count");
         const data = await response.json();
-        notificationCount.value = data.total_count || 0;
+        const newCount = data.total_count || 0;
+
+        // Si le nombre a augmenté, déclencher une notification locale
+        if (newCount > notificationCount.value && notificationCount.value > 0) {
+            showLocalNotification();
+        }
+
+        notificationCount.value = newCount;
 
         // Mettre à jour le badge de l'application avec le nombre de notifications non lues
         if (
@@ -98,14 +105,111 @@ const updateNotificationCount = async () => {
         ) {
             navigator.serviceWorker.controller.postMessage({
                 type: "UPDATE_BADGE",
-                count: data.total_count || 0,
+                count: newCount,
             });
+
+            // Envoyer aussi le message d'initialisation pour synchroniser le service worker
+            navigator.serviceWorker.controller.postMessage({
+                type: "INIT_COUNT",
+                count: newCount,
+            });
+        }
+
+        // Fallback pour mobile : changer le titre de la page
+        if (newCount > 0) {
+            document.title = `(${newCount}) Solelec Admin`;
+        } else {
+            document.title = "Solelec Admin";
         }
     } catch (error) {
         console.error(
             "Erreur lors de la récupération du nombre de notifications:",
             error
         );
+    }
+};
+
+// Fonction pour afficher une notification locale
+const showLocalNotification = () => {
+    // Vérifier les permissions
+    if (Notification.permission === "granted") {
+        // Si on a un service worker, utiliser showNotification pour PWA
+        if (
+            "serviceWorker" in navigator &&
+            navigator.serviceWorker.controller
+        ) {
+            // Envoyer un message au service worker pour déclencher une notification
+            navigator.serviceWorker.controller.postMessage({
+                type: "SHOW_NOTIFICATION",
+                title: "Solelec Admin",
+                body: "Nouvelle notification disponible",
+                icon: "/images/icons/icon-192x192.png",
+                badge: "/images/icons/icon-192x192.png",
+                tag: "solelec-new-notification",
+                data: { url: "/admin" },
+            });
+        } else {
+            // Fallback : notification normale
+            new Notification("Solelec Admin", {
+                body: "Nouvelle notification disponible",
+                icon: "/images/icons/icon-192x192.png",
+                badge: "/images/icons/icon-192x192.png",
+                tag: "solelec-new-notification",
+                vibrate: [200, 100, 200],
+                requireInteraction: false,
+                data: { url: "/admin" },
+            });
+        }
+    } else if (Notification.permission === "default") {
+        // Demander la permission
+        Notification.requestPermission().then((permission) => {
+            if (permission === "granted") {
+                showLocalNotification();
+            }
+        });
+    }
+};
+
+// Initialiser les notifications push
+const initializePushNotifications = async () => {
+    try {
+        if (!("Notification" in window)) {
+            return;
+        }
+
+        if (Notification.permission === "granted") {
+            // Test immédiat pour voir si ça marche
+            new Notification("Solelec Admin", {
+                body: "Notifications déjà actives !",
+                icon: "/images/icons/icon-192x192.png",
+            });
+            return;
+        }
+
+        if (Notification.permission === "denied") {
+            return;
+        }
+
+        // Permission par défaut - demander maintenant
+        const permission = await Notification.requestPermission();
+
+        if (permission === "granted") {
+            showNotification(
+                "Notifications activées ! Vous recevrez les alertes importantes.",
+                "success"
+            );
+
+            // Test immédiat
+            setTimeout(() => {
+                new Notification("Solelec Admin", {
+                    body: "Notifications configurées avec succès !",
+                    icon: "/images/icons/icon-192x192.png",
+                    tag: "setup-success",
+                });
+            }, 1000);
+        }
+    } catch (error) {
+        // Erreur silencieuse
     }
 };
 
@@ -128,6 +232,11 @@ const handleNotificationRead = () => {
 onMounted(() => {
     window.addEventListener("show-notification", showNotificationHandler);
     window.addEventListener("hide-notification", hideNotificationHandler);
+
+    // Initialiser les notifications immédiatement
+    setTimeout(() => {
+        initializePushNotifications();
+    }, 1000);
 
     // Gestion globale des erreurs 419 (CSRF token expiré)
     window.addEventListener("unhandledrejection", (event) => {
@@ -164,11 +273,14 @@ onMounted(() => {
             window.location.hostname === "127.0.0.1" ||
             window.location.hostname.includes("laragon"))
     ) {
-        window.addEventListener("load", () => {
+        window.addEventListener("load", async () => {
             navigator.serviceWorker
                 .register("/sw.js")
-                .then((registration) => {
+                .then(async (registration) => {
                     // Service Worker enregistré avec succès
+
+                    // Initialiser les notifications push
+                    await initializePushNotifications();
 
                     // Écouter les mises à jour
                     registration.addEventListener("updatefound", () => {

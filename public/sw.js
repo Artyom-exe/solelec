@@ -37,71 +37,148 @@ self.addEventListener("activate", (event) => {
         })
     );
     self.clients.claim(); // Prend contrôle immédiatement
+
+    // Démarrer le polling automatique
+    startBackgroundSync();
 });
+
+// Variables pour le polling
+let pollInterval = null;
+let lastNotificationCount = 0;
+
+// Démarrer le polling en arrière-plan
+function startBackgroundSync() {
+    // Arrêter l'ancien interval s'il existe
+    if (pollInterval) {
+        clearInterval(pollInterval);
+    }
+
+    // Polling toutes les 30 secondes
+    pollInterval = setInterval(async () => {
+        try {
+            await checkForNewNotifications();
+        } catch (error) {
+            // Erreur silencieuse
+        }
+    }, 30000); // 30 secondes
+}
+
+// Vérifier les nouvelles notifications
+async function checkForNewNotifications() {
+    try {
+        const response = await fetch("/admin/notifications/count");
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const newCount = data.total_count || 0;
+
+        // Si augmentation, afficher notification
+        if (newCount > lastNotificationCount && lastNotificationCount > 0) {
+            await self.registration.showNotification("Solelec Admin", {
+                body: "Nouvelle notification disponible",
+                icon: "/images/icons/icon-192x192.png",
+                badge: "/images/icons/icon-192x192.png",
+                tag: "solelec-new-notification",
+                data: { url: "/admin" },
+                requireInteraction: false,
+                renotify: true,
+                vibrate: [200, 100, 200],
+                silent: false,
+            });
+        }
+
+        // Mettre à jour le badge
+        await updateBadge(newCount);
+        lastNotificationCount = newCount;
+    } catch (error) {
+        // Erreur silencieuse
+    }
+}
+
+// Fonction helper pour mettre à jour le badge
+async function updateBadge(count) {
+    try {
+        await writeBadgeCount(count);
+        await setAppBadgeSafe(count);
+    } catch (error) {
+        // Erreur silencieuse
+    }
+}
 
 // Gestion des notifications push
 self.addEventListener("push", (event) => {
+    console.log("Push event received:", event);
+
+    let data = {};
     if (event.data) {
-        const data = event.data.json();
+        try {
+            data = event.data.json();
+        } catch (e) {
+            data = {
+                title: "Nouvelle notification",
+                message: event.data.text(),
+            };
+        }
+    } else {
+        data = { title: "Solelec Admin", message: "Nouvelle notification" };
+    }
 
-        const options = {
-            body: data.message || "Nouvelle notification Solelec",
-            icon: "/images/icons/icon-192x192.png",
-            badge: "/images/icons/icon-192x192.png",
-            tag: data.tag || "solelec-notification",
-            data: data.data || {},
-            actions: [
-                {
-                    action: "view",
-                    title: "Voir",
-                    icon: "/images/icons/icon-192x192.png",
-                },
-                {
-                    action: "dismiss",
-                    title: "Ignorer",
-                },
-            ],
-            requireInteraction: data.priority === "high",
-            renotify: true,
-            vibrate: data.priority === "high" ? [200, 100, 200] : [100],
-        };
+    const options = {
+        body: data.message || "Nouvelle notification Solelec",
+        icon: "/images/icons/icon-192x192.png",
+        badge: "/images/icons/icon-192x192.png",
+        tag: data.tag || "solelec-notification",
+        data: data.data || {},
+        actions: [
+            {
+                action: "view",
+                title: "Voir",
+                icon: "/images/icons/icon-192x192.png",
+            },
+            {
+                action: "dismiss",
+                title: "Ignorer",
+            },
+        ],
+        requireInteraction: data.priority === "high",
+        renotify: true,
+        vibrate: data.priority === "high" ? [200, 100, 200] : [100],
+        silent: false, // Important pour mobile
+    };
 
-        // Afficher la notification puis mettre à jour le badge
-        event.waitUntil(
-            (async () => {
+    // Afficher la notification puis mettre à jour le badge
+    event.waitUntil(
+        (async () => {
+            try {
                 await self.registration.showNotification(
                     data.title || "Solelec Admin",
                     options
                 );
 
-                // Mettre à jour le compteur de badge : si le payload fournit un count/badge, on l'utilise,
-                // sinon on incrémente le compteur localement.
-                try {
-                    const payloadCount =
-                        typeof data.count === "number"
-                            ? data.count
-                            : typeof data.badge === "number"
-                            ? data.badge
-                            : null;
+                // Mettre à jour le compteur de badge
+                const payloadCount =
+                    typeof data.count === "number"
+                        ? data.count
+                        : typeof data.badge === "number"
+                        ? data.badge
+                        : null;
 
-                    let newCount;
-                    if (payloadCount !== null) {
-                        newCount = payloadCount;
-                    } else {
-                        // Incrément par défaut
-                        const current = await readBadgeCount();
-                        newCount = (current || 0) + 1;
-                    }
-
-                    await writeBadgeCount(newCount);
-                    await setAppBadgeSafe(newCount);
-                } catch (e) {
-                    // Ne pas bloquer l'affichage de la notification si l'update du badge échoue
-                    console.warn("Badge update failed in push handler:", e);
+                let newCount;
+                if (payloadCount !== null) {
+                    newCount = payloadCount;
+                } else {
+                    // Incrément par défaut
+                    const current = await readBadgeCount();
+                    newCount = (current || 0) + 1;
                 }
-            })()
-        );
-    }
+
+                await writeBadgeCount(newCount);
+                await setAppBadgeSafe(newCount);
+            } catch (e) {
+                console.warn("Badge update failed in push handler:", e);
+            }
+        })()
+    );
 });
 
 // Gestion des clics sur les notifications
@@ -148,10 +225,13 @@ self.addEventListener("notificationclick", (event) => {
     }
 });
 
-// Gestion des messages pour mettre à jour le badge
+// Gestion des messages pour mettre à jour le badge et afficher des notifications
 self.addEventListener("message", (event) => {
     if (event.data && event.data.type === "UPDATE_BADGE") {
         const count = event.data.count || 0;
+
+        // Mettre à jour le compteur local
+        lastNotificationCount = count;
 
         // Mettre à jour le badge sur l'icône de l'application (PWA)
         event.waitUntil(
@@ -168,6 +248,40 @@ self.addEventListener("message", (event) => {
                     console.warn("UPDATE_BADGE failed:", e);
                 }
             })()
+        );
+    }
+
+    // Nouvelle fonctionnalité : afficher une notification depuis le client
+    if (event.data && event.data.type === "SHOW_NOTIFICATION") {
+        const data = event.data;
+
+        const options = {
+            body: data.body || "Nouvelle notification",
+            icon: data.icon || "/images/icons/icon-192x192.png",
+            badge: data.badge || "/images/icons/icon-192x192.png",
+            tag: data.tag || "solelec-notification",
+            data: data.data || {},
+            requireInteraction: false,
+            renotify: true,
+            vibrate: [200, 100, 200],
+            silent: false,
+            timestamp: Date.now(),
+        };
+
+        event.waitUntil(
+            self.registration.showNotification(
+                data.title || "Solelec Admin",
+                options
+            )
+        );
+    }
+
+    // Message pour initialiser le compteur lors du démarrage
+    if (event.data && event.data.type === "INIT_COUNT") {
+        lastNotificationCount = event.data.count || 0;
+        console.log(
+            "SW: Initialized notification count to",
+            lastNotificationCount
         );
     }
 });
@@ -223,17 +337,28 @@ function writeBadgeCount(count) {
 
 async function setAppBadgeSafe(count) {
     try {
+        // Méthode 1: Service Worker Registration (le plus compatible)
         if (self.registration && "setAppBadge" in self.registration) {
-            await self.registration.setAppBadge(count);
-        } else if (
-            typeof navigator !== "undefined" &&
-            "setAppBadge" in navigator
-        ) {
-            await navigator.setAppBadge(count);
+            await self.registration.setAppBadge(count > 0 ? count : undefined);
+            return;
         }
+
+        // Méthode 2: Navigator (fallback)
+        if (typeof navigator !== "undefined" && "setAppBadge" in navigator) {
+            await navigator.setAppBadge(count > 0 ? count : undefined);
+            return;
+        }
+
+        // Méthode 3: Forcer via les clients PWA (pour mobile)
+        const clients = await self.clients.matchAll({ type: "window" });
+        clients.forEach((client) => {
+            client.postMessage({
+                type: "SET_BADGE",
+                count: count,
+            });
+        });
     } catch (e) {
-        // Some browsers may throw if badge unsupported
-        // ignore silently
+        // Erreur silencieuse pour compatibilité
     }
 }
 
