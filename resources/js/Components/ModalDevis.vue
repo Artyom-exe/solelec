@@ -1,5 +1,13 @@
 <script setup lang="ts">
-import { ref, reactive, inject, onMounted, onUnmounted, watch, nextTick } from "vue";
+import {
+    ref,
+    reactive,
+    inject,
+    onMounted,
+    onUnmounted,
+    watch,
+    nextTick,
+} from "vue";
 import { VueFinalModal, useVfm } from "vue-final-modal";
 import "vue-final-modal/style.css";
 import axios from "axios";
@@ -544,7 +552,16 @@ onMounted(() => {
                 : 'translate-y-full md:scale-95 md:translate-y-0 opacity-0',
             'md:ease-[cubic-bezier(0.19,1,0.22,1)] ease-out md:rounded-xl overflow-hidden',
         ]"
-        :content-style="isMobile ? { height: 'calc(var(--vh, 1vh) * 100)', maxHeight: 'calc(var(--vh, 1vh) * 100)', paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'env(safe-area-inset-bottom)' } : {}"
+        :content-style="
+            isMobile
+                ? {
+                      height: 'calc(var(--vh, 1vh) * 100)',
+                      maxHeight: 'calc(var(--vh, 1vh) * 100)',
+                      paddingTop: 'env(safe-area-inset-top)',
+                      paddingBottom: 'env(safe-area-inset-bottom)',
+                  }
+                : {}
+        "
         :reserve-scroll-bar-gap="false"
         :lock-scroll="isMobile"
     >
@@ -552,7 +569,11 @@ onMounted(() => {
         <button
             @click="closeWithAnimation()"
             class="absolute top-3 right-3 z-20 bg-white/10 hover:bg-white/20 rounded-full p-2 transition-all duration-300 md:top-4 md:right-4"
-            :style="isMobile ? { top: 'calc(0.75rem + env(safe-area-inset-top))' } : {}"
+            :style="
+                isMobile
+                    ? { top: 'calc(0.75rem + env(safe-area-inset-top))' }
+                    : {}
+            "
             aria-label="Fermer"
         >
             <svg
@@ -588,7 +609,9 @@ onMounted(() => {
 
         <div
             class="flex-1 overflow-y-auto flex justify-center overflow-x-hidden"
-            :style="isMobile ? { paddingBottom: 'env(safe-area-inset-bottom)' } : {}"
+            :style="
+                isMobile ? { paddingBottom: 'env(safe-area-inset-bottom)' } : {}
+            "
             :class="{
                 'bg-[#FBFAF6]': step === 1 || step === 3,
                 'bg-[#2D2D2D]': step === 2,
@@ -1146,7 +1169,11 @@ onMounted(() => {
 
         <div
             class="p-6 md:rounded-b-lg sticky bottom-0 w-full"
-            :style="isMobile ? { paddingBottom: 'max(env(safe-area-inset-bottom), 0px)' } : {}"
+            :style="
+                isMobile
+                    ? { paddingBottom: 'max(env(safe-area-inset-bottom), 0px)' }
+                    : {}
+            "
             :class="{
                 'bg-[#FBFAF6]': step === 1 || step === 3,
                 'bg-[#2D2D2D]': step === 2,
