@@ -79,6 +79,40 @@ onUnmounted(() => {
     window.removeEventListener("resize", updateIsMobile);
 });
 
+// Fallback verrouillage du scroll de l'arrière-plan (mobile uniquement)
+let savedScrollY = 0;
+const lockBodyScroll = () => {
+    savedScrollY = window.scrollY || window.pageYOffset || 0;
+    const body = document.body as HTMLBodyElement;
+    body.style.position = "fixed";
+    body.style.top = `-${savedScrollY}px`;
+    body.style.left = "0";
+    body.style.right = "0";
+    body.style.width = "100%";
+    body.style.overflow = "hidden";
+};
+const unlockBodyScroll = () => {
+    const body = document.body as HTMLBodyElement;
+    body.style.position = "";
+    body.style.top = "";
+    body.style.left = "";
+    body.style.right = "";
+    body.style.width = "";
+    body.style.overflow = "";
+    // Restaure la position de scroll sans animation
+    window.scrollTo(0, savedScrollY);
+};
+
+onMounted(() => {
+    // Verrouille explicitement le scroll sur mobile au montage du modal
+    if (isMobile.value) lockBodyScroll();
+});
+
+onUnmounted(() => {
+    // Déverrouille le scroll au démontage du modal
+    if (isMobile.value) unlockBodyScroll();
+});
+
 // Fonction pour fermer le modal avec animation
 const closeWithAnimation = () => {
     // D'abord, déclencher l'animation de fermeture
@@ -558,7 +592,7 @@ onMounted(() => {
                       height: 'calc(var(--vh, 1vh) * 100)',
                       maxHeight: 'calc(var(--vh, 1vh) * 100)',
                       paddingTop: 'env(safe-area-inset-top)',
-                      paddingBottom: 'env(safe-area-inset-bottom)',
+                      paddingBottom: 'calc(env(safe-area-inset-bottom) + 12px)',
                   }
                 : {}
         "
@@ -610,7 +644,12 @@ onMounted(() => {
         <div
             class="flex-1 overflow-y-auto flex justify-center overflow-x-hidden"
             :style="
-                isMobile ? { paddingBottom: 'env(safe-area-inset-bottom)' } : {}
+                isMobile
+                    ? {
+                          paddingBottom:
+                              'calc(env(safe-area-inset-bottom) + 12px)',
+                      }
+                    : {}
             "
             :class="{
                 'bg-[#FBFAF6]': step === 1 || step === 3,
@@ -1171,7 +1210,10 @@ onMounted(() => {
             class="p-6 md:rounded-b-lg sticky bottom-0 w-full"
             :style="
                 isMobile
-                    ? { paddingBottom: 'max(env(safe-area-inset-bottom), 0px)' }
+                    ? {
+                          paddingBottom:
+                              'calc(max(env(safe-area-inset-bottom), 0px) + 12px)',
+                      }
                     : {}
             "
             :class="{
