@@ -532,9 +532,12 @@ const renderMarkdown = (text) => {
                         </div>
                     </div>
 
-                    <!-- Message si aucun devis -->
+                    <!-- Message si aucun devis pour un filtre -->
                     <div
-                        v-if="filteredQuotes.length === 0"
+                        v-if="
+                            filteredQuotes.length === 0 &&
+                            currentFilter !== 'all'
+                        "
                         class="text-white text-center w-full py-10"
                     >
                         <p class="font-inter text-lg">
@@ -543,6 +546,23 @@ const renderMarkdown = (text) => {
                                     ? " avec ce filtre"
                                     : ""
                             }}.
+                        </p>
+                    </div>
+
+                    <!-- Empty state when there are no quotes at all -->
+                    <div
+                        v-if="
+                            filteredQuotes.length === 0 &&
+                            currentFilter === 'all'
+                        "
+                        class="w-full text-center p-8 rounded-lg border border-white/20 bg-[#242424] mt-4"
+                    >
+                        <p class="text-white font-inter text-lg">
+                            Aucun devis disponible pour le moment
+                        </p>
+                        <p class="text-[#FF8C42] text-sm mt-2">
+                            Utilisez le bouton approprié pour ajouter un nouveau
+                            devis
                         </p>
                     </div>
                 </article>

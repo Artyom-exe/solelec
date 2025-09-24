@@ -297,7 +297,7 @@ const filteredClients = computed(() => {
 <template>
     <AdminLayout>
         <section
-            class="flex md:py-28 md:px-16 py-16 px-5 flex-col md:mt-[72px] mt-16 bg-[#2D2D2D]"
+            class="flex md:py-28 md:px-16 py-16 px-5 flex-col md:mt-[72px] mt-16 bg-[#2D2D2D] min-h-screen"
         >
             <div class="w-full max-w-screen-2xl mx-auto flex flex-col gap-12">
                 <div
@@ -1283,7 +1283,7 @@ const filteredClients = computed(() => {
                         </div>
                     </transition-group>
 
-                    <!-- Message quand aucun client n'est trouvé -->
+                    <!-- Message quand aucun client n'est trouvé pour une recherche -->
                     <div
                         v-if="
                             filteredClients.length === 0 && searchQuery.trim()
@@ -1314,6 +1314,22 @@ const filteredClients = computed(() => {
                                 </p>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- Empty state when there are no clients at all -->
+                    <div
+                        v-if="
+                            filteredClients.length === 0 && !searchQuery.trim()
+                        "
+                        class="w-full text-center p-8 rounded-lg border border-white/20 bg-[#242424] mt-4"
+                    >
+                        <p class="text-white font-inter text-lg">
+                            Aucune client à afficher
+                        </p>
+                        <p class="text-[#FF8C42] text-sm mt-2">
+                            Utilisez le bouton "Ajouter" pour créer un nouveau
+                            client
+                        </p>
                     </div>
                 </div>
             </div>
