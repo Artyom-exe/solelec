@@ -53,6 +53,8 @@ const vfm = useVfm();
 
 // Variable pour contrôler l'animation
 const modalVisible = ref(false);
+// Référence vers le conteneur scrollable du modal pour autoriser le scroll interne
+const modalContent = ref<HTMLElement | null>(null);
 // Détection mobile (< 768px)
 const isMobile = ref(false);
 
@@ -80,32 +82,99 @@ onUnmounted(() => {
 });
 
 // Fallback verrouillage du scroll de l'arrière-plan (mobile uniquement)
+// Combiner une classe CSS globale et le blocage des touchmove pour
+// empêcher le scroll de l'arrière-plan, tout en autorisant le scroll
+// à l'intérieur du conteneur modal.
 let savedScrollY = 0;
+// Détecter iOS pour appliquer une stratégie différente (iOS gère mal position:fixed)
+const isIOS = (() => {
+    if (typeof navigator === "undefined") return false;
+    return (
+        /iP(ad|hone|od)/.test(navigator.platform) ||
+        (navigator.userAgent.includes("Mac") && "ontouchend" in document)
+    );
+})();
+
+const preventTouchMove = (e: TouchEvent) => {
+    const target = e.target as Node | null;
+    // Autoriser le scroll si l'événement se produit à l'intérieur du conteneur modal
+    if (modalContent.value && target && modalContent.value.contains(target))
+        return;
+    e.preventDefault();
+};
+
+const preventWheel = (e: WheelEvent) => {
+    const target = e.target as Node | null;
+    if (modalContent.value && target && modalContent.value.contains(target))
+        return;
+    e.preventDefault();
+};
+
 const lockBodyScroll = () => {
     savedScrollY = window.scrollY || window.pageYOffset || 0;
-    const body = document.body as HTMLBodyElement;
-    body.style.position = "fixed";
-    body.style.top = `-${savedScrollY}px`;
-    body.style.left = "0";
-    body.style.right = "0";
-    body.style.width = "100%";
-    body.style.overflow = "hidden";
+    document.documentElement.classList.add("vfm-modal-open");
+    document.body.classList.add("vfm-modal-open");
+
+    // Pour la plupart des plateformes, fixer le body empêche le scroll du fond correctement
+    if (!isIOS) {
+        const body = document.body as HTMLBodyElement;
+        body.style.position = "fixed";
+        body.style.top = `-${savedScrollY}px`;
+        body.style.left = "0";
+        body.style.right = "0";
+        body.style.width = "100%";
+        body.style.overflow = "hidden";
+    }
+
+    // Bloquer les touchmove/wheel en capture pour empêcher le scroll de fond sur iOS et autres
+    document.addEventListener("touchmove", preventTouchMove, {
+        passive: false,
+        capture: true,
+    });
+    document.addEventListener("wheel", preventWheel, {
+        passive: false,
+        capture: true,
+    });
 };
+
 const unlockBodyScroll = () => {
-    const body = document.body as HTMLBodyElement;
-    body.style.position = "";
-    body.style.top = "";
-    body.style.left = "";
-    body.style.right = "";
-    body.style.width = "";
-    body.style.overflow = "";
-    // Restaure la position de scroll sans animation
+    document.documentElement.classList.remove("vfm-modal-open");
+    document.body.classList.remove("vfm-modal-open");
+
+    if (!isIOS) {
+        const body = document.body as HTMLBodyElement;
+        body.style.position = "";
+        body.style.top = "";
+        body.style.left = "";
+        body.style.right = "";
+        body.style.width = "";
+        body.style.overflow = "";
+    }
+
+    document.removeEventListener(
+        "touchmove",
+        preventTouchMove as EventListener,
+        true
+    );
+    document.removeEventListener("wheel", preventWheel as EventListener, true);
+
+    // Restaure la position de scroll (utile si on a scrolled avant d'ouvrir)
     window.scrollTo(0, savedScrollY);
 };
 
 onMounted(() => {
     // Verrouille explicitement le scroll sur mobile au montage du modal
     if (isMobile.value) lockBodyScroll();
+    // Si le modal est visible plus tard (animations), watcher
+    watch(
+        () => modalVisible.value,
+        (val) => {
+            if (isMobile.value) {
+                if (val) lockBodyScroll();
+                else unlockBodyScroll();
+            }
+        }
+    );
 });
 
 onUnmounted(() => {
@@ -577,10 +646,15 @@ onMounted(() => {
     <VueFinalModal
         overlay-transition="fade"
         content-transition=""
-        overlay-class="bg-[rgba(0,0,0,0.4)]"
+        overlay-class="bg-[rgba(0,0,0,0.4)] vfm-overlay"
         class="flex justify-center items-end md:items-center md:px-2 px-0"
         :content-class="[
-            'w-full md:max-w-5xl shadow-lg relative md:h-[min(720px,90vh)] md:max-h-[90vh] flex flex-col transition-all duration-300',
+            // Desktop: le modal est centré et limite la hauteur
+            'w-full md:max-w-5xl shadow-lg relative md:h-[min(720px,90vh)] md:max-h-[90vh] flex flex-col transition-all duration-300 vfm-modal-root h-full box-border',
+            // Mobile: forcer le modal à couvrir tout l'écran et rester fixe
+            isMobile
+                ? 'fixed inset-0 w-full h-full max-h-full rounded-none'
+                : '',
             modalVisible
                 ? 'translate-y-0 opacity-100 md:scale-100 md:translate-y-0'
                 : 'translate-y-full md:scale-95 md:translate-y-0 opacity-0',
@@ -589,10 +663,20 @@ onMounted(() => {
         :content-style="
             isMobile
                 ? {
+                      // Utiliser la variable --vh pour la hauteur visible mobile
                       height: 'calc(var(--vh, 1vh) * 100)',
                       maxHeight: 'calc(var(--vh, 1vh) * 100)',
+                      // fallback using dynamic viewport unit
+                      minHeight: '100dvh',
                       paddingTop: 'env(safe-area-inset-top)',
-                      paddingBottom: 'calc(env(safe-area-inset-bottom) + 12px)',
+                      paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+                      // Assurer que le modal est au dessus et ne bouge pas lors de l'ouverture du clavier
+                      position: 'fixed',
+                      left: '0',
+                      right: '0',
+                      top: '0',
+                      bottom: '0',
+                      boxSizing: 'border-box',
                   }
                 : {}
         "
@@ -642,12 +726,13 @@ onMounted(() => {
         </div>
 
         <div
-            class="flex-1 overflow-y-auto flex justify-center overflow-x-hidden"
+            ref="modalContent"
+            data-modal-scrollable
+            class="flex-1 overflow-y-auto flex justify-center overflow-x-hidden min-h-0"
             :style="
                 isMobile
                     ? {
-                          paddingBottom:
-                              'calc(env(safe-area-inset-bottom) + 12px)',
+                          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
                       }
                     : {}
             "
@@ -1531,5 +1616,35 @@ onMounted(() => {
         opacity: 1;
         transform: translateY(0);
     }
+}
+</style>
+
+<style>
+/* Global rules to enforce background lock and disable interactions when modal is open */
+.vfm-modal-open html,
+.vfm-modal-open body,
+.vfm-modal-open {
+    touch-action: none !important;
+    -webkit-user-select: none !important;
+    user-select: none !important;
+    overscroll-behavior: none !important;
+}
+
+/* When modal is open, make sure the overlay covers everything and pointer-events block clicks to the background */
+.vfm-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    pointer-events: auto !important;
+}
+
+/* The modal root should be above overlay and accept pointer events */
+.vfm-modal-root {
+    pointer-events: auto !important;
+}
+
+/* Prevent clicks and touch interactions on everything except the modal root when modal-open class is present */
+.vfm-modal-open body *:not(.vfm-modal-root):not(.vfm-modal-root *) {
+    pointer-events: none !important;
+    touch-action: none !important;
 }
 </style>
