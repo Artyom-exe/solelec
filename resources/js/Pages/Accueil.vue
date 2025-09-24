@@ -1047,7 +1047,7 @@ onMounted(() => {
                                 alt="Icône d'une enveloppe"
                                 class="w-6 h-6 filter invert brightness-100"
                             />
-                            <p>solelec.lmbt@gmail.com</p>
+                            <p>contact@solelec.be</p>
                         </div>
                         <div
                             class="flex gap-4"
