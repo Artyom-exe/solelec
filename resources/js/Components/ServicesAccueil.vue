@@ -9,6 +9,31 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 const isMobile = ref(false);
 const isTouchDevice = ref(false);
 
+// Pointer interaction state to distinguish tap vs scroll
+const pointerStartX = ref(0);
+const pointerStartY = ref(0);
+const pointerMoved = ref(false);
+const lastPointerToggleAt = ref(0);
+const POINTER_MOVE_THRESHOLD = 10; // px
+
+// Ref to component root to detect outside clicks
+const rootRef = ref(null);
+
+const onDocumentPointerDown = (e) => {
+    // Only apply outside-click closing on mobile/touch devices
+    if (!isMobile.value && !isTouchDevice.value) return;
+    const root = rootRef.value;
+    if (!root) return;
+    const target = e.target;
+    // If click/touch is outside our root, close active card
+    if (target && !root.contains(target)) {
+        // Only change state if something is active
+        if (activeIndex.value !== -1 && activeIndex.value !== 0) {
+            activeIndex.value = -1;
+        }
+    }
+};
+
 const props = defineProps({
     limit: {
         type: Number,
@@ -107,21 +132,71 @@ const centerCardInView = (element) => {
     }
 };
 
-const toggleActive = (index, event) => {
+const toggleActiveImmediate = (index, event) => {
+    // helper preserving previous behavior when directly toggled
     const previousIndex = activeIndex.value;
-
-    // Sur mobile/tablette (petits écrans) ou appareils tactiles : activer seulement sans possibilité de désactiver
+    let newIndex;
     if (isMobile.value || isTouchDevice.value) {
-        activeIndex.value = index;
+        // on mobile/tactile, allow toggling off: if already active -> deactivate (-1)
+        newIndex = previousIndex === index ? -1 : index;
     } else {
-        // Sur desktop non tactile : fonctionnement normal toggle on/off
-        activeIndex.value = activeIndex.value === index ? 0 : index;
+        // desktop non tactile: toggle between 0 and index
+        newIndex = previousIndex === index ? 0 : index;
     }
 
-    // Si on active une carte (pas désactivation), centrer la carte
-    if (activeIndex.value !== 0 && previousIndex !== activeIndex.value) {
+    activeIndex.value = newIndex;
+
+    // Only center when we activated a card (not when we deactivated)
+    if (newIndex !== -1 && newIndex !== 0 && previousIndex !== newIndex) {
+        centerCardInView(event.currentTarget);
+    } else if (
+        newIndex >= 0 &&
+        previousIndex !== newIndex &&
+        !isMobile.value &&
+        !isTouchDevice.value
+    ) {
+        // desktop case where activeIndex becomes a positive index (not 0)
         centerCardInView(event.currentTarget);
     }
+};
+
+// Pointer handlers
+const handlePointerDown = (index, e) => {
+    pointerMoved.value = false;
+    if (e && typeof e.clientX !== "undefined") {
+        pointerStartX.value = e.clientX;
+        pointerStartY.value = e.clientY;
+    }
+    // keep visual state minimal (no immediate activation)
+};
+
+const handlePointerMove = (e) => {
+    if (!e || typeof e.clientX === "undefined") return;
+    const dx = Math.abs(e.clientX - pointerStartX.value);
+    const dy = Math.abs(e.clientY - pointerStartY.value);
+    if (dx > POINTER_MOVE_THRESHOLD || dy > POINTER_MOVE_THRESHOLD) {
+        pointerMoved.value = true;
+    }
+};
+
+const handlePointerUp = (index, event) => {
+    if (!pointerMoved.value) {
+        // Considered a tap -> activate on release
+        toggleActiveImmediate(index, event);
+        lastPointerToggleAt.value = Date.now();
+    }
+    pointerMoved.value = false;
+};
+
+const handlePointerCancel = () => {
+    pointerMoved.value = false;
+};
+
+// click fallback that ignores clicks immediately after pointer-triggered toggles
+const handleClick = (index, event) => {
+    const now = Date.now();
+    if (now - lastPointerToggleAt.value < 500) return;
+    toggleActiveImmediate(index, event);
 };
 
 // Fonction pour naviguer vers la page services-portfolio avec le service concerné
@@ -157,10 +232,13 @@ const checkDeviceCapabilities = () => {
 onMounted(() => {
     checkDeviceCapabilities();
     window.addEventListener("resize", checkDeviceCapabilities);
+    // register outside click listener
+    document.addEventListener("pointerdown", onDocumentPointerDown);
 });
 
 onBeforeUnmount(() => {
     window.removeEventListener("resize", checkDeviceCapabilities);
+    document.removeEventListener("pointerdown", onDocumentPointerDown);
 });
 
 fetchServices();
@@ -174,6 +252,7 @@ fetchServices();
 
     <section
         v-else
+        ref="rootRef"
         class="flex w-full flex-col xl:flex-row gap-6"
         aria-label="Liste des services"
     >
@@ -195,17 +274,16 @@ fetchServices();
             }"
             @mouseenter="handleMouseEnter(index)"
             @mouseleave="handleMouseLeave"
-            @click="
-                isMobile || isTouchDevice ? toggleActive(index, $event) : false
-            "
-            @touchstart="
-                isMobile || isTouchDevice ? toggleActive(index, $event) : false
-            "
+            @click="handleClick(index, $event)"
+            @pointerdown.passive="handlePointerDown(index, $event)"
+            @pointermove.passive="handlePointerMove($event)"
+            @pointerup.passive="handlePointerUp(index, $event)"
+            @pointercancel="handlePointerCancel()"
             @keydown.enter.prevent="
                 activeIndex === index
                     ? navigateToServiceDetail(service.id)
                     : isMobile || isTouchDevice
-                    ? toggleActive(index, $event)
+                    ? toggleActiveImmediate(index, $event)
                     : handleMouseEnter(index)
             "
             tabindex="0"
