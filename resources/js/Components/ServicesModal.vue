@@ -21,7 +21,76 @@ const emit = defineEmits(["service-selected", "loading-complete"]);
 const services = ref([]);
 const loading = ref(true);
 const localSelectedServices = ref([...props.selectedServices]);
-const touchedServiceId = ref(null); // Pour suivre quel service est actuellement touché
+const touchedServiceId = ref(null); // Pour suivre quel service est actuellement touché (état visuel)
+
+// Pointer interaction state (unifie souris, touch, pen)
+const pointerStartX = ref(0);
+const pointerStartY = ref(0);
+const pointerMoved = ref(false);
+const lastPointerToggleAt = ref(0);
+const POINTER_MOVE_THRESHOLD = 10; // px
+
+// Handlers pointer
+const handlePointerDown = (service, e) => {
+    touchedServiceId.value = service.id;
+    pointerMoved.value = false;
+    if (e && typeof e.clientX !== "undefined") {
+        pointerStartX.value = e.clientX;
+        pointerStartY.value = e.clientY;
+    } else {
+        pointerStartX.value = 0;
+        pointerStartY.value = 0;
+    }
+    // Try to capture pointer so move/up events are guaranteed
+    try {
+        if (e.pointerId && e.target && e.target.setPointerCapture) {
+            e.target.setPointerCapture(e.pointerId);
+        }
+    } catch (err) {
+        // ignore
+    }
+};
+
+const handlePointerMove = (e) => {
+    if (!touchedServiceId.value) return;
+    if (!e || typeof e.clientX === "undefined") return;
+    const dx = Math.abs(e.clientX - pointerStartX.value);
+    const dy = Math.abs(e.clientY - pointerStartY.value);
+    if (dx > POINTER_MOVE_THRESHOLD || dy > POINTER_MOVE_THRESHOLD) {
+        pointerMoved.value = true;
+        // clear visual touch state
+        touchedServiceId.value = null;
+    }
+};
+
+const handlePointerUp = (service, e) => {
+    try {
+        if (e && e.pointerId && e.target && e.target.releasePointerCapture) {
+            e.target.releasePointerCapture(e.pointerId);
+        }
+    } catch (err) {
+        // ignore
+    }
+
+    if (!pointerMoved.value) {
+        toggleService(service);
+        lastPointerToggleAt.value = Date.now();
+    }
+    pointerMoved.value = false;
+    touchedServiceId.value = null;
+};
+
+const handlePointerCancel = () => {
+    pointerMoved.value = false;
+    touchedServiceId.value = null;
+};
+
+// Ignore click right after a pointer-triggered toggle to avoid double action
+const handleClick = (service) => {
+    const now = Date.now();
+    if (now - lastPointerToggleAt.value < 500) return;
+    toggleService(service);
+};
 
 // Calculer les services à afficher (tous les services dans le modal)
 const displayedServices = computed(() => {
@@ -38,15 +107,7 @@ const isTouched = (serviceId) => {
     return touchedServiceId.value === serviceId;
 };
 
-// Gestionnaires d'événements tactiles
-const handleTouchStart = (service) => {
-    touchedServiceId.value = service.id;
-};
-
-const handleTouchEnd = (service) => {
-    touchedServiceId.value = null;
-    toggleService(service);
-};
+// ... pointer handlers above replace touch handlers ...
 
 // Toggle sélection d'un service (avec feedback clavier et souris)
 const toggleService = (service) => {
@@ -130,10 +191,11 @@ fetchServices();
                 isSelected(service.id) ? 'background-color: #2D2D2D;' : '',
                 { height: height },
             ]"
-            @click="toggleService(service)"
-            @touchstart.prevent="handleTouchStart(service)"
-            @touchend.prevent="handleTouchEnd(service)"
-            @touchcancel="touchedServiceId = null"
+            @click="handleClick(service)"
+            @pointerdown.passive="handlePointerDown(service, $event)"
+            @pointermove.passive="handlePointerMove($event)"
+            @pointerup.passive="handlePointerUp(service, $event)"
+            @pointercancel="handlePointerCancel()"
             v-bind="{
                 tabindex: '0',
                 role: 'button',
