@@ -173,16 +173,25 @@ const showLocalNotification = () => {
 // Initialiser les notifications push
 const initializePushNotifications = async () => {
     try {
+        // Ne pas afficher la notification de test plus d'une fois par session
+        if (sessionStorage.getItem("admin_push_notif_shown")) return;
+
         if (!("Notification" in window)) {
             return;
         }
 
         if (Notification.permission === "granted") {
-            // Test immédiat pour voir si ça marche
+            // Test immédiat pour voir si ça marche (une seule fois par session)
             new Notification("Solelec Admin", {
                 body: "Notifications déjà actives !",
                 icon: "/images/icons/icon-192x192.png",
             });
+            // Marquer comme affichée pour cette session
+            try {
+                sessionStorage.setItem("admin_push_notif_shown", "1");
+            } catch (e) {
+                // ignore storage errors
+            }
             return;
         }
 
@@ -206,6 +215,12 @@ const initializePushNotifications = async () => {
                     icon: "/images/icons/icon-192x192.png",
                     tag: "setup-success",
                 });
+                // Marquer comme affichée pour cette session
+                try {
+                    sessionStorage.setItem("admin_push_notif_shown", "1");
+                } catch (e) {
+                    // ignore storage errors
+                }
             }, 1000);
         }
     } catch (error) {
