@@ -663,13 +663,15 @@ onMounted(() => {
                     data-aos-delay="200"
                 >
                     <p class="font-inter md:text-lg text-base font-normal">
-                        S<span class="text-[#FF8C42]">o</span>lelec, c'est 3 ans
-                        d'expertise dans les solutions électriques et
-                        photovoltaïques. Nous guidons nos clients à chaque étape
-                        de leur projet, garantissant un service de qualité et
-                        des installations conformes aux normes. Faites confiance
-                        à notre savoir-faire pour des solutions adaptées à vos
-                        besoins.
+                        S<span class="text-[#FF8C42]">o</span>lelec est bien
+                        plus qu'une simple entreprise d'électricité, c'est la
+                        création de Nicolas Lambot, un artisan électricien
+                        passionné qui a développé une expertise de pointe au
+                        cours de ses 8 années passées dans le milieu industriel.
+                        Aujourd'hui, il a rencontré son expérience et sa passion
+                        au service de la communauté locale en proposant des
+                        services d'électricité haut de gamme pour les
+                        particuliers et industriels.
                     </p>
                 </div>
             </div>
