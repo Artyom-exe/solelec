@@ -84,6 +84,14 @@ const hideNotificationHandler = () => {
     notification.value.show = false;
 };
 
+// Détection mobile basique
+const isMobile = (() => {
+    if (typeof navigator === "undefined") return false;
+    return /Mobi|Android|iP(hone|od|ad)|Windows Phone/i.test(
+        navigator.userAgent
+    );
+})();
+
 // Fonctions pour les notifications PWA
 const updateNotificationCount = async () => {
     try {
@@ -177,6 +185,25 @@ const initializePushNotifications = async () => {
         if (sessionStorage.getItem("admin_push_notif_shown")) return;
 
         if (!("Notification" in window)) {
+            // Fallback pour mobile : informer l'utilisateur via le panneau interne
+            if (isMobile) {
+                try {
+                    if (
+                        !sessionStorage.getItem(
+                            "admin_push_notif_supported_shown"
+                        )
+                    ) {
+                        showNotification(
+                            "Les notifications natives ne sont pas prises en charge par ce navigateur. Installez l'application (PWA) ou utilisez le panneau de notifications intégré.",
+                            "info"
+                        );
+                        sessionStorage.setItem(
+                            "admin_push_notif_supported_shown",
+                            "1"
+                        );
+                    }
+                } catch (e) {}
+            }
             return;
         }
 
@@ -196,6 +223,19 @@ const initializePushNotifications = async () => {
         }
 
         if (Notification.permission === "denied") {
+            // Si l'utilisateur a déjà refusé, informer via le panneau (mobile/desktop) une seule fois
+            try {
+                if (!sessionStorage.getItem("admin_push_notif_denied_shown")) {
+                    showNotification(
+                        "Les notifications natives sont désactivées pour ce site. Activez-les dans les paramètres du navigateur si vous souhaitez les recevoir.",
+                        "info"
+                    );
+                    sessionStorage.setItem(
+                        "admin_push_notif_denied_shown",
+                        "1"
+                    );
+                }
+            } catch (e) {}
             return;
         }
 
