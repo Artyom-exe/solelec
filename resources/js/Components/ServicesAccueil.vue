@@ -26,7 +26,7 @@ const props = defineProps({
 });
 
 const services = ref([]);
-const activeIndex = ref(0); // Pour la page accueil, activer le premier service par défaut
+const activeIndex = ref(0); // Pour la page accueil, par défaut on active le premier service (peut devenir -1 sur mobile)
 const loading = ref(true);
 
 // Calculer les services à afficher
@@ -141,6 +141,16 @@ const checkDeviceCapabilities = () => {
         "ontouchstart" in window ||
         navigator.maxTouchPoints > 0 ||
         navigator.msMaxTouchPoints > 0;
+
+    // Si on est sur mobile/tactile, fermer toutes les cartes par défaut (-1 = aucune)
+    if (isMobile.value || isTouchDevice.value) {
+        activeIndex.value = -1;
+    } else {
+        // Sur desktop non tactile : si aucune carte n'est active, activer la première
+        if (activeIndex.value === -1) {
+            activeIndex.value = 0;
+        }
+    }
 };
 
 // Configuration des écouteurs d'événements de redimensionnement
