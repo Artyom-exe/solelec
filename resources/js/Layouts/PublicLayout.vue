@@ -333,7 +333,20 @@ provide("navigateToSection", navigateToSection);
                                 Rue de Neufmoustier 4,
                             </p>
                             <p class="self-stretch text-sm">
-                                1348 Ottignies-Louvain-la-Neuve, Belgium
+                                1348 Ottignies-Louvain-la-Neuve, Belgique
+                            </p>
+                        </div>
+                        <div
+                            class="flex flex-col items-start gap-1 self-stretch"
+                        >
+                            <p class="self-stretch text-base font-semibold">
+                                Adresse secondaire:
+                            </p>
+                            <p class="self-stretch text-sm">
+                                Av. Hugo Van der Goes,
+                            </p>
+                            <p class="self-stretch text-sm">
+                                1160 Auderghem, Belgique
                             </p>
                         </div>
                         <div
@@ -353,7 +366,7 @@ provide("navigateToSection", navigateToSection);
                                 <a
                                     href="mailto:solelec.lmbt@gmail.com"
                                     class="underline underline-offset-2 decoration-solid decoration-1 hover:text-[#FF8C42] transition-colors"
-                                    >solelec.lmbt@gmail.com</a
+                                    >contact@solelec.be</a
                                 >
                             </p>
                         </div>
