@@ -312,36 +312,36 @@ const isDesktopMode = ref(window.innerWidth >= 1024);
 
 const leftImages = ref([
     {
-        src: "/images/header/ouvrier-dos.jpg",
-        alt: "Électricien Solelec de dos travaillant sur une installation",
+        src: "/images/header/tableau-electrique-domestique-cablage.webp",
+        alt: "Tableau électrique domestique avec disjoncteurs et câblage organisé",
         aosDelay: 0,
     },
     {
-        src: "/images/header/electricien.webp",
-        alt: "Technicien qualifié Solelec en intervention",
+        src: "/images/header/photo-equipe-devant-camion-livraison.webp",
+        alt: "Selfie de deux membres d’une équipe devant un camion jaune et blanc",
         aosDelay: 200,
     },
     {
-        src: "/images/header/ouvrier-panneau.jpg",
-        alt: "Installation de panneau solaire par l'équipe Solelec",
+        src: "/images/header/mesure-electrique-prise-greenup-240v.webp",
+        alt: "Mesure de tension sur prise Green’Up avec un testeur électrique affichant 240 volts",
         aosDelay: 400,
     },
 ]);
 
 const rightImages = ref([
     {
-        src: "/images/header/ouvrier-tableau-electrique.jpg",
-        alt: "Expert Solelec travaillant sur un tableau électrique",
+        src: "/images/header/salle-de-reunion-moderne-table-bois-bis.webp",
+        alt: "Salle de réunion moderne avec une grande table en bois et éclairage suspendu",
         aosDelay: 100,
     },
     {
-        src: "/images/header/plan-travail.jpg",
-        alt: "Plan d'installation électrique étudié par Solelec",
+        src: "/images/header/installation-panneaux-solaires-toiture-maison.webp",
+        alt: "Installation de panneaux solaires sur une toiture en tuiles avec vue sur le paysage",
         aosDelay: 300,
     },
     {
-        src: "/images/header/tableau-electrique-zoom.jpg",
-        alt: "Gros plan sur tableau électrique installé par Solelec",
+        src: "/images/header/installation-electrique-gtl-compteur.webp",
+        alt: "Installation électrique avec GTL et conduits pour compteur et raccordement",
         aosDelay: 500,
     },
 ]);
