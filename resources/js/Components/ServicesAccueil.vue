@@ -137,11 +137,12 @@ const toggleActiveImmediate = (index, event) => {
     const previousIndex = activeIndex.value;
     let newIndex;
     if (isMobile.value || isTouchDevice.value) {
-        // on mobile/tactile, allow toggling off: if already active -> deactivate (-1)
-        newIndex = previousIndex === index ? -1 : index;
+        // Sur mobile/tactile, ne pas refermer la carte quand on clique dessus
+        // (comportement uniforme avec desktop : cliquer garde la carte active)
+        newIndex = index;
     } else {
-        // desktop non tactile: toggle between 0 and index
-        newIndex = previousIndex === index ? 0 : index;
+        // desktop non tactile: do NOT close the card when clicking the same index
+        newIndex = index;
     }
 
     activeIndex.value = newIndex;
