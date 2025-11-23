@@ -14,7 +14,6 @@ const props = defineProps({
 });
 
 const mobileMenuOpen = ref(false);
-const aboutDropdownOpen = ref(false);
 const currentSection = ref("");
 const pendingSection = ref(""); // Section vers laquelle on navigue intentionnellement
 
@@ -47,12 +46,7 @@ const isItemActive = (item) => {
     }
 };
 
-// Pour fermer le dropdown si on clique ailleurs
-const closeDropdowns = (event) => {
-    if (!event.target.closest(".about-dropdown")) {
-        aboutDropdownOpen.value = false;
-    }
-};
+// (dropdown "À propos" supprimé — plus de gestion de clic global nécessaire)
 
 // Fonction appelée quand on clique sur un lien avec ancre
 const handleAnchorClick = (sectionName, route, path) => {
@@ -230,8 +224,6 @@ const observeSections = () => {
 };
 
 onMounted(() => {
-    document.addEventListener("click", closeDropdowns);
-
     // Démarrer l'observation des sections après un délai pour s'assurer que le DOM est prêt
     setTimeout(() => {
         observeSections();
@@ -304,31 +296,13 @@ onMounted(() => {
     });
 });
 
-onBeforeUnmount(() => {
-    document.removeEventListener("click", closeDropdowns);
-});
+// (plus de listener global lié au dropdown à nettoyer ici)
 
 const toggleMobileMenu = () => {
     mobileMenuOpen.value = !mobileMenuOpen.value;
 };
 
-// Pour positionner le dropdown en fixed sous le bouton "À propos"
-import { nextTick } from "vue";
-const dropdownPositionStyle = ref({});
-const toggleAboutDropdown = (event) => {
-    event.stopPropagation();
-    aboutDropdownOpen.value = !aboutDropdownOpen.value;
-    if (aboutDropdownOpen.value) {
-        nextTick(() => {
-            const btn = event.currentTarget;
-            const rect = btn.getBoundingClientRect();
-            dropdownPositionStyle.value = {
-                left: rect.left + "px",
-                top: rect.bottom + 4 + "px", // 4px de marge
-            };
-        });
-    }
-};
+// Dropdown "À propos" et positionnement supprimés — liens intégrés dans la nav
 
 const navItems = [
     { name: "Accueil", route: "accueil", path: "/" },
@@ -344,9 +318,6 @@ const navItems = [
         route: "services-portfolio",
         path: "/services-portfolio",
     },
-];
-
-const aboutSubItems = [
     { name: "Contact", anchor: "#contact", route: "accueil", path: "/" },
     {
         name: "Zones d'intervention",
@@ -417,67 +388,7 @@ const emit = defineEmits(["scrollToSection"]);
                         </a>
                     </template>
 
-                    <!-- Menu À propos avec dropdown -->
-                    <div class="relative about-dropdown">
-                        <button
-                            @click="toggleAboutDropdown"
-                            class="font-inter transition-colors duration-200 flex items-center"
-                            :class="{
-                                'text-[#FF8C42] font-medium':
-                                    aboutSubItems.some((subItem) =>
-                                        isItemActive(subItem)
-                                    ),
-                                'text-white hover:text-[#FF8C42]':
-                                    !aboutSubItems.some((subItem) =>
-                                        isItemActive(subItem)
-                                    ),
-                            }"
-                        >
-                            À propos
-                            <svg
-                                class="w-4 h-4 ml-1"
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                            >
-                                <path
-                                    fill-rule="evenodd"
-                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                    clip-rule="evenodd"
-                                />
-                            </svg>
-                        </button>
-
-                        <!-- Dropdown menu (fixed, pour éviter le scroll de la navbar) -->
-                        <div
-                            v-show="aboutDropdownOpen"
-                            class="fixed bg-white rounded-md shadow-lg py-1 z-50 w-48"
-                            :style="dropdownPositionStyle"
-                        >
-                            <a
-                                v-for="item in aboutSubItems"
-                                :key="item.name"
-                                href="#"
-                                @click.prevent="
-                                    handleAnchorClick(
-                                        item.anchor.substring(1),
-                                        item.route,
-                                        item.path
-                                    );
-                                    aboutDropdownOpen = false;
-                                "
-                                class="block px-4 py-2 transition-colors duration-200"
-                                :class="{
-                                    'text-[#FF8C42] bg-gray-50 font-medium':
-                                        isItemActive(item),
-                                    'text-gray-700 hover:bg-gray-100 hover:text-[#FF8C42]':
-                                        !isItemActive(item),
-                                }"
-                            >
-                                {{ item.name }}
-                            </a>
-                        </div>
-                    </div>
+                    <!-- Les liens 'À propos' ont été intégrés dans `navItems` -->
                 </div>
             </div>
 
@@ -567,44 +478,7 @@ const emit = defineEmits(["scrollToSection"]);
                         </a>
                     </template>
 
-                    <!-- À propos et sous-éléments -->
-                    <div
-                        class="py-2 border-b border-gray-100 pb-3 transition-all duration-300 transform"
-                        style="
-                            animation: fadeInDown 0.5s ease forwards;
-                            animation-delay: 300ms;
-                        "
-                    >
-                        <div
-                            class="font-inter text-gray-700 font-medium text-lg"
-                        >
-                            À propos
-                        </div>
-                        <div class="pl-4 mt-2 space-y-2">
-                            <a
-                                v-for="item in aboutSubItems"
-                                :key="item.name"
-                                href="#"
-                                @click.prevent="
-                                    handleAnchorClick(
-                                        item.anchor.substring(1),
-                                        item.route,
-                                        item.path
-                                    );
-                                    toggleMobileMenu();
-                                "
-                                class="block py-2 transition-all duration-200 transform hover:translate-x-1"
-                                :class="{
-                                    'text-[#FF8C42] font-medium':
-                                        isItemActive(item),
-                                    'text-gray-600 hover:text-[#FF8C42]':
-                                        !isItemActive(item),
-                                }"
-                            >
-                                {{ item.name }}
-                            </a>
-                        </div>
-                    </div>
+                    <!-- Les liens 'À propos' sont maintenant dans la boucle `navItems` -->
 
                     <PrimaryButton
                         class="w-full justify-center mt-4 py-3 text-lg transition-all duration-300 transform"
