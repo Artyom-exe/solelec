@@ -1072,8 +1072,7 @@ onMounted(() => {
                                 class="w-6 h-6 filter invert brightness-100"
                             />
                             <p>
-                                Rue de Neufmoustier 4, 1348
-                                Ottignies-Louvain-la-Neuve, Belgique
+                                Av. Hugo Van der Goes, 1160 Auderghem, Belgique
                             </p>
                         </div>
                         <div
@@ -1087,7 +1086,8 @@ onMounted(() => {
                                 class="w-6 h-6 filter invert brightness-100"
                             />
                             <p>
-                                Av. Hugo Van der Goes, 1160 Auderghem, Belgique
+                                Rue de Neufmoustier 4, 1348
+                                Ottignies-Louvain-la-Neuve, Belgique
                             </p>
                         </div>
                     </div>
