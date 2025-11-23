@@ -348,9 +348,7 @@ const emit = defineEmits(["scrollToSection"]);
             <!-- Navigation principale (Desktop) -->
             <div class="hidden md:flex items-center space-x-8">
                 <div class="flex space-x-6">
-                    <!-- Items de navigation standard -->
                     <template v-for="item in navItems" :key="item.name">
-                        <!-- Lien standard sans ancre -->
                         <Link
                             v-if="!item.anchor"
                             :href="route(item.route)"
@@ -365,7 +363,6 @@ const emit = defineEmits(["scrollToSection"]);
                             {{ item.name }}
                         </Link>
 
-                        <!-- Lien avec ancre -->
                         <a
                             v-else
                             href="#"
@@ -394,9 +391,35 @@ const emit = defineEmits(["scrollToSection"]);
 
             <!-- Groupe boutons droite (mobile) -->
             <div class="flex items-center justify-center gap-4 md:gap-8 h-full">
+                <!-- Lien téléphone cliquable -->
+                <a
+                    href="tel:+32492510931"
+                    class="font-inter text-base text-white hover:text-[#FF8C42] flex items-center gap-2"
+                    aria-label="Appeler Solelec"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="w-12 h-12 md:w-5 md:h-5"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path
+                            d="M22 16.92v3a2 2 0 0 1-2.18 2 19.86 19.86 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.86 19.86 0 0 1 2.08 4.18 2 2 0 0 1 4 2h3a2 2 0 0 1 2 1.72c.12.99.37 1.95.72 2.86a2 2 0 0 1-.45 2.11L8.09 10.91a16 16 0 0 0 6 6l1.22-1.22a2 2 0 0 1 2.11-.45c.9.35 1.87.6 2.86.72A2 2 0 0 1 22 16.92z"
+                        />
+                    </svg>
+                    <span class="hidden md:inline md:text-base md:font-medium"
+                        >0492/51.09.31</span
+                    >
+                </a>
+
                 <PrimaryButton @click="openDevisModal" navStyle>
                     Devis
                 </PrimaryButton>
+
                 <!-- Hamburger (Mobile) avec animation cross - masqué sur desktop avec v-if -->
                 <div class="md:hidden">
                     <button
@@ -479,6 +502,34 @@ const emit = defineEmits(["scrollToSection"]);
                     </template>
 
                     <!-- Les liens 'À propos' sont maintenant dans la boucle `navItems` -->
+
+                    <!-- Lien téléphone rapide (mobile menu) -->
+                    <a
+                        href="tel:+32492510931"
+                        class="w-full inline-flex items-center justify-center gap-3 py-3 mt-2 rounded-md text-lg bg-transparent border border-gray-100 text-gray-700 hover:text-[#FF8C42] transition-colors duration-200"
+                        style="
+                            animation: fadeInDown 0.5s ease forwards;
+                            animation-delay: 420ms;
+                        "
+                        @click="toggleMobileMenu"
+                        aria-label="Appeler Solelec"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="w-6 h-6"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+                            <path
+                                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.86 19.86 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.86 19.86 0 0 1 2.08 4.18 2 2 0 0 1 4 2h3a2 2 0 0 1 2 1.72c.12.99.37 1.95.72 2.86a2 2 0 0 1-.45 2.11L8.09 10.91a16 16 0 0 0 6 6l1.22-1.22a2 2 0 0 1 2.11-.45c.9.35 1.87.6 2.86.72A2 2 0 0 1 22 16.92z"
+                            />
+                        </svg>
+                        <span>0492/51.09.31</span>
+                    </a>
 
                     <PrimaryButton
                         class="w-full justify-center mt-4 py-3 text-lg transition-all duration-300 transform"
