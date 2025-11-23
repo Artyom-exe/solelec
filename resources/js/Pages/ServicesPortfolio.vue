@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch, inject, nextTick } from "vue";
+import { ref, onMounted, watch, inject, nextTick, onBeforeUnmount } from "vue";
 import axios from "axios";
 import { Head } from "@inertiajs/vue3";
 import PublicLayout from "@/Layouts/PublicLayout.vue";
@@ -79,6 +79,29 @@ const openModalWithOverflowFix = () => {
 const services = ref([]);
 const activeIndex = ref(0);
 const prevActiveIndex = ref(0);
+// Indicateur de scroll pour la liste desktop
+const showServicesScrollHint = ref(false);
+let servicesListEl = null;
+
+const updateServicesScrollHint = () => {
+    if (!servicesListEl) return;
+    const { scrollTop, scrollHeight, clientHeight } = servicesListEl;
+    // Montrer l'indicateur si le contenu déborde et qu'on n'est pas en bas
+    showServicesScrollHint.value =
+        scrollHeight > clientHeight &&
+        scrollTop + clientHeight < scrollHeight - 8;
+};
+
+const initServicesScrollHint = () => {
+    nextTick(() => {
+        servicesListEl = document.querySelector(".services-list-scroll");
+        if (servicesListEl) {
+            updateServicesScrollHint();
+            servicesListEl.addEventListener("scroll", updateServicesScrollHint);
+            window.addEventListener("resize", updateServicesScrollHint);
+        }
+    });
+};
 // Ajout de la définition de portfolio
 const portfolio = ref([]);
 // Variables pour Splide
@@ -313,6 +336,9 @@ onMounted(() => {
     // Appliquer la prévention du débordement horizontal
     preventHorizontalOverflow();
 
+    // Initialiser l'indicateur de scroll pour la liste des services
+    initServicesScrollHint();
+
     // Vérifier si l'URL contient un fragment (ancre)
     const hash = window.location.hash;
     if (hash) {
@@ -344,6 +370,13 @@ onMounted(() => {
             }
         }, 300);
     }
+});
+
+onBeforeUnmount(() => {
+    if (servicesListEl) {
+        servicesListEl.removeEventListener("scroll", updateServicesScrollHint);
+    }
+    window.removeEventListener("resize", updateServicesScrollHint);
 });
 </script>
 
@@ -425,7 +458,7 @@ onMounted(() => {
                     </div>
                     <!-- Version desktop - liste verticale -->
                     <div
-                        class="hidden md:flex flex-col items-start self-stretch max-h-[294px] overflow-y-auto hide-scrollbar"
+                        class="hidden md:flex relative flex-col items-start self-stretch max-h-[294px] overflow-y-auto hide-scrollbar services-list-scroll"
                         data-aos="fade-up"
                         data-aos-delay="700"
                     >
@@ -460,6 +493,30 @@ onMounted(() => {
                                 </p>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- Indicateur de scroll (gradient + chevron) -->
+                    <div
+                        v-show="showServicesScrollHint"
+                        class="pointer-events-none absolute left-0 right-0 bottom-0 h-12 flex items-end justify-center"
+                    >
+                        <div
+                            class="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-[#2D2D2D] to-transparent"
+                        ></div>
+                        <svg
+                            class="relative z-10 mb-2 w-5 h-5 text-[#FF8C42] animate-bounce"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M19 9l-7 7-7-7"
+                            />
+                        </svg>
                     </div>
 
                     <!-- Version mobile - carrousel Splide -->
@@ -829,6 +886,11 @@ onMounted(() => {
 .nav-indicator:hover {
     transform: scale(1.2);
     opacity: 0.8;
+}
+
+/* Style pour l'indicateur de scroll (si besoin de réglages supplémentaires) */
+.scroll-hint-svg {
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.25));
 }
 
 /* Effet de profondeur pour les cartes inactives */
