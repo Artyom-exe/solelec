@@ -4,41 +4,76 @@ namespace Database\Seeders;
 
 use App\Models\Portfolio;
 use App\Models\Tag;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class PortfolioTagSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // Récupération de tous les portfolios et tags
-        $portfolios = Portfolio::all();
-        $tags = Tag::all();
-
-        // Association des tags aux projets
         $portfolioTags = [
-            'Installation de panneaux solaires résidentiels' => ['Panneaux solaires', 'Photovoltaïque', 'Résidentiel', 'Installation'],
-            'Mise en conformité électrique d\'une maison ancienne' => ['Mise en conformité', 'Mise aux normes', 'Résidentiel', 'Rénovation'],
-            'Électricité en gros œuvre pour extension' => ['Gros œuvre', 'Résidentiel', 'Installation'],
-            'Dépannage suite à court-circuit' => ['Dépannage', 'Intervention urgente', 'Résidentiel'],
-            'Installation d\'une borne de recharge domestique' => ['Bornes de recharge', 'Véhicules électriques', 'Résidentiel', 'Installation'],
-            'Rénovation électrique complète d\'un appartement' => ['Rénovation', 'Mise aux normes', 'Résidentiel'],
-            'Installation de chauffage électrique' => ['Installation', 'Résidentiel', 'Basse consommation'],
+            'Travaux électriques en hauteur sur maison en bois' => [
+                'Résidentiel',
+                'Travaux en hauteur',
+                'Installation extérieure',
+                'Sécurité chantier',
+            ],
+            'Installation électrique extérieure sur façade en briques' => [
+                'Résidentiel',
+                'Installation extérieure',
+                'Éclairage',
+                'Façade',
+            ],
+            'Montage et câblage d’un tableau électrique complet' => [
+                'Résidentiel',
+                'Tableau électrique',
+                'Mise aux normes',
+                'Distribution électrique',
+            ],
+            'Installation électrique industrielle en local technique' => [
+                'Industriel',
+                'Local technique',
+                'Câblage',
+                'Conduits rigides',
+            ],
+            'Installation d’un luminaire mural LED design' => [
+                'Résidentiel',
+                'Éclairage intérieur',
+                'LED',
+                'Décoratif',
+            ],
+            'Installation de prises électriques industrielles en parking' => [
+                'Industriel',
+                'Parking',
+                'Prises',
+                'Installation apparente',
+            ],
+            'Test de mise à la terre d’une installation électrique' => [
+                'Mise à la terre',
+                'Mesure',
+                'Sécurité',
+                'Contrôle',
+            ],
+            'Installation de panneaux photovoltaïques en toiture inclinée' => [
+                'Panneaux solaires',
+                'Photovoltaïque',
+                'Résidentiel',
+                'Énergie renouvelable',
+            ],
         ];
 
         foreach ($portfolioTags as $portfolioTitle => $tagNames) {
-            $portfolio = $portfolios->where('title', $portfolioTitle)->first();
 
-            if ($portfolio) {
-                foreach ($tagNames as $tagName) {
-                    $tag = $tags->where('name', $tagName)->first();
-                    if ($tag) {
-                        $portfolio->tags()->attach($tag->id);
-                    }
-                }
+            $portfolio = Portfolio::where('title', $portfolioTitle)->first();
+
+            if (!$portfolio) {
+                continue;
+            }
+
+            foreach ($tagNames as $tagName) {
+                $tag = Tag::firstOrCreate(['name' => $tagName]);
+
+                // évite les doublons dans la table pivot
+                $portfolio->tags()->syncWithoutDetaching([$tag->id]);
             }
         }
     }

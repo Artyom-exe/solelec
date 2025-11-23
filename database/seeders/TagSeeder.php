@@ -3,41 +3,48 @@
 namespace Database\Seeders;
 
 use App\Models\Tag;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
 class TagSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $tags = [
+            'Résidentiel',
+            'Travaux en hauteur',
+            'Installation extérieure',
+            'Sécurité chantier',
+            'Éclairage',
+            'Façade',
+            'Tableau électrique',
+            'Mise aux normes',
+            'Distribution électrique',
+            'Industriel',
+            'Local technique',
+            'Câblage',
+            'Conduits rigides',
+            'Éclairage intérieur',
+            'LED',
+            'Décoratif',
+            'Parking',
+            'Prises',
+            'Installation apparente',
+            'Mise à la terre',
+            'Mesure',
+            'Sécurité',
+            'Contrôle',
             'Panneaux solaires',
             'Photovoltaïque',
-            'Mise en conformité',
-            'Mise aux normes',
-            'Gros œuvre',
-            'Dépannage',
-            'Intervention urgente',
-            'Bornes de recharge',
-            'Véhicules électriques',
-            'Résidentiel',
-            'Commercial',
-            'Rénovation',
-            'Installation',
-            'Basse consommation',
-            'Tableau électrique',
-            'Éclairage',
+            'Énergie renouvelable',
         ];
 
-        foreach ($tags as $tagName) {
-            Tag::create([
-                'name' => $tagName,
-                'slug' => Str::slug($tagName),
-            ]);
+        foreach ($tags as $name) {
+            Tag::updateOrCreate(
+                ['name' => $name],
+                ['slug' => Str::slug($name)]
+            );
         }
+
     }
 }
