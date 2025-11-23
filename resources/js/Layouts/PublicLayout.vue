@@ -330,10 +330,10 @@ provide("navigateToSection", navigateToSection);
                                 Adresse:
                             </p>
                             <p class="self-stretch text-sm">
-                                Rue de Neufmoustier 4,
+                                Av. Hugo Van der Goes,
                             </p>
                             <p class="self-stretch text-sm">
-                                1348 Ottignies-Louvain-la-Neuve, Belgique
+                                1160 Auderghem, Belgique
                             </p>
                         </div>
                         <div
@@ -343,10 +343,10 @@ provide("navigateToSection", navigateToSection);
                                 Adresse secondaire:
                             </p>
                             <p class="self-stretch text-sm">
-                                Av. Hugo Van der Goes,
+                                Rue de Neufmoustier 4,
                             </p>
                             <p class="self-stretch text-sm">
-                                1160 Auderghem, Belgique
+                                1348 Ottignies-Louvain-la-Neuve, Belgique
                             </p>
                         </div>
                         <div
