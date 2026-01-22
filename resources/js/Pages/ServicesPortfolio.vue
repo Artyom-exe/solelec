@@ -115,6 +115,11 @@ const fetchServices = async () => {
 
         // Après avoir chargé les services, vérifier si un service spécifique doit être sélectionné
         checkForServiceSelection();
+
+        // S'assurer que l'indicateur de scroll est à jour après le rendu de la liste
+        nextTick(() => {
+            updateServicesScrollHint();
+        });
     } catch (error) {
         console.error("Erreur lors de la récupération des services:", error);
     }
