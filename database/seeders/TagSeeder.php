@@ -11,32 +11,50 @@ class TagSeeder extends Seeder
     public function run(): void
     {
         $tags = [
+            // Général
             'Résidentiel',
+            'Industriel',
+
+            // Types de travaux
+            'Installation électrique',
+            'Mise aux normes',
+            'Rénovation',
+            'Dépannage',
+
+            // Spécifiques techniques
             'Travaux en hauteur',
             'Installation extérieure',
-            'Sécurité chantier',
-            'Éclairage',
-            'Façade',
-            'Tableau électrique',
-            'Mise aux normes',
-            'Distribution électrique',
-            'Industriel',
-            'Local technique',
+            'Installation apparente',
             'Câblage',
             'Conduits rigides',
-            'Éclairage intérieur',
-            'LED',
-            'Décoratif',
-            'Parking',
-            'Prises',
-            'Installation apparente',
+            'Distribution électrique',
+            'Tableau électrique',
             'Mise à la terre',
             'Mesure',
-            'Sécurité',
             'Contrôle',
+            'Sécurité',
+            'Sécurité chantier',
+
+            // Éclairage
+            'Éclairage',
+            'Éclairage intérieur',
+            'Éclairage LED',
+            'LED',
+            'Décoratif',
+
+            // Lieux / usages
+            'Façade',
+            'Parking',
+            'Cuisine',
+            'Local technique',
+
+            // Énergies
             'Panneaux solaires',
             'Photovoltaïque',
             'Énergie renouvelable',
+
+            // Équipements
+            'Prises',
         ];
 
         foreach ($tags as $name) {

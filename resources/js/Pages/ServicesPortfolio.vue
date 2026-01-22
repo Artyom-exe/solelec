@@ -196,7 +196,7 @@ const checkForServiceSelection = () => {
 
         // Trouver l'index du service correspondant à cet ID
         const serviceIndex = services.value.findIndex(
-            (service) => service.id === serviceId
+            (service) => service.id === serviceId,
         );
 
         if (serviceIndex !== -1) {
@@ -218,7 +218,7 @@ const checkForServiceSelection = () => {
                 // Ensuite, centrer le service dans son conteneur
                 setTimeout(() => {
                     const serviceElement = document.getElementById(
-                        "service-" + serviceId
+                        "service-" + serviceId,
                     );
                     centerServiceInContainer(serviceElement);
                 }, 300);
@@ -232,7 +232,7 @@ const checkForServiceSelection = () => {
             const serviceId = parseInt(hash.replace("#service-", ""));
             // Trouver l'index du service correspondant à cet ID
             const serviceIndex = services.value.findIndex(
-                (service) => service.id === serviceId
+                (service) => service.id === serviceId,
             );
             if (serviceIndex !== -1) {
                 // Mettre à jour l'index actif pour sélectionner le service
@@ -253,7 +253,7 @@ const checkForServiceSelection = () => {
                     // Ensuite, centrer le service dans son conteneur
                     setTimeout(() => {
                         const serviceElement = document.getElementById(
-                            hash.substring(1)
+                            hash.substring(1),
                         );
                         centerServiceInContainer(serviceElement);
                     }, 300);
@@ -286,7 +286,7 @@ const selectService = (index) => {
         if (serviceId) {
             setTimeout(() => {
                 const serviceElement = document.getElementById(
-                    "service-" + serviceId
+                    "service-" + serviceId,
                 );
                 centerServiceInContainer(serviceElement);
             }, 100);
@@ -354,7 +354,7 @@ onMounted(() => {
                 const serviceId = parseInt(sectionId.replace("service-", ""));
                 // Trouver l'index du service correspondant à cet ID
                 const serviceIndex = services.value.findIndex(
-                    (service) => service.id === serviceId
+                    (service) => service.id === serviceId,
                 );
                 if (serviceIndex !== -1) {
                     // Mettre à jour l'index actif pour sélectionner le service
@@ -752,7 +752,9 @@ onBeforeUnmount(() => {
 
 /* Styles pour les descriptions */
 .description {
-    transition: max-height 0.4s ease, opacity 0.3s ease;
+    transition:
+        max-height 0.4s ease,
+        opacity 0.3s ease;
     overflow: hidden;
     width: 100%;
 }
@@ -783,7 +785,9 @@ onBeforeUnmount(() => {
     margin-bottom: 24px;
     position: relative;
     background-color: white;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
     display: inline-block;
     width: 100%;
 }
@@ -862,8 +866,11 @@ onBeforeUnmount(() => {
 
 /* Animation smooth pour les transitions parallaxe */
 .mobile-service-card {
-    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-        filter 0.4s ease, opacity 0.4s ease, scale 0.3s ease;
+    transition:
+        transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+        filter 0.4s ease,
+        opacity 0.4s ease,
+        scale 0.3s ease;
 }
 
 /* Amélioration du scroll horizontal */

@@ -59,6 +59,12 @@ class PortfolioTagSeeder extends Seeder
                 'Résidentiel',
                 'Énergie renouvelable',
             ],
+            'Installation d’éclairage LED et prises électriques' => [
+                'Éclairage LED',
+                'Installation électrique',
+                'Cuisine',
+                'Résidentiel',
+            ],
         ];
 
         foreach ($portfolioTags as $portfolioTitle => $tagNames) {

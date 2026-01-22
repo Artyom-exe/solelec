@@ -60,6 +60,11 @@ class PortfolioSeeder extends Seeder
             'description' => 'Pose de panneaux solaires sur une toiture inclinée avec fixation sécurisée, orientation optimisée et raccordement électrique complet au système de production d’énergie.',
             'image' => 'images/portfolio/installation-panneaux-photovoltaiques-toiture.webp',
         ],
+        [
+            'title' => 'Installation d’éclairage LED et prises électriques',
+            'description' => 'Pose d’un éclairage LED sous meubles et installation de prises électriques dans une cuisine, avec raccordement sécurisé et finitions soignées.',
+            'image' => 'images/portfolio/cuisine-led-prise.webp',
+        ],
     ];
 
         foreach ($portfolios as $data) {
