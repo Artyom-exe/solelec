@@ -453,9 +453,9 @@ onMounted(() => {
                             data-aos-delay="300"
                             data-aos-anchor="#header"
                         >
-                            Découvrez des solutions électriques innovantes et
-                            éco-responsables. Faites confiance à notre expertise
-                            pour vos projets d'énergie renouvelable.
+                            Des installations électriques fiables et soignées
+                            pour vos projets de rénovation, de mise aux normes
+                            et d’aménagement intérieur.
                         </p>
                     </div>
 
